@@ -1,0 +1,37 @@
+# 忽略 bin/ 目录
+bin/
+
+# 忽略 .idea/ 目录
+.idea/
+
+# 忽略 GoLand配置文件
+*.iml
+.idea_modules/
+.idea/*
+*.ipr
+*.iws
+*.bak
+
+# 忽略 GoLand自动生成的文件
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/misc.xml
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+
+# 忽略Go编译生成的文件
+*.exe
+*.test
+*.prof
+*.out
+
+# 忽略Go编译缓存和临时文件
+*.test/
+*.prof/
+*.exe/
+*.out/
+
+.DS_Store
+
+assets
