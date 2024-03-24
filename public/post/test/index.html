@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Test | docsGo</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+  </head>
+  <body>
+    <header>
+      
+
+<header class="bg-gray-800 sticky top-0 z-10 ">
+    <div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-3 " >
+        <span class="clickable-wrapper">
+
+
+
+        </span>
+        <span class="flex flex-row gap-1">
+            <a href="https://github.com/" class="text-white hover:opacity-95 hover:bg-blue-800 p-2 rounded-full">
+                <svg viewBox="0 0 16 16" class="w-6 h-6 sm:w-7 sm:h-7" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            </a>
+        </span>
+        <ul class="hidden md:flex flex-grow justify-end flex-row space-x-5 text-white ">
+            <li>
+                <a href="/documentation" class="hover:underline ">Documentation</a>
+            </li>
+
+
+
+        </ul>
+    </div>
+</header>
+    </header>
+    <main>
+      
+  <h1>Test</h1>
+
+  
+  
+  <time datetime="2024-03-24T14:08:37&#43;08:00">March 24, 2024</time>
+
+  <p>🎉 mongodb exporter</p>
+<hr>
+<p>下载：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://github.com/percona/mongodb_exporter/releases/download/v0.11.2/mongodb_exporter-0.11.2.linux-amd64.tar.gz
+</span></span></code></pre></div><p>减压后将 <code>mongodb_exporter</code> 二进制文件移动：</p>
+<pre tabindex="0"><code>mv mongodb_exporter /usr/local/bin/
+</code></pre><p>在 MongoDB 中创建一个名为 <code>prometheus</code> 的用户</p>
+<ol>
+<li>进入mongodb</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mongo mongo.skydns.local --ssl --sslPEMKeyFile /etc/ssl/mongo/client.pem --sslCAFile /etc/ssl/mongo/ca.crt  --authenticationDatabase <span style="color:#e6db74">&#39;$external&#39;</span> --authenticationMechanism MONGODB-X509
+</span></span></code></pre></div><ol start="2">
+<li>创建用户</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>use admin
+</span></span><span style="display:flex;"><span>db.createUser<span style="color:#f92672">({</span>
+</span></span><span style="display:flex;"><span>    user: <span style="color:#e6db74">&#34;prometheus&#34;</span>,
+</span></span><span style="display:flex;"><span>    pwd: <span style="color:#e6db74">&#34;prometheus&#34;</span>,
+</span></span><span style="display:flex;"><span>    roles: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;read&#34;</span>, db: <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;readAnyDatabase&#34;</span>, db: <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;clusterMonitor&#34;</span>, db: <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">})</span>;
+</span></span></code></pre></div><p>创建service文件</p>
+<p>‼️ 修改证书路径 和 IP</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/systemd/system/mongodb_exporter.service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=mongodb_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Environment=&#34;MONGODB_URI=mongodb://prometheus:prometheus@1.1.1.1:27017/admin?ssl=true&amp;sslclientcertificatekeyfile=/etc/ssl/mongo/dev-data1.pem&amp;sslinsecure=true&amp;sslcertificateauthorityfile=/etc/ssl/mongo/ca.crt&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/usr/local/bin/mongodb_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>sed 修改 <code>mongodb_exporter.service</code> 文件中<code>1.1.1.1</code>  为 	<code>mongodb host IP</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sed -i <span style="color:#e6db74">&#34;s/1.1.1.1/mongodb-hostip/g&#34;</span> /etc/systemd/system/mongodb_exporter.service
+</span></span></code></pre></div><p>重新加载 systemd 的配置</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemctl daemon-reload
+</span></span><span style="display:flex;"><span>systemctl restart mongodb_exporter.service
+</span></span><span style="display:flex;"><span>systemctl enable mongodb_exporter.service
+</span></span><span style="display:flex;"><span>systemctl status mongodb_exporter.service
+</span></span></code></pre></div><p>验证：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>curl 127.0.0.1:9216/metrics
+</span></span></code></pre></div>
+  
+
+
+    </main>
+
+
+    <footer>
+      <div class="container mx-auto mt-8 pt-8 flex flex-wrap justify-center">
+    <a href="/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">最新文章</a>
+    <a href="/post/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">所有文章</a>
+    <a href="/progress/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">更新进展</a>
+    <a href="/tags/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">标签</a>
+    <a href="/about" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">关于我</a>
+</div>
+<p class="pb-8 text-center text-grey text-xs my-8">
+    ©2024 M-Q. 版权所有.
+</p>
+<div class="py-6"></div>
+
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
