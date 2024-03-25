@@ -3,7 +3,7 @@
   <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
-<title>Tags | docsGo</title>
+<title>Etcd Exporter | docsGo</title>
 
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -45,23 +45,58 @@
     <main>
       
 
-  
-<div class="container mx-auto mb-8 lg:flex">
-  <div class="w-full bg-white shadow-md rounded pb-8">
-    <h1 class="py-6 border-b-2 border-grey-lighter text-grey-darker font-headline">
-      标签
-    </h1>
-    <br>
-    <div class="flex flex-wrap mb-4">
+<p class="text-4xl text-center text-grey " >Etcd Exporter</p>
+  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
+
+    <div class="max-w-6xl mx-auto mb-10">
       
-
-
+      
+      <time datetime="2024-03-25T09:28:11&#43;08:00">March 25, 2024</time>
+      <div class="text-lg text-gray-700 p-4 text-sm  ">
+        <p>🎉 特定环境，每个节点 <code>/etc/ssl/etcd/ssl</code> 有etcd 证书</p>
+<ul>
+<li>将以下配置写入：<code>vmagent.yaml</code></li>
+</ul>
+<p>‼️ 注意修改证书名为实际证书名，修改 <code>etcd-ip</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>  - job_name: <span style="color:#e6db74">&#34;etcd&#34;</span>
+</span></span><span style="display:flex;"><span>    scheme: https
+</span></span><span style="display:flex;"><span>    tls_config:
+</span></span><span style="display:flex;"><span>      insecure_skip_verify: true
+</span></span><span style="display:flex;"><span>      cert_file: /etc/ssl/etcd/ssl/node-dev-master.pem
+</span></span><span style="display:flex;"><span>      key_file: /etc/ssl/etcd/ssl/node-dev-master-key.pem
+</span></span><span style="display:flex;"><span>      ca_file: /etc/ssl/etcd/ssl/ca.pem
+</span></span><span style="display:flex;"><span>    static_configs:
+</span></span><span style="display:flex;"><span>      - targets: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;etcd-ip1:2379&#39;</span>,<span style="color:#e6db74">&#39;etcd-ip2:2379&#39;</span>,<span style="color:#e6db74">&#39;etcd-ip3:2379&#39;</span><span style="color:#f92672">]</span>
+</span></span></code></pre></div>
+      </div>
+      
 
     </div>
   </div>
+
+
+<div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 
     </main>
 
