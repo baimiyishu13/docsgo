@@ -19,18 +19,12 @@
       <header class="sticky top-0 z-10 py-1">
     <div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-1 " >
         <span class="clickable-wrapper">
-
                 <span class="text-xl sm:text-2xl font-medium">M-Q</span>
-
         </span>
-
         <ul class="hidden md:flex flex-grow justify-end flex-row space-x-5 ">
             <li>
                 <a href="/documentation" class="hover:underline ">Docs</a>
             </li>
-
-
-
         </ul>
         <span class="flex flex-row gap-1">
             <a href="https://github.com/" class="hover:opacity-95 hover:bg-blue-800 p-2 rounded-full">
@@ -53,7 +47,7 @@
       
       <time datetime="2024-03-25T09:27:13&#43;08:00">March 25, 2024</time>
       <div class="text-lg text-gray-700 p-4 text-sm  ">
-        <p>🎉  监控 9114端口</p>
+        <p>监控 9114端口</p>
 <p>下载减压：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v1.5.0/elasticsearch_exporter-1.5.0.linux-amd64.tar.gz
 </span></span></code></pre></div><p>2.减压后node_exporter移动</p>
@@ -77,16 +71,16 @@
 </span></span></code></pre></div><ol start="4">
 <li>启动服务</li>
 </ol>
-<pre tabindex="0"><code>systemctl daemon-reload
-systemctl restart elasticsearch_exporter
-systemctl status elasticsearch_exporter
-systemctl enable elasticsearch_exporter
-</code></pre><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl daemon-reload
+</span></span><span style="display:flex;"><span>systemctl restart elasticsearch_exporter
+</span></span><span style="display:flex;"><span>systemctl status elasticsearch_exporter
+</span></span><span style="display:flex;"><span>systemctl enable elasticsearch_exporter
+</span></span></code></pre></div><ol start="5">
 <li>接入：</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>- job_name: <span style="color:#e6db74">&#39;elasticsearch_exporter&#39;</span>
-</span></span><span style="display:flex;"><span>  static_configs:
-</span></span><span style="display:flex;"><span>  - targets: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;10.61.200.236:9114&#39;</span><span style="color:#f92672">]</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>  - job_name: <span style="color:#e6db74">&#39;elasticsearch_exporter&#39;</span>
+</span></span><span style="display:flex;"><span>    static_configs:
+</span></span><span style="display:flex;"><span>    - targets: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;10.61.200.236:9114&#39;</span><span style="color:#f92672">]</span>
 </span></span></code></pre></div><p>Grafana 导入ID：14191</p>
 
       </div>
