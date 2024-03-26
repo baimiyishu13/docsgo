@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Rulers | docsGo</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+
+
+
+
+
+
+<link rel="icon" href="/icons/safari-pinned-tab.svg" type="image/x-icon">
+  </head>
+  <body>
+    <header>
+      <header class="sticky top-0 z-10 py-1">
+    <div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-1 " >
+        <span class="clickable-wrapper">
+                <span class="text-xl sm:text-2xl font-medium">M-Q</span>
+        </span>
+        <ul class="hidden md:flex flex-grow justify-end flex-row space-x-5 ">
+            <li>
+                <a href="/documentation" class="hover:underline ">Docs</a>
+            </li>
+        </ul>
+        <span class="flex flex-row gap-1">
+            <a href="https://github.com/" class="hover:opacity-95 hover:bg-blue-800 p-2 rounded-full">
+                <svg viewBox="0 0 16 16" class="w-6 h-6 sm:w-7 sm:h-7" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            </a>
+        </span>
+    </div>
+</header>
+<hr>
+
+    </header>
+    <main>
+      
+
+<p class="text-4xl text-center text-grey " >Rulers</p>
+  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
+
+    <div class="max-w-6xl mx-auto mb-10">
+      
+      
+      <time datetime="2024-03-26T11:27:25&#43;08:00">March 26, 2024</time>
+      <div class="text-lg text-gray-700 p-4 text-sm  ">
+        <p>访问：<a href="https://samber.github.io/awesome-prometheus-alerts/">告警规则集合链接</a></p>
+<h4 id="node-exporter">Node Exporter</h4>
+<hr>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># 主机和硬件相关的告警规则</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 磁盘使用率告警</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">磁盘使用率告警</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">磁盘使用率告警</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">floor(((node_filesystem_size_bytes{heihutao!~&#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&#34;} - node_filesystem_free_bytes) * 100) / (node_filesystem_avail_bytes + node_filesystem_size_bytes - node_filesystem_free_bytes)) &gt; 85</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;磁盘使用率超过85% (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;设备 {{ $labels.device }} 挂载在 {{ $labels.mountpoint }} 的磁盘使用率超过了 85%。(当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 内存使用率告警</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">内存告警规则</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#e6db74">&#34;内存使用率告警&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">floor((node_memory_MemTotal_bytes{heihutao!~&#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&#34;} - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes * 100) &gt; 85</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">3m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;内存使用率超过85% (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;内存资源利用率大于85%! (当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CPU使用率告警</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">CPU报警规则</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">CPU使用率告警</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">floor(100 * (1 - avg(irate(node_cpu_seconds_total{mode=&#34;idle&#34;,heihutao!~&#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&#34;}[3m])) by (instance, datacenter))) &gt; 85</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">3m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;CPU报警使用率超过85% (实例  {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;CPU使用率超过了85%! (当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#磁盘几乎耗尽了可用 inode（剩余 &lt; 10%）</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">磁盘inode告警</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#e6db74">&#34;磁盘inode告警&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">(node_filesystem_files_free{fstype!=&#34;msdosfs&#34;} / node_filesystem_files{fstype!=&#34;msdosfs&#34;} * 100 &lt; 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~&#34;.+&#34;}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">2m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">warning</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;磁盘inode告警 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;设备 {{ $labels.device }} 挂载在 {{ $labels.mountpoint }} 的磁盘几乎耗尽了可用 inode（剩余 &lt; 10%）。(当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 主机离线</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">主机离线</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#e6db74">&#34;主机离线&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">up == 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;主机离线 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;主机 {{ $labels.instance }} 离线了&#34;</span>
+</span></span></code></pre></div><h4 id="mongodb-exporter">mongodb Exporter</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MongoDB 宕机</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">MongoDB 宕机</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">mongodb_up == 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;MongoDB 宕机 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;MongoDB 实例 {{ $labels.instance }} 宕机。&#34;</span>
+</span></span></code></pre></div><h4 id="etcd-exporter">ETCD Exporter</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#etcd集群没有领导者</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">etcd 集群没有领导者</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">etcd 集群没有领导者</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">etcd_server_has_leader == 0</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;etcd 集群没有领导者 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;etcd 集群没有领导者。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在 Etcd 中检测到超过 5% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 中检测到超过 5% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 中检测到超过 5% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(rate(etcd_http_failed_total[1m])) BY (method) / sum(rate(etcd_http_received_total[1m])) BY (method) &gt; 0.05</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 中检测到超过 5% 的 HTTP 故障 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;在 Etcd 中检测到超过 5% 的 HTTP 故障。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd成员通信变慢，第99个百分位数超过0.15秒</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd成员通信变慢</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd成员通信变慢</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">histogram_quantile(0.99, rate(etcd_network_peer_round_trip_time_seconds_bucket[1m])) &gt; 0.15</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd成员通信变慢 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Etcd成员通信变慢，第99个百分位数超过0.15秒。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 服务器过去一小时收到超过 5 个失败的提案</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 服务器过去一小时收到超过 5 个失败的提案</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 服务器过去一小时收到超过 5 个失败的提案</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">increase(etcd_server_proposals_failed_total[1h]) &gt; 5</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 服务器过去一小时收到超过 5 个失败的提案 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Etcd 服务器过去一小时收到超过 5 个失败的提案。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd WAL fsync 持续时间增加，第 99 个百分位数超过 0.5 秒[复制]</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd WAL fsync 持续时间增加</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd WAL fsync 持续时间增加</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) &gt; 0.5</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd WAL fsync 持续时间增加 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Etcd WAL fsync 持续时间增加，第 99 个百分位数超过 0.5 秒。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 提交持续时间增加，第 99 个百分位超过 0.25 秒</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 提交持续时间增加</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 提交持续时间增加</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[1m])) &gt; 0.25</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 提交持续时间增加 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Etcd 提交持续时间增加，第 99 个百分位超过 0.25 秒。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># HTTP 请求变慢，第 99 个百分位数超过 0.15 秒</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">HTTP 请求变慢</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">HTTP 请求变慢</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">histogram_quantile(0.99, rate(etcd_http_successful_duration_seconds_bucket[1m])) &gt; 0.15</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;HTTP 请求变慢 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;HTTP 请求变慢，第 99 个百分位数超过 0.15 秒。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 中检测到超过 1% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 中检测到超过 1% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 中检测到超过 1% 的 HTTP 故障</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(rate(etcd_http_failed_total[1m])) BY (method) / sum(rate(etcd_http_received_total[1m])) BY (method) &gt; 0.01</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 中检测到超过 1% 的 HTTP 故障 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;在 Etcd 中检测到超过 1% 的 HTTP 故障。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 中检测到超过 5% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 中检测到超过 5% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 中检测到超过 5% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(rate(grpc_server_handled_total{grpc_code!=&#34;OK&#34;}[1m])) BY (grpc_service, grpc_method) / sum(rate(grpc_server_handled_total[1m])) BY (grpc_service, grpc_method) &gt; 0.05</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 中检测到超过 5% 的 GRPC 请求失败 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;在 Etcd 中检测到超过 5% 的 GRPC 请求失败。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 中检测到超过 1% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 中检测到超过 1% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 中检测到超过 1% 的 GRPC 请求失败</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(rate(grpc_server_handled_total{grpc_code!=&#34;OK&#34;}[1m])) BY (grpc_service, grpc_method) / sum(rate(grpc_server_handled_total[1m])) BY (grpc_service, grpc_method) &gt; 0.01</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 中检测到超过 1% 的 GRPC 请求失败 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;在 Etcd 中检测到超过 1% 的 GRPC 请求失败。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Etcd 领导者在 10 分钟内更换了 2 次以上</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Etcd 领导者在 10 分钟内更换了 2 次以上</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Etcd 领导者在 10 分钟内更换了 2 次以上</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">increase(etcd_server_leader_changes_seen_total[10m]) &gt; 2</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Etcd 领导者在 10 分钟内更换了 2 次以上 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Etcd 领导者在 10 分钟内更换了 2 次以上。&#34;</span>
+</span></span></code></pre></div><h4 id="elasticsearch">Elasticsearch</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  Elasticsearch 堆使用率过高</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Elasticsearch 堆使用率过高</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Elasticsearch 堆使用率过高</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">(elasticsearch_jvm_memory_used_bytes{area=&#34;heap&#34;} / elasticsearch_jvm_memory_max_bytes{area=&#34;heap&#34;}) * 100 &gt; 85</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Elasticsearch 堆使用率过高 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Elasticsearch 堆使用率超过了 85%。(当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  Elasticsearch 磁盘空间不足</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Elasticsearch 磁盘空间不足</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Elasticsearch 磁盘空间不足</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">elasticsearch_filesystem_data_available_bytes / elasticsearch_filesystem_data_size_bytes * 100 &lt; 10</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Elasticsearch 磁盘空间不足 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Elasticsearch 磁盘空间不足。(当前值: {{ $value }}%)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  elasticsearch_cluster_health_status{color=&#34;red&#34;}</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Elasticsearch 集群健康状态</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Elasticsearch 集群健康状态</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">elasticsearch_cluster_health_status{color=&#34;red&#34;}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">for</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Elasticsearch 集群健康状态 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Elasticsearch 集群健康状态为 red。&#34;</span>
+</span></span></code></pre></div><h4 id="kubernetes">Kubernetes</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Kubernetes： kube-state-metrics</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">节点已长时间未就绪</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">节点已长时间未就绪</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">kube_node_status_condition{condition=&#34;Ready&#34;,status=&#34;false&#34;} == 1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;节点已长时间未就绪 (实例 {{ $labels.node }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;节点 {{ $labels.node }} 已长时间未就绪。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kubernetes Pod OOMKilled</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Kubernetes 容器OOMKilled</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(kube_pod_container_status_terminated_reason{reason=&#34;Error&#34;}) by (namespace, pod, container,datacenter,instance) &gt; 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Kubernetes 容器OOMKilled (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Kubernetes 容器 {{ $labels.container }} 在 {{ $labels.namespace }} 命名空间中发生了 OOMKilled 事件。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kubernetes Pod JobFailed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Kubernetes 容器JobFailed</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(kube_pod_container_status_terminated_reason{reason=&#34;Error&#34;}) by (namespace, pod, container,datacenter,instance) &gt; 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Kubernetes 容器JobFailed (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Kubernetes 容器 {{ $labels.container }} 在 {{ $labels.namespace }} 命名空间中发生了 JobFailed 事件。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kubernetes Pod 状态异常</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Kubernetes Pod 状态异常</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">sum(kube_pod_status_phase{phase=~&#34;Pending|Failed|Unknown&#34;}) by (namespace, pod, container,datacenter,instance) &gt; 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Kubernetes Pod 状态异常 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Kubernetes Pod {{ $labels.pod }} 在 {{ $labels.namespace }} 命名空间中出现了异常状态。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kubernetes pod 崩溃循环</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">Kubernetes pod 崩溃循环</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">expr</span>: <span style="color:#ae81ff">increase(kube_pod_container_status_restarts_total[1m]) &gt; 3</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">for</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">严重</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">summary</span>: <span style="color:#e6db74">&#34;Kubernetes pod 崩溃循环 (实例 {{ $labels.instance }})&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;Kubernetes pod {{ $labels.pod }} 在 {{ $labels.namespace }} 命名空间中发生了崩溃循环。&#34;</span>
+</span></span></code></pre></div>
+      </div>
+      
+
+    </div>
+  </div>
+
+
+<div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+
+    <footer>
+      <div class="container mx-auto mt-8 pt-8 flex flex-wrap justify-center">
+    <a href="/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">最新文章</a>
+    <a href="/post/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">所有文章</a>
+    <a href="/progress/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">更新进展</a>
+    <a href="/tags/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">标签</a>
+    <a href="/about" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">关于我</a>
+</div>
+<p class="pb-8 text-center text-grey text-xs my-8">
+    ©2024 M-Q. 版权所有.
+</p>
+<div class="py-6"></div>
+
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+

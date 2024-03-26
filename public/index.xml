@@ -6,8 +6,15 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 26 Mar 2024 10:57:21 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 26 Mar 2024 11:27:25 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rulers</title>
+      <link>http://localhost:1313/monitor/alert/rulers/</link>
+      <pubDate>Tue, 26 Mar 2024 11:27:25 +0800</pubDate>
+      <guid>http://localhost:1313/monitor/alert/rulers/</guid>
+      <description>访问：告警规则集合链接&#xA;Node Exporter # 主机和硬件相关的告警规则 groups: # 磁盘使用率告警 - name: 磁盘使用率告警 rules: - alert: 磁盘使用率告警 expr: floor(((node_filesystem_size_bytes{heihutao!~&amp;#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&amp;#34;} - node_filesystem_free_bytes) * 100) / (node_filesystem_avail_bytes + node_filesystem_size_bytes - node_filesystem_free_bytes)) &amp;gt; 85 for: 1m labels: severity: 严重 annotations: summary: &amp;#34;磁盘使用率超过85% (实例 {{ $labels.instance }})&amp;#34; description: &amp;#34;设备 {{ $labels.device }} 挂载在 {{ $labels.mountpoint }} 的磁盘使用率超过了 85%。(当前值: {{ $value }}%)&amp;#34; # 内存使用率告警 - name: 内存告警规则 rules: - alert: &amp;#34;内存使用率告警&amp;#34; expr: floor((node_memory_MemTotal_bytes{heihutao!~&amp;#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&amp;#34;} - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes * 100) &amp;gt; 85 for: 3m labels: severity: 严重 annotations: summary: &amp;#34;内存使用率超过85% (实例 {{ $labels.</description>
+    </item>
     <item>
       <title>Garfana</title>
       <link>http://localhost:1313/monitor/grafana/garfana/</link>
