@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-	<meta name="generator" content="Hugo 0.123.8"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
-<title>docsGo</title>
+<title>Garfana | docsGo</title>
 
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -42,55 +41,40 @@
     <main>
       
 
+<p class="text-4xl text-center text-grey " >Garfana</p>
+  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
 
+    <div class="max-w-6xl mx-auto mb-10">
+      
+      
+      <time datetime="2024-03-26T10:57:21&#43;08:00">March 26, 2024</time>
+      <div class="text-lg text-gray-700 p-4 text-sm  ">
+        <h3 id="安装grafna">安装Grafna</h3>
+<p>访问：https://grafana.com/docs/grafana/latest/setup-grafana/installation/</p>
+<h3 id="设置-grafana-https-以确保网络流量安全">设置 Grafana HTTPS 以确保网络流量安全</h3>
+<p>访问：https://grafana.com/docs/grafana/latest/setup-grafana/set-up-https/</p>
+<p>步骤</p>
+<ol>
+<li>生成自签名证书</li>
+<li>生成自签名证书</li>
+</ol>
+<p>打开该<code>grafana.ini</code>文件并编辑以下配置参数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#66d9ef">[server]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">http_addr</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">http_port</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">3000</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">domain</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">mysite.com</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">root_url</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">https://subdomain.mysite.com:3000</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">cert_key</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/etc/grafana/grafana.key</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">cert_file</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/etc/grafana/grafana.crt</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">enforce_domain</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">False</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">protocol</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">https</span>
+</span></span></code></pre></div><p><strong>注意</strong>：SSL 流量的标准端口是 443，您可以使用它来代替 Grafana 的默认端口 3000。</p>
 
+      </div>
+      
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<hr>
-<div class="relative pt-24 md:pt-5 pb-2 overflow-hidden">
-    <div class="">
-        <div class="relative lg:max-w-7xl  mx-auto px-4 lg:px-0 text-xl text-gray-500">
-
-            <h2 class="text-center text-3xl font-extrabold text-gray-800 tracking-tight sm:text-4xl">
-                "我所需要的只是一个文档库"
-            </h2>
-            <p class="text-center mt-2 text-base font-semibold tracking-wider text-cyan-600 uppercase">- 每个希望学习的人</p>
-
-        </div>
-        <div class="text-center pt-8 pb-2">
-            <a href="/tags" class="mx-auto text-center sm:text-left sm:w-auto px-4 py-4 rounded-md text-white font-medium bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">进入文档库!</a>
-        </div>
     </div>
-</div>
+  </div>
 
 
 <div class="footer-content ">
@@ -111,44 +95,6 @@
                 <img src="/success.gif" style="width: 40%">
                 <br>
                 <br>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container mx-auto border-none py-0 lg:flex" id="about">
-    <div class="block w-full lg:flex ">
-        <div class="h-48 lg:h-auto lg:w-80 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style="background-image: url('/greenforested.png')" title="Green forested area">
-        </div>
-        <div class="border-r border-b border-l border-grey-light lg:border-l-0 lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-            <div class="mb-2">
-                <div class="mb-2 items-center px-6 flex">
-                    <img class="w-16 h-16 rounded-full mr-4" src="/img.png" alt="Avatar">
-                    <div>
-
-                        <div class="text-xs text-grey-dark">文章作者：</div>
-
-                        <div class="text-grey-darkest font-bold text-xl">M-Q</div>
-                        <div class="flex">
-                            <a class="github" href="https://github.com/baimiyishu13" data-size="small">
-                                ⛳️ github</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-grey-darker text-base">
-                    <p class="py-1">
-                        <span>"MQ是一位运维工程师，专业领域包括网络、Kubernetes、DevOps、Go语言以及云原生监控等。对常用运维技术有深入的理解和实践，曾经成功地为公司部署了一套基于VictoriaMetrics的完整监控系统。 </span>
-                    </p>
-
-                    <p class="py-1">
-                        此前，曾担任过网络工程师，云运维工程师、K8s运维工程师等职位。参与了多个大型项目的开发和部署。"
-                    </p>
-                    <p class="py-1">
-                    大学就读期间就开始学习cisco网络、Linux等技术，对计算机网络、操作系统等有深入的理解。"
-                    </p>
-                </div>
-                <div class="text-grey-dark text-base pt-8">
-                </div>
             </div>
         </div>
     </div>

@@ -6,8 +6,15 @@
     <description>Recent content in Monitor on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 Mar 2024 10:23:51 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 26 Mar 2024 10:57:21 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/monitor/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Garfana</title>
+      <link>http://localhost:1313/monitor/grafana/garfana/</link>
+      <pubDate>Tue, 26 Mar 2024 10:57:21 +0800</pubDate>
+      <guid>http://localhost:1313/monitor/grafana/garfana/</guid>
+      <description>安装Grafna 访问：https://grafana.com/docs/grafana/latest/setup-grafana/installation/&#xA;设置 Grafana HTTPS 以确保网络流量安全 访问：https://grafana.com/docs/grafana/latest/setup-grafana/set-up-https/&#xA;步骤&#xA;生成自签名证书 生成自签名证书 打开该grafana.ini文件并编辑以下配置参数：&#xA;[server] http_addr = http_port = 3000 domain = mysite.com root_url = https://subdomain.mysite.com:3000 cert_key = /etc/grafana/grafana.key cert_file = /etc/grafana/grafana.crt enforce_domain = False protocol = https 注意：SSL 流量的标准端口是 443，您可以使用它来代替 Grafana 的默认端口 3000。</description>
+    </item>
     <item>
       <title>Kube State Metrics</title>
       <link>http://localhost:1313/monitor/exporter/kube-state-metrics/</link>
