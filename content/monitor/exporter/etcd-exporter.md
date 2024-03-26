@@ -1,7 +1,7 @@
 +++
 title = 'Etcd Exporter'
 date = 2024-03-25T09:28:11+08:00
-draft = false
+draft = true
 +++
 特定环境，每个节点 `/etc/ssl/etcd/ssl` 有etcd 证书
 

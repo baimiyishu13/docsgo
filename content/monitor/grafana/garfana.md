@@ -1,7 +1,7 @@
 +++
 title = 'Garfana'
 date = 2024-03-26T10:57:21+08:00
-draft = false
+draft = true
 +++
 
 ### 安装Grafna

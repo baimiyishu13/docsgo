@@ -1,7 +1,7 @@
 +++
 title = 'Mysql Exporter'
 date = 2024-03-25T09:28:39+08:00
-draft = false
+draft = true
 +++
 🎉 暴露端口 9104
 

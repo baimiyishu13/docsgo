@@ -1,7 +1,7 @@
 +++
 title = 'Kube State Metrics'
 date = 2024-03-25T10:23:51+08:00
-draft = false
+draft = true
 +++
 
 适用于集群版本，k8s v1.9

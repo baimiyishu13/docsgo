@@ -1,7 +1,7 @@
 +++
 title = 'Rulers'
 date = 2024-03-26T11:27:25+08:00
-draft = false
+draft = true
 +++
 
 访问：[告警规则集合链接](https://samber.github.io/awesome-prometheus-alerts/)
