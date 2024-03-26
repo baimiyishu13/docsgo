@@ -8,6 +8,9 @@
     <loc>http://localhost:1313/monitor/grafana/garfana/</loc>
     <lastmod>2024-03-26T10:57:21+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/monitor/</loc>
+    <lastmod>2024-03-25T21:14:17+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/monitor/exporter/kube-state-metrics/</loc>
     <lastmod>2024-03-25T10:23:51+08:00</lastmod>
   </url><url>
