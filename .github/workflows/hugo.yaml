@@ -59,6 +59,7 @@ jobs:
           hugo \
             --gc \
             --minify \
+            --bind "https://baimiyishu13.github.io/docsgo/"
             --baseURL "https://baimiyishu13.github.io/docsgo/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
