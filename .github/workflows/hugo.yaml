@@ -59,7 +59,11 @@ jobs:
           hugo \
             --gc \
             --minify \
+            -F --cleanDestinationDir\
             --baseURL "${{ steps.pages.outputs.base_url }}/"
+          mkdir -p public
+          cp -r public/* ./ 
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
