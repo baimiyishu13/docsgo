@@ -2,73 +2,73 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Home on docsGo</title>
-    <link>https://baimiyishu13.github.io//docsgo/</link>
+    <link>http://localhost:1313/docsgo/</link>
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 26 Mar 2024 11:27:25 +0800</lastBuildDate>
-    <atom:link href="https://baimiyishu13.github.io//docsgo/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/docsgo/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Rulers</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/alert/rulers/</link>
+      <link>http://localhost:1313/docsgo/monitor/alert/rulers/</link>
       <pubDate>Tue, 26 Mar 2024 11:27:25 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/alert/rulers/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/alert/rulers/</guid>
       <description>访问：告警规则集合链接&#xA;Node Exporter # 主机和硬件相关的告警规则 groups: # 磁盘使用率告警 - name: 磁盘使用率告警 rules: - alert: 磁盘使用率告警 expr: floor(((node_filesystem_size_bytes{heihutao!~&amp;#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&amp;#34;} - node_filesystem_free_bytes) * 100) / (node_filesystem_avail_bytes + node_filesystem_size_bytes - node_filesystem_free_bytes)) &amp;gt; 85 for: 1m labels: severity: 严重 annotations: summary: &amp;#34;磁盘使用率超过85% (实例 {{ $labels.instance }})&amp;#34; description: &amp;#34;设备 {{ $labels.device }} 挂载在 {{ $labels.mountpoint }} 的磁盘使用率超过了 85%。(当前值: {{ $value }}%)&amp;#34; # 内存使用率告警 - name: 内存告警规则 rules: - alert: &amp;#34;内存使用率告警&amp;#34; expr: floor((node_memory_MemTotal_bytes{heihutao!~&amp;#34;heihutao-tw-dev|heihutao-tw-test|heihutao-tw-dp&amp;#34;} - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes * 100) &amp;gt; 85 for: 3m labels: severity: 严重 annotations: summary: &amp;#34;内存使用率超过85% (实例 {{ $labels.</description>
     </item>
     <item>
       <title>Garfana</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/grafana/garfana/</link>
+      <link>http://localhost:1313/docsgo/monitor/grafana/garfana/</link>
       <pubDate>Tue, 26 Mar 2024 10:57:21 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/grafana/garfana/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/grafana/garfana/</guid>
       <description>安装Grafna 访问：https://grafana.com/docs/grafana/latest/setup-grafana/installation/&#xA;设置 Grafana HTTPS 以确保网络流量安全 访问：https://grafana.com/docs/grafana/latest/setup-grafana/set-up-https/&#xA;步骤&#xA;生成自签名证书 生成自签名证书 打开该grafana.ini文件并编辑以下配置参数：&#xA;[server] http_addr = http_port = 3000 domain = mysite.com root_url = https://subdomain.mysite.com:3000 cert_key = /etc/grafana/grafana.key cert_file = /etc/grafana/grafana.crt enforce_domain = False protocol = https 注意：SSL 流量的标准端口是 443，您可以使用它来代替 Grafana 的默认端口 3000。</description>
     </item>
     <item>
       <title>Kube State Metrics</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/kube-state-metrics/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/kube-state-metrics/</link>
       <pubDate>Mon, 25 Mar 2024 10:23:51 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/kube-state-metrics/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/kube-state-metrics/</guid>
       <description>适用于集群版本，k8s v1.9&#xA;前提准备：&#xA;准备镜像 docker pull bitnami/kube-state-metrics:1.6.0 上传到所有worker节点&#xA;🎉 完成上述步骤再继续&#xA;部署：&#xA;--- apiVersion: v1 kind: ServiceAccount metadata: labels: app: kube-state-metrics name: kube-state-metrics namespace: kube-system --- apiVersion: rbac.authorization.k8s.io/v1 kind: ClusterRole metadata: name: kube-state-metrics rules: - apiGroups: [&amp;#34;&amp;#34;] resources: - configmaps - secrets - nodes - pods - services - resourcequotas - replicationcontrollers - limitranges - persistentvolumeclaims - persistentvolumes - namespaces - endpoints verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;extensions&amp;#34;] resources: - daemonsets - deployments - replicasets - ingresses verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;apps&amp;#34;] resources: - daemonsets - deployments - replicasets - statefulsets verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;batch&amp;#34;] resources: - cronjobs - jobs verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;autoscaling&amp;#34;] resources: - horizontalpodautoscalers verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;policy&amp;#34;] resources: - poddisruptionbudgets verbs: [&amp;#34;list&amp;#34;, &amp;#34;watch&amp;#34;] - apiGroups: [&amp;#34;certificates.</description>
     </item>
     <item>
       <title>Node Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/node-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/node-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:28:48 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/node-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/node-exporter/</guid>
       <description>🎉 默认端口 9100，因为与业务端口冲突，所以此处为9101&#xA;node exporter 1.下载&#xA;wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz 2.减压后node_exporter移动&#xA;tar -zxvf node_exporter-1.7.0.linux-amd64.tar.gz -C /usr/local/bin/ --strip-components=1 3.service 文件&#xA;端口默认9100，会与yugabyte 端口冲突&#xA;cat &amp;lt;&amp;lt;EOF | tee /etc/systemd/system/node_exporter.service [Unit] Description=Node Exporter After=network.target [Service] Type=simple ExecStart=/usr/local/bin/node_exporter --web.listen-address=:9101 Restart=always [Install] WantedBy=multi-user.target EOF 启动服务 systemctl daemon-reload systemctl restart node_exporter.service systemctl status node_exporter.service systemctl enable node_exporter.service 接入：&#xA;- job_name: &amp;#39;node&amp;#39; static_configs: - targets: [&amp;#39;localhost:9101&amp;#39;] </description>
     </item>
     <item>
       <title>Mysql Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/mysql-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/mysql-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:28:39 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/mysql-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/mysql-exporter/</guid>
       <description>🎉 暴露端口 9104&#xA;创建 /etc/mysqlexporter 目录并在其中创建 .my.cnf 文件，该文件包含 MySQL 用户名和密码。 🔔 user、password 数据库用户密码&#xA;mkdir -p /etc/mysqlexporter echo -e &amp;#34;[client]\nuser=$user\npassword=$password&amp;#34; &amp;gt; /etc/mysqlexporter/.my.cnf 将 mysqld_exporter 复制到 /usr/local/bin/ 目录。 cp ./bin/mysqld_exporter /usr/local/bin/ 创建一个名为 mysql_exporter.service 的 systemd 服务文件，该文件在 /etc/systemd/system/ 目录下。 cat &amp;lt;&amp;lt;EOF &amp;gt; /etc/systemd/system/mysql_exporter.service [Unit] Description=mysql Exporter After=network.target [Service] Type=simple ExecStart=/usr/local/bin/mysqld_exporter --config.my-cnf=/etc/mysqlexporter/.my.cnf [Install] WantedBy=multi-user.target EOF 重新加载 systemd 的配置，启动 mysql_exporter.service 服务，并将其设置为开机启动。 systemctl daemon-reload systemctl start mysql_exporter.service systemctl enable mysql_exporter.service 验证 curl 127.0.0.1:9104/metrics 接入：&#xA;- job_name: &amp;#39;mysql&amp;#39; static_configs: - targets: [&amp;#39;mysql-exporter:9104&amp;#39;] Grafana 模版 ID ：17320</description>
     </item>
     <item>
       <title>Mongodb Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/mongodb-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/mongodb-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:28:25 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/mongodb-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/mongodb-exporter/</guid>
       <description>🎉 mongodb exporter&#xA;下载：&#xA;wget https://github.com/percona/mongodb_exporter/releases/download/v0.11.2/mongodb_exporter-0.11.2.linux-amd64.tar.gz 减压后将 mongodb_exporter 二进制文件移动：&#xA;mv mongodb_exporter /usr/local/bin/ 在 MongoDB 中创建一个名为 prometheus 的用户&#xA;进入mongodb mongo mongo.skydns.local --ssl --sslPEMKeyFile /etc/ssl/mongo/client.pem --sslCAFile /etc/ssl/mongo/ca.crt --authenticationDatabase &amp;#39;$external&amp;#39; --authenticationMechanism MONGODB-X509 创建用户 use admin db.createUser({ user: &amp;#34;prometheus&amp;#34;, pwd: &amp;#34;prometheus&amp;#34;, roles: [ { role: &amp;#34;read&amp;#34;, db: &amp;#34;admin&amp;#34; }, { role: &amp;#34;readAnyDatabase&amp;#34;, db: &amp;#34;admin&amp;#34; }, { role: &amp;#34;clusterMonitor&amp;#34;, db: &amp;#34;admin&amp;#34; } ] }); 创建service文件&#xA;‼️ 修改证书路径 和 IP&#xA;cat &amp;lt;&amp;lt;EOF &amp;gt; /etc/systemd/system/mongodb_exporter.service [Unit] Description=mongodb_exporter After=network.</description>
     </item>
     <item>
       <title>Etcd Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/etcd-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/etcd-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:28:11 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/etcd-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/etcd-exporter/</guid>
       <description>特定环境，每个节点 /etc/ssl/etcd/ssl 有etcd 证书&#xA;将以下配置写入：vmagent.yaml ‼️ 注意修改证书名为实际证书名，修改 etcd-ip&#xA;- job_name: &amp;#34;etcd&amp;#34; scheme: https tls_config: insecure_skip_verify: true cert_file: /etc/ssl/etcd/ssl/node-dev-master.pem key_file: /etc/ssl/etcd/ssl/node-dev-master-key.pem ca_file: /etc/ssl/etcd/ssl/ca.pem static_configs: - targets: [&amp;#39;etcd-ip1:2379&amp;#39;,&amp;#39;etcd-ip2:2379&amp;#39;,&amp;#39;etcd-ip3:2379&amp;#39;] </description>
     </item>
     <item>
       <title>Elasticsearch Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/elasticsearch-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/elasticsearch-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:27:13 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/elasticsearch-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/elasticsearch-exporter/</guid>
       <description>监控 9114端口&#xA;下载减压：&#xA;wget https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v1.5.0/elasticsearch_exporter-1.5.0.linux-amd64.tar.gz 2.减压后node_exporter移动&#xA;cp elasticsearch_exporter-1.5.0.linux-amd64/elasticsearch_exporter /usr/local/bin/ 3.service 文件&#xA;⚠️ &amp;ndash;es.uri 参数地址指定为 elasticsearch 节点IP&#xA;cat &amp;lt;&amp;lt;EOF | tee /etc/systemd/system/elasticsearch_exporter.service [Unit] Description=elasticsearch_exporter After=network.target [Service] Type=simple ExecStart=/usr/local/bin/elasticsearch_exporter --es.uri http://10.61.200.236:9200 --web.listen-address 0.0.0.0:9114 Restart=always [Install] WantedBy=multi-user.target EOF 启动服务 systemctl daemon-reload systemctl restart elasticsearch_exporter systemctl status elasticsearch_exporter systemctl enable elasticsearch_exporter 接入： - job_name: &amp;#39;elasticsearch_exporter&amp;#39; static_configs: - targets: [&amp;#39;10.61.200.236:9114&amp;#39;] Grafana 导入ID：14191</description>
     </item>
     <item>
       <title>Cassandra Exporter</title>
-      <link>https://baimiyishu13.github.io//docsgo/monitor/exporter/cassandra-exporter/</link>
+      <link>http://localhost:1313/docsgo/monitor/exporter/cassandra-exporter/</link>
       <pubDate>Mon, 25 Mar 2024 09:26:56 +0800</pubDate>
-      <guid>https://baimiyishu13.github.io//docsgo/monitor/exporter/cassandra-exporter/</guid>
+      <guid>http://localhost:1313/docsgo/monitor/exporter/cassandra-exporter/</guid>
       <description>在cassandra 节点 - data1&#xA;下载包 wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.19.0/jmx_prometheus_javaagent-0.19.0.jar 放在data1:&#xA;mv jmx_prometheus_javaagent-0.19.0.jar /usr/share/cassandra/lib/ 2.1 配置修改1 /etc/cassandra/conf/cassandra-jmx.yaml&#xA;lowercaseOutputLabelNames: true lowercaseOutputName: true whitelistObjectNames: [&amp;#34;org.apache.cassandra.metrics:*&amp;#34;] # ColumnFamily is an alias for Table metrics blacklistObjectNames: [&amp;#34;org.apache.cassandra.metrics:type=ColumnFamily,*&amp;#34;] rules: # Generic gauges with 0-2 labels - pattern: org.apache.cassandra.metrics&amp;lt;type=(\S*)(?:, ((?!scope)\S*)=(\S*))?(?:, scope=(\S*))?, name=(\S*)&amp;gt;&amp;lt;&amp;gt;Value name: cassandra_$1_$5 type: GAUGE labels: &amp;#34;$1&amp;#34;: &amp;#34;$4&amp;#34; &amp;#34;$2&amp;#34;: &amp;#34;$3&amp;#34; # # Emulate Prometheus &amp;#39;Summary&amp;#39; metrics for the exported &amp;#39;Histogram&amp;#39;s. # TotalLatency is the sum of all latencies since server start # - pattern: org.</description>
     </item>
   </channel>

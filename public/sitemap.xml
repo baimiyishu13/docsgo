@@ -2,41 +2,41 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/alert/rulers/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/alert/rulers/</loc>
     <lastmod>2024-03-26T11:27:25+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/grafana/garfana/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/grafana/garfana/</loc>
     <lastmod>2024-03-26T10:57:21+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/</loc>
     <lastmod>2024-03-25T21:14:17+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/kube-state-metrics/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/kube-state-metrics/</loc>
     <lastmod>2024-03-25T10:23:51+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/node-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/node-exporter/</loc>
     <lastmod>2024-03-25T09:28:48+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/mysql-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/mysql-exporter/</loc>
     <lastmod>2024-03-25T09:28:39+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/mongodb-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/mongodb-exporter/</loc>
     <lastmod>2024-03-25T09:28:25+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/etcd-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/etcd-exporter/</loc>
     <lastmod>2024-03-25T09:28:11+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/elasticsearch-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/elasticsearch-exporter/</loc>
     <lastmod>2024-03-25T09:27:13+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/monitor/exporter/cassandra-exporter/</loc>
+    <loc>http://localhost:1313/docsgo/monitor/exporter/cassandra-exporter/</loc>
     <lastmod>2024-03-25T09:26:56+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/</loc>
+    <loc>http://localhost:1313/docsgo/</loc>
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/categories/</loc>
+    <loc>http://localhost:1313/docsgo/categories/</loc>
   </url><url>
-    <loc>https://baimiyishu13.github.io//docsgo/tags/</loc>
+    <loc>http://localhost:1313/docsgo/tags/</loc>
   </url>
 </urlset>
