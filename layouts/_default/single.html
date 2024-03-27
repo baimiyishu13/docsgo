@@ -1,23 +1,20 @@
-{{ define "main" }}
-<p class="text-4xl text-center text-grey " >{{ .Title }}</p>
-<article>
-  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
-    <div class="max-w-6xl mx-auto mb-10">
-      {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-      {{ $dateHuman := .Date | time.Format ":date_long" }}
-      <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
-      <aside class="text-lg text-gray-700 p-4 text-sm  ">
-        <h1> 目录：</h1>
-        {{ .TableOfContents }}
-      </aside>
-      <hr>
-      <div class=" text-lg text-gray-700 p-4 text-sm foo bar" >
-
-        {{ .Content }}
-      </div>
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-    </div>
-  </div>
-</article>
 {{ partial "success.html" . }}
-{{ end }}
+<div id="article">
+    <div class="article-title">
+        <h1>{{ .Title }}</h1>
+    </div>
+    {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+    {{ $dateHuman := .Date | time.Format ":date_long" }}
+    <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+    <hr/>
+    <aside class="text-sm text-inherit">
+        <p> 目录: </p>
+        {{ .TableOfContents }}
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            {{ .Content }}
+        </div>
+    </div>
+</div>
