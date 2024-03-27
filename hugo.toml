@@ -1,4 +1,4 @@
-baseURL = 'https://baimiyishu13.github.io/'
+baseURL = 'https://baimiyishu13.github.io/docsgo/'
 languageCode = 'en-us'
 title = 'docsGo'
 canonifyURLs = true
