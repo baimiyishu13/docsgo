@@ -1,29 +1,142 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Elasticsearch Exporter | docsGo</title>
-<script src=https://cdn.tailwindcss.com></script><link rel=icon href=https://baimiyishu13.github.io/docsgo/icons/safari-pinned-tab.svg type=image/x-icon></head><body><header><header class="sticky top-0 z-10 py-1"><div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-1"><span class=clickable-wrapper><span class="text-xl sm:text-2xl font-medium">M-Q</span></span><ul class="hidden md:flex flex-grow justify-end flex-row space-x-5"><li><a href=https://baimiyishu13.github.io/docsgo/documentation class=hover:underline>Docs</a></li></ul><span class="flex flex-row gap-1"><a href=https://github.com/ class="hover:opacity-95 hover:bg-blue-800 p-2 rounded-full"><svg viewBox="0 0 16 16" class="w-6 h-6 sm:w-7 sm:h-7" fill="currentcolor" aria-hidden="true"><path d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></span></div></header><hr></header><main><p class="text-4xl text-center text-grey">Elasticsearch Exporter</p><div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10"><div class="max-w-6xl mx-auto mb-10"><time datetime=2024-03-25T09:27:13+08:00>March 25, 2024</time><div class="text-lg text-gray-700 p-4 text-sm"><p>监控 9114端口</p><p>下载减压：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>wget https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v1.5.0/elasticsearch_exporter-1.5.0.linux-amd64.tar.gz
-</span></span></code></pre></div><p>2.减压后node_exporter移动</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>cp elasticsearch_exporter-1.5.0.linux-amd64/elasticsearch_exporter /usr/local/bin/
-</span></span></code></pre></div><p>3.service 文件</p><p>⚠️ &ndash;es.uri 参数地址指定为 elasticsearch 节点IP</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>cat <span style=color:#e6db74>&lt;&lt;EOF | tee /etc/systemd/system/elasticsearch_exporter.service
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Unit]
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Description=elasticsearch_exporter
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>After=network.target
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Service]
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Type=simple
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>ExecStart=/usr/local/bin/elasticsearch_exporter  --es.uri http://10.61.200.236:9200 --web.listen-address 0.0.0.0:9114
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Restart=always
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Install]
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>WantedBy=multi-user.target
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></div><ol start=4><li>启动服务</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>systemctl daemon-reload
-</span></span><span style=display:flex><span>systemctl restart elasticsearch_exporter
-</span></span><span style=display:flex><span>systemctl status elasticsearch_exporter
-</span></span><span style=display:flex><span>systemctl enable elasticsearch_exporter
-</span></span></code></pre></div><ol start=5><li>接入：</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>  - job_name: <span style=color:#e6db74>&#39;elasticsearch_exporter&#39;</span>
-</span></span><span style=display:flex><span>    static_configs:
-</span></span><span style=display:flex><span>    - targets: <span style=color:#f92672>[</span><span style=color:#e6db74>&#39;10.61.200.236:9114&#39;</span><span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>Grafana 导入ID：14191</p></div></div></div><div class=footer-content><div class=row style=display:flex;justify-content:center;align-items:center><div class="col-md-4 col-md-offset-0 vcenter"><div style=text-align:center><img class=float-right src=https://baimiyishu13.github.io/docsgo/punching.gif style=width:40%><br><br></div></div><div class="col-md-6 col-md-offset-1 vcenter"><div class=quote style="font-size:1.5em;font-family:courier new,Courier,monospace;color:#888;margin-left:20px;margin-right:20px;text-align:center">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div></div><div class="col-md-4 col-md-offset-0 vcenter"><div style=text-align:center><img src=https://baimiyishu13.github.io/docsgo/success.gif style=width:40%><br><br></div></div></div></div></main><footer><div class="container mx-auto mt-8 pt-8 flex flex-wrap justify-center"><a href=https://baimiyishu13.github.io/docsgo/ class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">最新文章</a>
-<a href=https://baimiyishu13.github.io/docsgo/post/ class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">所有文章</a>
-<a href=https://baimiyishu13.github.io/docsgo/progress/ class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">更新进展</a>
-<a href=https://baimiyishu13.github.io/docsgo/tags/ class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">标签</a>
-<a href=https://baimiyishu13.github.io/docsgo/about class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">关于我</a></div><p class="pb-8 text-center text-grey text-xs my-8">©2024 M-Q. 版权所有.</p><div class=py-6></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head><script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Elasticsearch Exporter | docsGo</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+
+
+
+
+
+
+<link rel="icon" href="http://localhost:1313/docsgo/icons/safari-pinned-tab.svg" type="image/x-icon">
+  </head>
+  <body>
+    <header>
+      <header class="sticky top-0 z-10 py-1">
+    <div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-1 " >
+        <span class="clickable-wrapper">
+                <span class="text-xl sm:text-2xl font-medium">M-Q</span>
+        </span>
+        <ul class="hidden md:flex flex-grow justify-end flex-row space-x-5 ">
+            <li>
+                <a href="http://localhost:1313/docsgo/documentation" class="hover:underline ">Docs</a>
+            </li>
+        </ul>
+        <span class="flex flex-row gap-1">
+            <a href="https://github.com/" class="hover:opacity-95 hover:bg-blue-800 p-2 rounded-full">
+                <svg viewBox="0 0 16 16" class="w-6 h-6 sm:w-7 sm:h-7" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            </a>
+        </span>
+    </div>
+</header>
+<hr>
+
+    </header>
+    <main>
+      
+
+<p class="text-4xl text-center text-grey " >Elasticsearch Exporter</p>
+  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
+
+    <div class="max-w-6xl mx-auto mb-10">
+      
+      
+      <time datetime="2024-03-25T09:27:13&#43;08:00">March 25, 2024</time>
+      <div class="text-lg text-gray-700 p-4 text-sm  ">
+        <p>监控 9114端口</p>
+<p>下载减压：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v1.5.0/elasticsearch_exporter-1.5.0.linux-amd64.tar.gz
+</span></span></code></pre></div><p>2.减压后node_exporter移动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cp elasticsearch_exporter-1.5.0.linux-amd64/elasticsearch_exporter /usr/local/bin/
+</span></span></code></pre></div><p>3.service 文件</p>
+<p>⚠️ &ndash;es.uri 参数地址指定为 elasticsearch 节点IP</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF | tee /etc/systemd/system/elasticsearch_exporter.service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=elasticsearch_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/usr/local/bin/elasticsearch_exporter  --es.uri http://10.61.200.236:9200 --web.listen-address 0.0.0.0:9114
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=always
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><ol start="4">
+<li>启动服务</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl daemon-reload
+</span></span><span style="display:flex;"><span>systemctl restart elasticsearch_exporter
+</span></span><span style="display:flex;"><span>systemctl status elasticsearch_exporter
+</span></span><span style="display:flex;"><span>systemctl enable elasticsearch_exporter
+</span></span></code></pre></div><ol start="5">
+<li>接入：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>  - job_name: <span style="color:#e6db74">&#39;elasticsearch_exporter&#39;</span>
+</span></span><span style="display:flex;"><span>    static_configs:
+</span></span><span style="display:flex;"><span>    - targets: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;10.61.200.236:9114&#39;</span><span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>Grafana 导入ID：14191</p>
+
+      </div>
+      
+
+    </div>
+  </div>
+
+
+<div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+
+    <footer>
+      <div class="container mx-auto mt-8 pt-8 flex flex-wrap justify-center">
+    <a href="http://localhost:1313/docsgo/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">最新文章</a>
+    <a href="http://localhost:1313/docsgo/post/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">所有文章</a>
+    <a href="http://localhost:1313/docsgo/progress/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">更新进展</a>
+    <a href="http://localhost:1313/docsgo/tags/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">标签</a>
+    <a href="http://localhost:1313/docsgo/about" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">关于我</a>
+</div>
+<p class="pb-8 text-center text-grey text-xs my-8">
+    ©2024 M-Q. 版权所有.
+</p>
+<div class="py-6"></div>
+
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
