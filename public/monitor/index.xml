@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Monitor on docsGo</title>
+    <title>docsGo</title>
     <link>http://localhost:1313/docsgo/monitor/</link>
-    <description>Recent content in Monitor on docsGo</description>
+    <description>Recent content on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 26 Mar 2024 11:27:25 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 27 Mar 2024 16:38:42 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/monitor/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Vmauth</title>
+      <link>http://localhost:1313/docsgo/monitor/victoriametrics/vmauth/</link>
+      <pubDate>Wed, 27 Mar 2024 16:38:42 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/monitor/victoriametrics/vmauth/</guid>
+      <description>简单身份验证代理&#xA;下载：https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.99.0/vmutils-linux-amd64-v1.99.0.tar.gz&#xA;减压到：/usr/local/bin&#xA;system 文件&#xA;使用了TLS 加密 配置文件参考官方文档即可 cat &amp;lt;&amp;lt;EOF &amp;gt; /etc/systemd/system/vmauth.service [Unit] Description=Description=vmauth.service After=network.target [Service] Type=simple ExecStart=/usr/local/bin/vmauth-prod -auth.config=/etc/auth/config.yml -tls -tlsCertFile=/root/.ssh/cert.pem -tlsKeyFile=/root/.ssh/key.pem SyslogIdentifier=victoriametrics Restart=always [Install] WantedBy=multi-user.target EOF </description>
+    </item>
+    <item>
+      <title>VictoriaMetrics</title>
+      <link>http://localhost:1313/docsgo/monitor/victoriametrics/victoriametrics/</link>
+      <pubDate>Wed, 27 Mar 2024 16:33:08 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/monitor/victoriametrics/victoriametrics/</guid>
+      <description>安装方式多种参考官网文档&#xA;二进制安装：&#xA;下载：https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.99.0/victoria-metrics-linux-amd64-v1.99.0.tar.gz 解压到 /usr/local/bin&#xA;创建数据目录：例如 /data/victoria-metrics 启动文件：&#xA;兼容 prometheus 配置文件格式 cat &amp;lt;&amp;lt;EOF &amp;gt;/etc/systemd/system/victoria-metrics.service [Unit] Description=Description=VictoriaMetrics service After=network.target [Service] Type=simple LimitNOFILE=2097152 ExecStart=/usr/local/bin/victoria-metrics-prod -storageDataPath=/data/victoria-metrics -promscrape.config=/etc/victoriametrics/prometheus.yaml SyslogIdentifier=victoriametrics Restart=always PrivateTmp=yes ProtectHome=yes NoNewPrivileges=yes ProtectSystem=full [Install] WantedBy=multi-user.target 暴露端口：8428</description>
+    </item>
+    <item>
+      <title>Alertmanager</title>
+      <link>http://localhost:1313/docsgo/monitor/alert/alertmanager/</link>
+      <pubDate>Wed, 27 Mar 2024 16:03:21 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/monitor/alert/alertmanager/</guid>
+      <description>二进制安装：&#xA;下载：https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz&#xA;下载减压 - &amp;gt; /usr/local/bin&#xA;cta &amp;lt;&amp;lt;EOF &amp;gt;/etc/systemd/system/alertmanager.service ### Alertmanager systemd [Unit] Description=Alertmanager After=network-online.target [Service] User=alertmanager Group=alertmanager Type=simple ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml Restart=always [Install] WantedBy=multi-user.target EOF 配置文件：alertmanager.yml&#xA;参考官方配置 示例：企业微信&#xA;global: resolve_timeout: 5m route: group_by: [&amp;#39;alertname&amp;#39;] group_wait: 10s group_interval: 1m repeat_interval: 30m receiver: &amp;#39;web.hook&amp;#39; receivers: - name: &amp;#39;web.hook&amp;#39; webhook_configs: - url: &amp;#39;http://localhost:8999/webhook&amp;#39; send_resolved: true 访问：9093端口</description>
+    </item>
+    <item>
+      <title>Vmagent</title>
+      <link>http://localhost:1313/docsgo/monitor/victoriametrics/vmagent/</link>
+      <pubDate>Wed, 27 Mar 2024 15:48:16 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/monitor/victoriametrics/vmagent/</guid>
+      <description>接入腾讯云监控，vmagent 会将监控数据 pull 到腾讯云 victoriametrics TSDB&#xA;前提 下载包 wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.99.0/vmutils-linux-amd64-v1.99.0.tar.gz 证书文件放置在 /etc/ssl/certs cert.pem key.pem 安全 证书：&#xA;🎉 用于 vmagent传输数据 TLS加密&#xA;cat &amp;lt;&amp;lt;EOF &amp;gt; openssl.cnf [req] req_extensions = v3_req distinguished_name = req_distinguished_name [req_distinguished_name] [v3_req] basicConstraints = CA:FALSE keyUsage = nonRepudiation, digitalSignature, keyEncipherment subjectAltName = @alt_names [alt_names] IP.1 = 1.15.176.240 EOF openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \ -keyout key.pem -out cert.pem \ -subj &amp;#34;/C=CN/ST=shanxi/L=xian/O=IT/CN=monitor&amp;#34; \ -config.yaml openssl.cnf 接入环境配置：&#xA;cat &amp;lt;&amp;lt;EOF &amp;gt;/etc/ssl/certs/cert.</description>
+    </item>
     <item>
       <title>Rulers</title>
       <link>http://localhost:1313/docsgo/monitor/alert/rulers/</link>

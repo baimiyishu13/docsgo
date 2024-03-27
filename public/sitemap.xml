@@ -2,6 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/monitor/victoriametrics/vmauth/</loc>
+    <lastmod>2024-03-27T16:38:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/monitor/victoriametrics/victoriametrics/</loc>
+    <lastmod>2024-03-27T16:33:08+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/monitor/alert/alertmanager/</loc>
+    <lastmod>2024-03-27T16:03:21+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/monitor/victoriametrics/vmagent/</loc>
+    <lastmod>2024-03-27T15:48:16+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/devops/</loc>
     <lastmod>2024-03-27T13:10:39+08:00</lastmod>
   </url><url>
