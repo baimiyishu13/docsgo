@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Git | docsGo</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+
+
+
+
+
+
+<link rel="icon" href="http://localhost:1313/docsgo/icons/favicon-32x32.png" type="image/x-icon">
+  </head>
+  <body>
+    <header>
+      <header class="sticky top-0 z-10 py-1">
+    <div class="container max-w-full px-10 flex flex-row items-center space-x-8 py-1 " >
+        <span class="clickable-wrapper">
+                <span class="text-xl sm:text-2xl font-medium">M-Q</span>
+        </span>
+        <ul class="hidden md:flex flex-grow justify-end flex-row space-x-5 ">
+            <li>
+                <a href="http://localhost:1313/docsgo/documentation" class="hover:underline ">Docs</a>
+            </li>
+        </ul>
+        <span class="flex flex-row gap-1">
+            <a href="https://github.com/" class="hover:opacity-95 hover:bg-blue-800 p-2 rounded-full">
+                <svg viewBox="0 0 16 16" class="w-6 h-6 sm:w-7 sm:h-7" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            </a>
+        </span>
+    </div>
+</header>
+<hr>
+
+    </header>
+    <main>
+      
+<p class="text-4xl text-center text-grey " >Git</p>
+<article>
+  <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
+    <div class="max-w-6xl mx-auto mb-10">
+      
+      
+      <time datetime="2024-03-27T13:10:39&#43;08:00">March 27, 2024</time>
+      <aside class="text-lg text-gray-700 p-4 text-sm  ">
+        <h1> 目录：</h1>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#-what-is-version-control">🤔 What is Version Control</a></li>
+    <li><a href="#--如何实现工作">🚀  如何实现工作</a></li>
+    <li><a href="#-设置git-仓库">⚙️ 设置Git 仓库</a></li>
+    <li><a href="#--git-工作">🚀  Git 工作</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#--初始化本地仓库">🚀  初始化本地仓库</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#-分支">🚀 分支</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#-合并请求">🚀 合并请求</a></li>
+    <li><a href="#-删除分支">🚀 删除分支</a></li>
+    <li><a href="#-避免合并冲突">🚀 避免合并冲突</a></li>
+    <li><a href="#-解决合并问题">🚀 解决合并问题</a></li>
+    <li><a href="#-忽略文件">🚀 忽略文件</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#-报错正在进行的更改隐藏">🚀 报错正在进行的更改（隐藏）</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#-git-历史">🚀 Git 历史</a></li>
+    <li><a href="#-删除和修改提交">🚀 删除和修改提交</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#-合并分支">🚀 合并分支</a></li>
+    <li><a href="#-git-for-devops">🍄 Git for DevOps</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </aside>
+      <hr>
+      <div class=" text-lg text-gray-700 p-4 text-sm foo bar" >
+
+        <h1 id="-version-control">🏆 Version Control</h1>
+<p>[toc]</p>
+<p>Git 在软件开发中，用于管理应用程序代码</p>
+<ul>
+<li>版本控制概念</li>
+<li>如何实现工作</li>
+<li>创建Git仓库</li>
+<li>本地使用 Git 命令行工具</li>
+<li>所有相关的 Git 注释</li>
+<li>一些有用的概念：恢复错误，合并冲突</li>
+<li>分支的概念</li>
+</ul>
+<p>🧬 贯穿整个模块，同时学习不同的概念 ，使用Git的最佳实践</p>
+<h2 id="-what-is-version-control">🤔 What is Version Control</h2>
+<p>🌰：一个团队、公司、大项目 多个开发同时在做的事情 - 开发应用程序。</p>
+<ul>
+<li>构建前端、后端、数据库连接等等</li>
+</ul>
+<p>共享代码，多个人对同一文件做了操作，进行了更改。</p>
+<p>从 代码仓库存储到本地，做一些改变后推送到代码仓库，下一个开发人员就可以获取到代码。</p>
+<p>持续集成：</p>
+<ul>
+<li>开发中，使用相同代码的开发人员，最好的做法是不断的推拉，通常来自存储库，因此不需要合并重叠的巨大变化，也可以轻松排序不同的变化。</li>
+</ul>
+<p>‼️ 如果有人弄乱了代码和更改</p>
+<ul>
+<li>每一次提交都是一个历史版本，可以还原提交，这就是版本控制的来源</li>
+<li>每个更改都有提示信息【意味着提交不应该很大】</li>
+</ul>
+<hr>
+<h2 id="--如何实现工作">🚀  如何实现工作</h2>
+<ul>
+<li>远端仓库</li>
+<li>本地仓库</li>
+<li>历史：日志</li>
+<li>暂停：被锁定的部分</li>
+<li>git客户端</li>
+</ul>
+<p>工作目录 &ndash;&gt; git add  暂停区域 &ndash;&gt; git commint  本地仓库  git push  远端仓库</p>
+<hr>
+<h2 id="-设置git-仓库">⚙️ 设置Git 仓库</h2>
+<p>什么是Git 存储库</p>
+<ul>
+<li>存储库：GitHub、GitLab</li>
+<li>私人、公司</li>
+</ul>
+<p>公司不会在公共场所托管他们的代码，Git 存储库的云厂商，有自己的存储仓库托管在公司当中。</p>
+<p>🎯 git客户端 连接 gitlab</p>
+<ul>
+<li>身份验证：ssh - gitlab的公钥</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ssh-keygen -t rsa -b <span style="color:#ae81ff">4096</span> -C <span style="color:#e6db74">&#34;baimiyishu13@163.com&#34;</span>
+</span></span><span style="display:flex;"><span>➜  ~ ls ~/.ssh/
+</span></span><span style="display:flex;"><span>id_rsa          id_rsa.pub
+</span></span><span style="display:flex;"><span>➜  ~ cat ~/.ssh/id_rsa.pub
+</span></span></code></pre></div><p>🎯克隆仓库</p>
+<ul>
+<li>使用SSH克隆</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git clone git@gitlab.com:baimiyishu13/my_devops_notes.git
+</span></span></code></pre></div><p>因为使用SSH认证</p>
+<ul>
+<li>GitLab 能够在拉取时进行身份认证、或推送，始终无需提供用户们和密码</li>
+</ul>
+<h2 id="--git-工作">🚀  Git 工作</h2>
+<p>在Git工作时，了解不同的状态非常必要</p>
+<p>本地文件  - 提交到暂存区 - commint到本地仓库 - 推送到远端</p>
+<h4 id="-git-status">🎯 git status</h4>
+<ul>
+<li>当前目录状态</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git status
+</span></span><span style="display:flex;"><span>On branch main
+</span></span><span style="display:flex;"><span>Your branch is up to date with <span style="color:#e6db74">&#39;origin/main&#39;</span>.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Changes not staged <span style="color:#66d9ef">for</span> commit:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git add &lt;file&gt;...&#34;</span> to update what will be committed<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git restore &lt;file&gt;...&#34;</span> to discard changes in working directory<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	modified:   README.md
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Untracked files:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git add &lt;file&gt;...&#34;</span> to include in what will be committed<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	.DS_Store
+</span></span><span style="display:flex;"><span>	images/
+</span></span><span style="display:flex;"><span>	main.md
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>no changes added to commit <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git add&#34;</span> and/or <span style="color:#e6db74">&#34;git commit -a&#34;</span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><ul>
+<li>未暂存的更改（Untracked files）：这些是在工作目录中但尚未被Git跟踪的文件。</li>
+<li>已修改但未暂存的更改（Changes not staged for commit）：这些是在工作目录中已被Git跟踪但尚未被暂存的文件更改。</li>
+<li>已暂存的更改（Changes to be committed）：这些是已经暂存但尚未提交的文件更改。</li>
+</ul>
+<p>🔔 如果想最后再提交（推送）可以先将文件存储在 暂存区</p>
+<h4 id="-git-add">🎯 git add</h4>
+<p>将工作目录中的文件更改添加到暂存区</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_notes git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git add README.md
+</span></span><span style="display:flex;"><span>➜  my_devops_notes git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git status
+</span></span><span style="display:flex;"><span>On branch main
+</span></span><span style="display:flex;"><span>Your branch is up to date with <span style="color:#e6db74">&#39;origin/main&#39;</span>.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Changes to be committed:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git restore --staged &lt;file&gt;...&#34;</span> to unstage<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	modified:   README.md
+</span></span></code></pre></div><p>git add 用法：【. | file | dir/ | 正则】</p>
+<h4 id="-git-commit">🎯 git commit</h4>
+<p>将暂存区中的更改提交到版本库中，并创建一个新的提交（commit）</p>
+<ul>
+<li>这个提交包含了您在暂存区中添加的文件更改的快照。</li>
+</ul>
+<p>🔔 如果省略 <code>-m</code> 选项，Git 会打开默认文本编辑器（通常是 Vi 或 Nano），以便输入提交信息</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_notes git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git commit
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main 2ebc8f2<span style="color:#f92672">]</span> Add README.md File
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">1</span> file changed, <span style="color:#ae81ff">28</span> insertions<span style="color:#f92672">(</span>+<span style="color:#f92672">)</span>, <span style="color:#ae81ff">75</span> deletions<span style="color:#f92672">(</span>-<span style="color:#f92672">)</span>
+</span></span></code></pre></div><h4 id="-git-log">🎯 git log</h4>
+<p>显示您仓库中的提交记录，包括每个提交的作者、提交时间、提交消息以及哈希值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>commit 2ebc8f26c8753cc0e4cd3a1347abcc845080dc78 <span style="color:#f92672">(</span>HEAD -&gt; main<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Author: baimiyishu13 &lt;baimiyishu13@163.com&gt;
+</span></span><span style="display:flex;"><span>Date:   Wed Dec <span style="color:#ae81ff">13</span> 21:58:01 <span style="color:#ae81ff">2023</span> +0800
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Add README.md File
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>commit b4701a6a867ba0f09fe61c475a5af079d2031d75 <span style="color:#f92672">(</span>origin/main, origin/HEAD<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Author: baimiyishu13 &lt;baimiyishu13@163.com&gt;
+</span></span><span style="display:flex;"><span>Date:   Wed Dec <span style="color:#ae81ff">13</span> 12:06:39 <span style="color:#ae81ff">2023</span> +0000
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Initial commit
+</span></span></code></pre></div><h4 id="-git-push">🎯 git push</h4>
+<p>将本地分支的更改推送到远程仓库</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git push 仓库名称 分支
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_notes git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git push
+</span></span><span style="display:flex;"><span>Enumerating objects: 5, <span style="color:#66d9ef">done</span>.
+</span></span><span style="display:flex;"><span>Counting objects: 100% <span style="color:#f92672">(</span>5/5<span style="color:#f92672">)</span>, <span style="color:#66d9ef">done</span>.
+</span></span><span style="display:flex;"><span>Delta compression using up to <span style="color:#ae81ff">8</span> threads
+</span></span><span style="display:flex;"><span>Compressing objects: 100% <span style="color:#f92672">(</span>2/2<span style="color:#f92672">)</span>, <span style="color:#66d9ef">done</span>.
+</span></span><span style="display:flex;"><span>Writing objects: 100% <span style="color:#f92672">(</span>3/3<span style="color:#f92672">)</span>, <span style="color:#ae81ff">925</span> bytes | 925.00 KiB/s, <span style="color:#66d9ef">done</span>.
+</span></span><span style="display:flex;"><span>Total <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>delta 0<span style="color:#f92672">)</span>, reused <span style="color:#ae81ff">0</span> <span style="color:#f92672">(</span>delta 0<span style="color:#f92672">)</span>, pack-reused <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>To gitlab.com:baimiyishu13/my_devops_notes.git
+</span></span><span style="display:flex;"><span>   b4701a6..2ebc8f2  main -&gt; main
+</span></span></code></pre></div><h2 id="--初始化本地仓库">🚀  初始化本地仓库</h2>
+<p>假设创建了一些代码，并且想检查推送，而并非克隆现有的</p>
+<ul>
+<li>创建本地存储库 - 推送到远程</li>
+</ul>
+<p>在某时刻想将本地私人代码项目托管在 远端Git仓库</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects ls -a
+</span></span><span style="display:flex;"><span>.         ..        README.md images
+</span></span></code></pre></div><h4 id="-git-init">🎯 git init</h4>
+<p>转换成本地仓库</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects git init
+</span></span><span style="display:flex;"><span>Initialized empty Git repository in /Users/lelema/Documents/my_devops_projects/.git/
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git status
+</span></span><span style="display:flex;"><span>On branch main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>No commits yet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Untracked files:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git add &lt;file&gt;...&#34;</span> to include in what will be committed<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	README.md
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>nothing added to commit but untracked files present <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git add&#34;</span> to track<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>添加到暂存区 - 更改提交到版本库中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git add .
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗ git status
+</span></span><span style="display:flex;"><span>On branch main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>No commits yet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Changes to be committed:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>use <span style="color:#e6db74">&#34;git rm --cached &lt;file&gt;...&#34;</span> to unstage<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	new file:   README.md
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> ✗  git commit -m <span style="color:#e6db74">&#39;add readme.md file and images&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>main <span style="color:#f92672">(</span>root-commit<span style="color:#f92672">)</span> 4b4dc88<span style="color:#f92672">]</span> add readme.md file and images
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">1</span> file changed, <span style="color:#ae81ff">58</span> insertions<span style="color:#f92672">(</span>+<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span> create mode <span style="color:#ae81ff">100644</span> README.md 
+</span></span></code></pre></div><p>但此时，对存储库一无所知【远端】</p>
+<h4 id="-git-remote-add">🎯 git remote add</h4>
+<p>将远程仓库添加到本地的 Git 仓库</p>
+<p>前提：gitlab创建一个空项目 my_devops_projects</p>
+<pre tabindex="0"><code>git remote add origin git@gitlab.com:baimiyishu13/my_devops_projects.git
+git push --set-upstream origin main
+</code></pre><ul>
+<li>将本地的 <code>main</code> 分支推送到远程仓库 <code>origin</code></li>
+</ul>
+<h2 id="-分支">🚀 分支</h2>
+<p>如果在开发持续集成持续交付的管道，那么应该始终使用 main 分支，还将出发测试代码的管道</p>
+<h4 id="-cretae">🎯 cretae</h4>
+<p>开发中典型的案例，为程序开发新功能 或者 修改功能中的错误</p>
+<p>‼️每个开发都更改了代码，如果都推送到存储库，那会是多混乱</p>
+<p>所以：存在分支的概念</p>
+<ol>
+<li>为了干净利落的分工</li>
+<li>最佳实践：每个功能进行分支【功能分支、错误分支等等】</li>
+<li>合并到主分支</li>
+</ol>
+<p>也可以起</p>
+<ul>
+<li>bugfix/user-auth-err 等再好不过，清晰的分离</li>
+</ul>
+<p>在不破坏其他人的代码情况下，本地完成修改和测试后，将它合并到主分支</p>
+<p>🔔  如果合并的文件大，很可能出现冲突</p>
+<ul>
+<li>开发将不得不去沟通解决</li>
+</ul>
+<p>让本地知道创建了一个新分支</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> git pull
+</span></span><span style="display:flex;"><span>From gitlab.com:baimiyishu13/my_devops_projects
+</span></span><span style="display:flex;"><span> * <span style="color:#f92672">[</span>new branch<span style="color:#f92672">]</span>      test       -&gt; origin/test
+</span></span></code></pre></div><h4 id="-git-checkout">🎯 git checkout</h4>
+<p>等同：git switch</p>
+<p>切换分支：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git checkout test
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> git checkout test
+</span></span><span style="display:flex;"><span>branch <span style="color:#e6db74">&#39;test&#39;</span> set up to track <span style="color:#e6db74">&#39;origin/test&#39;</span>.
+</span></span><span style="display:flex;"><span>Switched to a new branch <span style="color:#e6db74">&#39;test&#39;</span>
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>test<span style="color:#f92672">)</span>
+</span></span></code></pre></div><ul>
+<li>
+<p>现在的修改只会影响该分支下的代码</p>
+<p>创建并切换到新分支</p>
+</li>
+<li>
+<p>无需在UI界面创建，本地更快的完成</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git checkout -b feature/databases-connection
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> git checkout -b feature/databases-connection
+</span></span><span style="display:flex;"><span>Switched to a new branch <span style="color:#e6db74">&#39;feature/databases-connection&#39;</span>
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span>
+</span></span></code></pre></div><h4 id="-git-branch">🎯 git branch</h4>
+<p>查看所有分支</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git branch
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span> git branch
+</span></span><span style="display:flex;"><span>* feature/databases-connection
+</span></span><span style="display:flex;"><span>  main
+</span></span><span style="display:flex;"><span>  test
+</span></span></code></pre></div><p>在新的分支中修改了README.md文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>vim README.md
+</span></span><span style="display:flex;"><span>git status
+</span></span><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;modified readme.md&#34;</span>
+</span></span><span style="display:flex;"><span>git push
+</span></span><span style="display:flex;"><span>git push --set-upstream origin feature/databases-connection
+</span></span></code></pre></div><h2 id="-合并请求">🚀 合并请求</h2>
+<p>使用git处理代码时常见的一种做法，当开发人员完成功能实现 或者 错误修复其他开发人员审查更改 直到合并到 mian</p>
+<ul>
+<li>main 是必须受到保护的</li>
+</ul>
+<p>分支更改提交了一些变化：</p>
+<p>两个变化不在 main 分支中</p>
+<p>🎯 新建合并请求</p>
+<h2 id="-删除分支">🚀 删除分支</h2>
+<p>通常团队离开分支后：可以合并后立刻删除分支</p>
+<p>如果有一些错误，可以创建一个新的分支 ，一个错误的修复分支，修复该问题</p>
+<ul>
+<li>编辑</li>
+<li>进行功能的补充</li>
+</ul>
+<p>好处是你最终不会得到 很多个分支，以至于没人知道哪个是活跃的，哪一项是否完成了合并</p>
+<p>在Ui删除分支后本地还存在</p>
+<p>清理【已经删除的分支】</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git checkout main
+</span></span><span style="display:flex;"><span>git status
+</span></span><span style="display:flex;"><span>git pull
+</span></span><span style="display:flex;"><span>git branch
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> git branch -d feature/databases-connection
+</span></span></code></pre></div><h2 id="-避免合并冲突">🚀 避免合并冲突</h2>
+<p>开发1：在分支feature/databases-connection  ceshi2.md文件中增加了一些内容</p>
+<p>开发2：也在分支feature/databases-connection ceshi2.md文件中增加了一些内容</p>
+<p>开发1不知道开发2 修改了文件，在开发1提交时：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span> git push
+</span></span><span style="display:flex;"><span>To gitlab.com:baimiyishu13/my_devops_projects.git
+</span></span><span style="display:flex;"><span> ! <span style="color:#f92672">[</span>rejected<span style="color:#f92672">]</span>        feature/databases-connection -&gt; feature/databases-connection <span style="color:#f92672">(</span>fetch first<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>error: failed to push some refs to <span style="color:#e6db74">&#39;gitlab.com:baimiyishu13/my_devops_projects.git&#39;</span>
+</span></span><span style="display:flex;"><span>hint: Updates were rejected because the remote contains work that you <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>hint: not have locally. This is usually caused by another repository pushing
+</span></span><span style="display:flex;"><span>hint: to the same ref. You may want to first integrate the remote changes
+</span></span><span style="display:flex;"><span>hint: <span style="color:#f92672">(</span>e.g., <span style="color:#e6db74">&#39;git pull ...&#39;</span><span style="color:#f92672">)</span> before pushing again.
+</span></span><span style="display:flex;"><span>hint: See the <span style="color:#e6db74">&#39;Note about fast-forwards&#39;</span> in <span style="color:#e6db74">&#39;git push --help&#39;</span> <span style="color:#66d9ef">for</span> details.
+</span></span></code></pre></div><p>提示再推送前：pull</p>
+<p>示表明你的本地分支和远程分支之间存在分</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>hint:   git config pull.rebase false  <span style="color:#75715e"># merge</span>
+</span></span><span style="display:flex;"><span>hint:   git config pull.rebase true   <span style="color:#75715e"># rebase</span>
+</span></span><span style="display:flex;"><span>hint:   git config pull.ff only       <span style="color:#75715e"># fast-forward only</span>
+</span></span></code></pre></div><p>可以选择合并：</p>
+<ul>
+<li>这会将远程分支的更改合并到本地分支上</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git pull
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>git add
+</span></span><span style="display:flex;"><span>git commit -m “cehsi”
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div><h2 id="-解决合并问题">🚀 解决合并问题</h2>
+<p>实际使用本地编译器：GoLand</p>
+<p>GitLab上修改：</p>
+<p>Goland修改：</p>
+<pre tabindex="0"><code>package main
+
+import &#34;fmt&#34;
+
+func main() {
+	fmt.Println(&#34;Hello GitLab!&#34;)
+	fmt.Println(&#34;Hello Goland-321!&#34;)
+}
+</code></pre><p>Goland推送时会发生：推送被拒绝</p>
+<p>需要决定</p>
+<ol>
+<li>选择推送自己的</li>
+<li>选择同步另一方的</li>
+<li>选择手动</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt; <span style="color:#a6e22e">HEAD</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Hello GitLab!&#34;</span>)
+</span></span><span style="display:flex;"><span>   <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Hello Goland-321!&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">======</span>=
+</span></span><span style="display:flex;"><span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Hello GitLab-123!&#34;</span>)
+</span></span><span style="display:flex;"><span>   <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Hello Goland!&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;&gt;&gt;&gt;</span>&gt; <span style="color:#a6e22e">origin</span><span style="color:#f92672">/</span><span style="color:#a6e22e">feature</span><span style="color:#f92672">/</span><span style="color:#a6e22e">databases</span><span style="color:#f92672">-</span><span style="color:#a6e22e">connection</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>ui：本地变化 - 最终结果-  远端变化</p>
+<ul>
+<li>所以必须绝对最终的结果是什么</li>
+<li>开发会去相互沟通，为什么要做出这些改变，变化是否正确等等，也许更改都需要合并</li>
+</ul>
+<p>解决冲突后提交合并也可以使用命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git rebase --continue
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div><h2 id="-忽略文件">🚀 忽略文件</h2>
+<p>每个开发人员特有的文件</p>
+<p>比如打开项目后，自动创建的 <code>.idea</code> 显然不需要这个文件夹 ，所以不应该推送到存储库</p>
+<p>不需要作为代码的一部分:</p>
+<p>🎯 创建文件 <code>./gitigmore</code></p>
+<pre tabindex="0"><code>.idea/*
+build/*
+</code></pre><h4 id="-git-rm--r---cached">🎯 git rm -r &ndash;cached</h4>
+<ul>
+<li>将 <code>.idea/</code> 目录及其内容从 Git 仓库的暂存区（index）中移除，从而停止追踪这些文件。选项 <code>-r</code> 表示递归，用于移除目录及其内容。</li>
+</ul>
+<pre tabindex="0"><code>➜  my_devops_projects git:(feature/databases-connection) ✗ git rm -r --cached .idea/
+rm &#39;.idea/.gitignore&#39;
+rm &#39;.idea/modules.xml&#39;
+rm &#39;.idea/my_devops_projects.iml&#39;
+rm &#39;.idea/vcs.xml&#39;
+</code></pre><h2 id="-报错正在进行的更改隐藏">🚀 报错正在进行的更改（隐藏）</h2>
+<p>在bug分支中，假设无法修复，需要更多的信息，关于如何修复，需要 切换到其他分支查看。</p>
+<ul>
+<li>离开分支提示：隐藏这些更改</li>
+</ul>
+<h4 id="-git-stash">🎯 git stash</h4>
+<p><code>git stash</code> 是一个用于保存当前工作目录的临时状态的 Git 命令。当你需要切换分支、处理紧急任务或者在进行其他操作之前，想要保存当前的修改而不提交它们时，<code>git stash</code> 是一个非常有用的工具。</p>
+<ul>
+<li>list参数：查看</li>
+<li>apply</li>
+<li>clear</li>
+<li>pop 取回</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span> ✗ git stash 
+</span></span><span style="display:flex;"><span>Saved working directory and index state WIP on feature/databases-connection: abdfb5f gitignore file
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span> git checkout main
+</span></span><span style="display:flex;"><span>Switched to branch <span style="color:#e6db74">&#39;main&#39;</span>
+</span></span><span style="display:flex;"><span>Your branch is up to date with <span style="color:#e6db74">&#39;origin/main&#39;</span>.
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> 
+</span></span></code></pre></div><p>切换回来后，更改不在这里，取回更改</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> git stash pop 
+</span></span></code></pre></div><h2 id="-git-历史">🚀 Git 历史</h2>
+<p>git log 可以查看历史commit 提交记录</p>
+<ul>
+<li>每个提交都有为一个哈希值</li>
+</ul>
+<p>在排查哪个更改代码导致的bug时很有用，复现找出错误的原因或问题。</p>
+<p>回退到某次提交时的整个应用程序的代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git checkout 8567fba536f54990a1ed73fef4751a576e62b0b6
+</span></span></code></pre></div><p>大多数情况都是用来</p>
+<ul>
+<li>测试</li>
+<li>重现错误</li>
+</ul>
+<h2 id="-删除和修改提交">🚀 删除和修改提交</h2>
+<p>假如：更改了些内容，并且提交了</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;delete main.go line 8-9&#34;</span>
+</span></span></code></pre></div><p>推送前意识到有错误，所以想还原，恢复整个提交</p>
+<ul>
+<li>很安全的重置最后一次提交</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git log
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>commit 691d1616e745b8fe91ca55cb6ec5442a92936dbf <span style="color:#f92672">(</span>HEAD -&gt; feature/databases-connection<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Author: baimiyishu13 &lt;baimiyishu13@163.com&gt;
+</span></span><span style="display:flex;"><span>Date:   Fri Dec <span style="color:#ae81ff">15</span> 00:02:02 <span style="color:#ae81ff">2023</span> +0800
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    delete main.go line 8-9
+</span></span></code></pre></div><h4 id="-git-reset">🎯 git reset</h4>
+<p>恢复：</p>
+<ul>
+<li>恢复最后一次 ： HEAD～1</li>
+</ul>
+<p>🍄参数： &ndash;haed</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git reset --hard HEAD~1
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>➜  my_devops_projects git:<span style="color:#f92672">(</span>feature/databases-connection<span style="color:#f92672">)</span> git reset --hard HEAD~1
+</span></span><span style="display:flex;"><span>HEAD is now at bc4fd7c ceshi
+</span></span></code></pre></div><p>如果不想恢复，是想更正</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git log
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>commit 4711fafd5de738f5b22214dc44511320cba40dfb <span style="color:#f92672">(</span>HEAD -&gt; feature/databases-connection<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Author: baimiyishu13 &lt;baimiyishu13@163.com&gt;
+</span></span><span style="display:flex;"><span>Date:   Fri Dec <span style="color:#ae81ff">15</span> 00:11:00 <span style="color:#ae81ff">2023</span> +0800
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">321</span> - <span style="color:#ae81ff">123</span>
+</span></span></code></pre></div><p>🍄 参数：&ndash;soft 但是不需要使用它，直接</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git reset HEAD~1
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>        modified:   main.go
+</span></span></code></pre></div><p>再次修改代码后提交</p>
+<h4 id="-撤销推送">🎯 撤销推送</h4>
+<pre tabindex="0"><code>git reset --hard HEAD~1
+</code></pre><p>本地撤销了，但是远端仓库还在</p>
+<p>🔔 直接git push 是不被允许的</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git push --force
+</span></span></code></pre></div><ul>
+<li>强制更改了远端仓库</li>
+</ul>
+<p>‼️ 重要提示：其实不应该在这么做，会造成其他人在提交时出现问题</p>
+<p>替代方案：还原,在主分支中</p>
+<pre tabindex="0"><code>git revert 哈希值
+</code></pre><h2 id="-合并分支">🚀 合并分支</h2>
+<p><code>git merge</code> 是用于将一个分支的更改合并到另一个分支的 Git 命令。它创建一个新的合并提交，将两个分支的更改整合在一起</p>
+<p>假设：一个处理Bug的分支再修改完发现已经远落后main分支</p>
+<ul>
+<li>想合并main 到分支</li>
+</ul>
+<ol>
+<li>确保本地仓库 main 分支最新</li>
+<li>切换到bug分支</li>
+</ol>
+<pre tabindex="0"><code>git merge main
+git push
+</code></pre><h2 id="-git-for-devops">🍄 Git for DevOps</h2>
+<h4 id="-用例基础设施">🚀 用例：基础设施</h4>
+<ul>
+<li>Kubernetes Config file 协调各种文件，这些文件必须在正确的位置管理</li>
+<li>如果使用云，需要维护 terraform 文件 和 Ansible 文件</li>
+<li>脚本【bash、py、go】</li>
+</ul>
+<p>这些文件都是会随着时间改变的，发生了什么变化 的一些历史记录，还有所有文件所在的地方</p>
+<ul>
+<li>安全的存储在一个位置，而不是只在本地电脑上</li>
+</ul>
+<p>多个DevOps工程师一起维护，意味着处理这些脚本、配置文件等等 ，就像开发人员在同一个项目上开发一样相互同步和通信</p>
+<ul>
+<li>作为一个DevOps团队需要某个配合</li>
+</ul>
+<h4 id="-用例cicd">🚀 用例：CICD</h4>
+<p>CICD管道通常用来构建自动化工具，所以构建自动化的基础 或持续集成 持续交付，是检查代码、测试代码构建应用程序 基于该代码的所做的事情</p>
+<ul>
+<li>整合构建自动化：带有代码的工具</li>
+<li>持续集成，在构建自动化和Git之间</li>
+</ul>
+
+      </div>
+      
+
+    </div>
+  </div>
+</article>
+
+<div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+
+    <footer>
+      <div class="container mx-auto mt-8 pt-8 flex flex-wrap justify-center">
+    <a href="http://localhost:1313/docsgo/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">最新文章</a>
+    <a href="http://localhost:1313/docsgo/post/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">所有文章</a>
+    <a href="http://localhost:1313/docsgo/progress/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">更新进展</a>
+    <a href="http://localhost:1313/docsgo/tags/" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">标签</a>
+    <a href="http://localhost:1313/docsgo/about" class="leading-loose mx-6 text-grey-dark hover:text-grey-darkest">关于我</a>
+</div>
+<p class="pb-8 text-center text-grey text-xs my-8">
+    ©2024 M-Q. 版权所有.
+</p>
+<div class="py-6"></div>
+
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+

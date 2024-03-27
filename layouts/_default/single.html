@@ -1,18 +1,23 @@
 {{ define "main" }}
-
 <p class="text-4xl text-center text-grey " >{{ .Title }}</p>
+<article>
   <div class="container content mx-auto bg-white shadow-md rounded whitespace-normal overflow-auto break-all mb-10">
-
     <div class="max-w-6xl mx-auto mb-10">
       {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
       {{ $dateHuman := .Date | time.Format ":date_long" }}
       <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
-      <div class="text-lg text-gray-700 p-4 text-sm  ">
+      <aside class="text-lg text-gray-700 p-4 text-sm  ">
+        <h1> 目录：</h1>
+        {{ .TableOfContents }}
+      </aside>
+      <hr>
+      <div class=" text-lg text-gray-700 p-4 text-sm foo bar" >
+
         {{ .Content }}
       </div>
       {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     </div>
   </div>
-
+</article>
 {{ partial "success.html" . }}
 {{ end }}

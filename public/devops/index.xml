@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Devops on docsGo</title>
+    <link>http://localhost:1313/docsgo/devops/</link>
+    <description>Recent content in Devops on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Mar 2024 13:10:39 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git</title>
+      <link>http://localhost:1313/docsgo/devops/git/git/</link>
+      <pubDate>Wed, 27 Mar 2024 13:10:39 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devops/git/git/</guid>
+      <description>🏆 Version Control [toc]&#xA;Git 在软件开发中，用于管理应用程序代码&#xA;版本控制概念 如何实现工作 创建Git仓库 本地使用 Git 命令行工具 所有相关的 Git 注释 一些有用的概念：恢复错误，合并冲突 分支的概念 🧬 贯穿整个模块，同时学习不同的概念 ，使用Git的最佳实践&#xA;🤔 What is Version Control 🌰：一个团队、公司、大项目 多个开发同时在做的事情 - 开发应用程序。&#xA;构建前端、后端、数据库连接等等 共享代码，多个人对同一文件做了操作，进行了更改。&#xA;从 代码仓库存储到本地，做一些改变后推送到代码仓库，下一个开发人员就可以获取到代码。&#xA;持续集成：&#xA;开发中，使用相同代码的开发人员，最好的做法是不断的推拉，通常来自存储库，因此不需要合并重叠的巨大变化，也可以轻松排序不同的变化。 ‼️ 如果有人弄乱了代码和更改&#xA;每一次提交都是一个历史版本，可以还原提交，这就是版本控制的来源 每个更改都有提示信息【意味着提交不应该很大】 🚀 如何实现工作 远端仓库 本地仓库 历史：日志 暂停：被锁定的部分 git客户端 工作目录 &amp;ndash;&amp;gt; git add 暂停区域 &amp;ndash;&amp;gt; git commint 本地仓库 git push 远端仓库&#xA;⚙️ 设置Git 仓库 什么是Git 存储库&#xA;存储库：GitHub、GitLab 私人、公司 公司不会在公共场所托管他们的代码，Git 存储库的云厂商，有自己的存储仓库托管在公司当中。&#xA;🎯 git客户端 连接 gitlab</description>
+    </item>
+  </channel>
+</rss>

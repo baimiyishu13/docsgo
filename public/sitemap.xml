@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/devops/</loc>
+    <lastmod>2024-03-27T13:10:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devops/git/git/</loc>
+    <lastmod>2024-03-27T13:10:39+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/monitor/alert/rulers/</loc>
     <lastmod>2024-03-26T11:27:25+08:00</lastmod>
   </url><url>
