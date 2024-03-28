@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/shell/mysqldump/</loc>
+    <lastmod>2024-03-28T16:11:37+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/shell/</loc>
+    <lastmod>2024-03-28T16:11:37+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/monitor/</loc>
+    <lastmod>2024-03-27T16:38:42+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/monitor/victoriametrics/vmauth/</loc>
     <lastmod>2024-03-27T16:38:42+08:00</lastmod>
   </url><url>
@@ -25,9 +34,6 @@
   </url><url>
     <loc>http://localhost:1313/docsgo/monitor/grafana/garfana/</loc>
     <lastmod>2024-03-26T10:57:21+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/docsgo/monitor/</loc>
-    <lastmod>2024-03-25T21:14:17+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/monitor/exporter/kube-state-metrics/</loc>
     <lastmod>2024-03-25T10:23:51+08:00</lastmod>

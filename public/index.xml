@@ -6,8 +6,15 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 27 Mar 2024 16:38:42 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 28 Mar 2024 16:11:37 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mysqldump</title>
+      <link>http://localhost:1313/docsgo/shell/mysqldump/</link>
+      <pubDate>Thu, 28 Mar 2024 16:11:37 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/mysqldump/</guid>
+      <description>🍭 mysqldump ✅ 执行 mysqldump.sh 完成全量备份 变量 (必须):&#xA;BACKUP_DIR：备份目录 MYSQL_UNAME：用户 MYSQL_PWORD：密码 PATH：mysqldump命令路径 KEEP_BACKUPS_FOR：保留天数(默认7天) 🌐 恢复(示例)&#xA;for file in ./2024-03-07/*.sql.gz; do gunzip &amp;gt; &amp;#34;$file&amp;#34; | mysql -u your_username -p your_database_name; done ⛳️ cron(示例)&#xA;例：每天定时凌晨1点10分备份数据库&#xA;10 1 * * * /bin/bash /data/mysql/.sh/mysql_backup.sh 脚本：&#xA;#!/bin/bash #============================================================================== #TITLE: mysql_backup.sh #DESCRIPTION: 自动执行日常 mysql 备份的脚本 #DATE: 2024.03.07 #VERSION: 0.1 #USAGE: ./mysql_backup.sh #CRON: # 每天凌晨 00:00 执行数据库备份的 cron 示例 # 0 0 * * * /Users/[your user name]/scripts/mysql_backup.</description>
+    </item>
     <item>
       <title>Vmauth</title>
       <link>http://localhost:1313/docsgo/monitor/victoriametrics/vmauth/</link>
