@@ -1,0 +1,139 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Systemd创建Linux服务</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-01T17:03:58&#43;08:00">April 1, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#systemd创建linux服务">Systemd创建Linux服务</a>
+      <ul>
+        <li><a href="#可以采取几种方法">可以采取几种方法</a></li>
+        <li><a href="#systemd-启动示例">systemd 启动示例</a></li>
+        <li><a href="#管理服务的依赖项">管理服务的依赖项</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h2 id="systemd创建linux服务">Systemd创建Linux服务</h2>
+<p>🤔 需要创建一个脚本并在后台运行它</p>
+<h3 id="可以采取几种方法">可以采取几种方法</h3>
+<ol>
+<li>也许最简单的方法就是在命令末尾添加一个<code>&amp;</code>  另外，如果想关闭终端，追加<code>nohup</code>。⚠️ 如果的脚本由于某种原因存在，需要手动重新启动它。</li>
+<li>更好的方法是使用Linux 的： <a href="https://systemd.io/">systemd</a></li>
+</ol>
+<p>展示如何创建一个简单的 systemd 服务，该服务可以在后台运行脚本并在出现故障时重新启动它</p>
+<h3 id="systemd-启动示例">systemd 启动示例</h3>
+<ol>
+<li>创建一个简单的 Python HTTP 服务器</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>vim my_server.py
+</span></span></code></pre></div><ol start="2">
+<li>接受 HTTP GET 请求并将<code>Hello</code>字符串返回给客户端</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> http.server <span style="color:#f92672">import</span> BaseHTTPRequestHandler, HTTPServer
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>hostName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;localhost&#34;</span>
+</span></span><span style="display:flex;"><span>serverPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyServer</span>(BaseHTTPRequestHandler):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_GET</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>send_response(<span style="color:#ae81ff">200</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>send_header(<span style="color:#e6db74">&#34;Content-type&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>end_headers()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>wfile<span style="color:#f92672">.</span>write(bytes(<span style="color:#e6db74">&#34;Hello</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;utf-8&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    webServer <span style="color:#f92672">=</span> HTTPServer((hostName, serverPort), MyServer)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Server started http://</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (hostName, serverPort))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        webServer<span style="color:#f92672">.</span>serve_forever()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">KeyboardInterrupt</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    webServer<span style="color:#f92672">.</span>server_close()
+</span></span></code></pre></div><p>尝试在前台运行，确保py脚本正常</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>python3 my_server.py
+</span></span></code></pre></div><p>然后打开一个新窗口并，尝试使用命令访问服务器<code>curl</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>curl localhost:8080/hello
+</span></span></code></pre></div><ol start="3">
+<li>创建 Systemd Linux 服务</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>vim /etc/systemd/system/my-server.service
+</span></span></code></pre></div><p>确保指定的命令</p>
+<ul>
+<li>L<code>User</code>和<code>ExecStart</code>启动服务器的命令</li>
+<li><code>Environment</code>：向脚本提供变量。（可选）</li>
+<li><code>Restart</code>：重要的参数，可以将其设置为<code>always</code> 或 <code>on-failure</code>。默认情况下，<code>Restart=always,  如果在 10 秒间隔内启动失败超过 5 次，systemd 将放弃重新启动服务。</code>RestartSec`指令也会对结果产生影响：如果将其设置为 3 秒后重新启动，那么永远不会在 10 秒内重试 5 次失败。</li>
+</ul>
+<p>​	<strong>始终有效的简单修复方法是设置</strong><code>StartLimitIntervalSec=0</code>.这样，systemd 将尝试永远重新启动服务。不过，最好设置<code>RestartSec</code>为至少 1 秒，以避免在出现问题时给服务器带来太大压力。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>Unit<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Description<span style="color:#f92672">=</span>My Server
+</span></span><span style="display:flex;"><span>After<span style="color:#f92672">=</span>network.target
+</span></span><span style="display:flex;"><span>StartLimitIntervalSec<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Service<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Type<span style="color:#f92672">=</span>simple
+</span></span><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/bin/python3 /home/ubuntu/my_server.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>User<span style="color:#f92672">=</span>ubuntu
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Environment<span style="color:#f92672">=</span>ENV<span style="color:#f92672">=</span>production
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Restart<span style="color:#f92672">=</span>always
+</span></span><span style="display:flex;"><span>RestartSec<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Install<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>WantedBy<span style="color:#f92672">=</span>multi-user.target
+</span></span></code></pre></div><p>测试</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo systemctl start my-server
+</span></span><span style="display:flex;"><span>sudo systemctl enable my-server
+</span></span></code></pre></div><p>然后检查状态：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo systemctl status my-server
+</span></span></code></pre></div><p>如果失败，并且需要查找原因，或者只想跟踪日志，则可以使用命令<code>journactl</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>journalctl -u my-server -f --no-pager
+</span></span></code></pre></div><p>用于<code>curl</code>测试。</p>
+<pre tabindex="0"><code>curl localhost:8080/hello
+</code></pre><h3 id="管理服务的依赖项">管理服务的依赖项</h3>
+<p>讨论的最后一件事是可以管理服务的<strong>依赖项</strong>。</p>
+<p>​	例如，如果服务器需要数据库，可以使用<code>After=postgresql.service</code>指令指示 systemd 仅在 Postgres 启动后启动 python 服务器。</p>
+<p>​	<strong>只有当 Linux 启动并且这两个服务都启用时，这才会起作用</strong>。</p>
+<p>​	如果需要，可以添加另一个<code>Requires=postgresql.service</code>指令。即使 Progress 已关闭并且尝试启动 Python 服务器，systemd 也会首先启动 Postgres，然后启动程序。</p>
+
+        </div>
+    </div>
+</div>
