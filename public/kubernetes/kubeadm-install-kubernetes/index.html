@@ -69,6 +69,7 @@
         <li><a href="#ks">KS</a></li>
         <li><a href="#kubekey">KubeKey</a></li>
         <li><a href="#离线安装集群方式">离线安装集群方式</a></li>
+        <li><a href="#开始安装">开始安装</a></li>
       </ul>
     </li>
   </ul>
@@ -1069,7 +1070,7 @@
 </span></span><span style="display:flex;"><span>      edgeWatcherAgent:
 </span></span><span style="display:flex;"><span>        nodeSelector: <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;node-role.kubernetes.io/worker&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span>        tolerations: <span style="color:#f92672">[]</span>
-</span></span></code></pre></div><h4 id="开始安装">开始安装</h4>
+</span></span></code></pre></div><h3 id="开始安装">开始安装</h3>
 <p>确定完成上面所有步骤后，您可以执行以下命令。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./kk create cluster -f config-sample.yaml
 </span></span></code></pre></div><p>将可执行文件 <code>kk</code> 和包含 Kubernetes 二进制文件的文件夹 <code>kubekey</code> 传输至任务机机器用于安装后，必须将它们放在相同目录中，然后再执行上面的命令。</p>

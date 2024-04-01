@@ -6,8 +6,22 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Apr 2024 11:18:20 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Apr 2024 15:58:40 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Root Ssh Login Sh</title>
+      <link>http://localhost:1313/docsgo/shell/root-ssh-login-sh/</link>
+      <pubDate>Mon, 01 Apr 2024 15:58:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/root-ssh-login-sh/</guid>
+      <description>配置SSH以允许root用户无密码登录&#xA;示例：&#xA;脚本：&#xA;#!/bin/bash print_script_header() { echo &amp;#34;-----------------------------------------------&amp;#34; echo &amp;#34;# 脚本: root_ssh_login.sh&amp;#34; echo &amp;#34;# 描述: 配置SSH以允许root用户无密码登录&amp;#34; echo &amp;#34;# 作者:&amp;#34; echo &amp;#34;# 日期: 2024&amp;#34; echo &amp;#34;-----------------------------------------------&amp;#34; } # 示例用法 users=(&amp;#34;root&amp;#34;) input(){ # 提示用户输入节点，以空格分隔 read -p &amp;#34;请输入节点名称（以空格分隔）: &amp;#34; nodes_input # 将输入的节点字符串分割成数组 IFS=&amp;#39; &amp;#39; read -ra nodes &amp;lt;&amp;lt;&amp;lt; &amp;#34;$nodes_input&amp;#34; } # 函数：提示用户输入密码并创建password.txt prompt_for_password() { read -s -p &amp;#34;请输入密码: &amp;#34; password echo &amp;#34;$password&amp;#34; &amp;gt; /tmp/password.txt } # 函数：检查并使用yum安装sshpass install_sshpass() { if ! command -v sshpass &amp;amp;&amp;gt; /dev/null; then echo &amp;#34;提示：sshpass未安装，正在安装.</description>
+    </item>
+    <item>
+      <title>Root_ssh_login_sh</title>
+      <link>http://localhost:1313/docsgo/shell/root-sshlogin-sh/</link>
+      <pubDate>Mon, 01 Apr 2024 15:49:18 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/root-sshlogin-sh/</guid>
+      <description>配置SSH以允许root用户无密码登录&#xA;示例： 脚本：&#xA;#!/bin/bash print_script_header() { echo &amp;#34;-----------------------------------------------&amp;#34; echo &amp;#34;# 脚本: root_ssh_login.sh&amp;#34; echo &amp;#34;# 描述: 配置SSH以允许root用户无密码登录&amp;#34; echo &amp;#34;# 作者:&amp;#34; echo &amp;#34;# 日期: 2024&amp;#34; echo &amp;#34;-----------------------------------------------&amp;#34; } # 示例用法 users=(&amp;#34;root&amp;#34;) input(){ # 提示用户输入节点，以空格分隔 read -p &amp;#34;请输入节点名称（以空格分隔）: &amp;#34; nodes_input # 将输入的节点字符串分割成数组 IFS=&amp;#39; &amp;#39; read -ra nodes &amp;lt;&amp;lt;&amp;lt; &amp;#34;$nodes_input&amp;#34; } # 函数：提示用户输入密码并创建password.txt prompt_for_password() { read -s -p &amp;#34;请输入密码: &amp;#34; password echo &amp;#34;$password&amp;#34; &amp;gt; /tmp/password.txt } # 函数：检查并使用yum安装sshpass install_sshpass() { if ! command -v sshpass &amp;amp;&amp;gt; /dev/null; then echo &amp;#34;提示：sshpass未安装，正在安装.</description>
+    </item>
     <item>
       <title>Kubeadm Install Kubernetes</title>
       <link>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</link>

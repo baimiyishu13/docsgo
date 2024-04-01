@@ -1,0 +1,153 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Root_ssh_login_sh</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-01T15:49:18&#43;08:00">April 1, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>配置SSH以允许root用户无密码登录</p>
+<p>示例：
+<img
+    src="http://localhost:1313/docsgo/shell.png" alt="ceshi"
+    
+    
+    />
+</p>
+<p><img
+    src="http://localhost:1313/docsgo/shell.png" alt="ceshi"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<p>脚本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>print_script_header<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;-----------------------------------------------&#34;</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;# 脚本: root_ssh_login.sh&#34;</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;# 描述: 配置SSH以允许root用户无密码登录&#34;</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;# 作者:&#34;</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;# 日期: 2024&#34;</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;-----------------------------------------------&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 示例用法</span>
+</span></span><span style="display:flex;"><span>users<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;root&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>input<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 提示用户输入节点，以空格分隔</span>
+</span></span><span style="display:flex;"><span>read -p <span style="color:#e6db74">&#34;请输入节点名称（以空格分隔）: &#34;</span> nodes_input
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将输入的节点字符串分割成数组</span>
+</span></span><span style="display:flex;"><span>IFS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39; &#39;</span> read -ra nodes <span style="color:#f92672">&lt;&lt;&lt;</span> <span style="color:#e6db74">&#34;</span>$nodes_input<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 函数：提示用户输入密码并创建password.txt</span>
+</span></span><span style="display:flex;"><span>prompt_for_password<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    read -s -p <span style="color:#e6db74">&#34;请输入密码: &#34;</span> password
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;</span>$password<span style="color:#e6db74">&#34;</span> &gt; /tmp/password.txt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 函数：检查并使用yum安装sshpass</span>
+</span></span><span style="display:flex;"><span>install_sshpass<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ! command -v sshpass &amp;&gt; /dev/null; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>      echo <span style="color:#e6db74">&#34;提示：sshpass未安装，正在安装...&#34;</span>
+</span></span><span style="display:flex;"><span>      yum install -y sshpass &gt; /dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># 检查 yum install 是否执行成功</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>          echo <span style="color:#e6db74">&#34;sshpass安装成功。&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>          echo <span style="color:#e6db74">&#34;错误：sshpass安装失败。&#34;</span>
+</span></span><span style="display:flex;"><span>          exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>      echo <span style="color:#e6db74">&#34;提示：sshpass已安装.&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 函数：检查并生成SSH密钥对</span>
+</span></span><span style="display:flex;"><span>generate_ssh_key<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    local key_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/root/.ssh/id_rsa&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span>$key_path<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If the key does not exist, generate it</span>
+</span></span><span style="display:flex;"><span>        ssh-keygen -t rsa -b <span style="color:#ae81ff">2048</span> -f <span style="color:#e6db74">&#34;</span>$key_path<span style="color:#e6db74">&#34;</span> -N <span style="color:#e6db74">&#34;&#34;</span>   &gt; /dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;密钥已生成&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If the key already exists, display a message</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;密钥已存在，不再生成新的密钥。&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 函数：将公钥复制到authorized_keys</span>
+</span></span><span style="display:flex;"><span>copy_public_key<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    local user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    shift
+</span></span><span style="display:flex;"><span>    local nodes<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    count<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    echo -e <span style="color:#e6db74">&#34;\n\t ***** 复制公钥 *****&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> node in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>nodes[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>        sshpass -f /tmp/password.txt ssh-copy-id -o StrictHostKeyChecking<span style="color:#f92672">=</span>no <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>user<span style="color:#e6db74">}</span><span style="color:#e6db74">@</span><span style="color:#e6db74">${</span>node<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>   &gt; /dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            echo -e <span style="color:#e6db74">&#34;\e[34m\t[</span><span style="color:#e6db74">${</span>count<span style="color:#e6db74">}</span><span style="color:#e6db74">] 公钥成功复制到 </span><span style="color:#e6db74">${</span>node<span style="color:#e6db74">}</span><span style="color:#e6db74">\e[0m&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>            echo -e <span style="color:#e6db74">&#34;\e[31m\t[</span><span style="color:#e6db74">${</span>count<span style="color:#e6db74">}</span><span style="color:#e6db74">] ERROR 无法复制公钥到 </span><span style="color:#e6db74">${</span>node<span style="color:#e6db74">}</span><span style="color:#e6db74">\e[0m&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">((</span>count++<span style="color:#f92672">))</span>  <span style="color:#75715e"># 计数器递增</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 主脚本</span>
+</span></span><span style="display:flex;"><span>main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    print_script_header
+</span></span><span style="display:flex;"><span>    install_sshpass
+</span></span><span style="display:flex;"><span>    input
+</span></span><span style="display:flex;"><span>    prompt_for_password
+</span></span><span style="display:flex;"><span>    generate_ssh_key
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> user in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>users[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>        copy_public_key <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>user<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>nodes[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo -e <span style="color:#e6db74">&#34;\e[32m\n root_ssh_login.sh 脚本开结束 \e[0m&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 执行主脚本</span>
+</span></span><span style="display:flex;"><span>main
+</span></span></code></pre></div>
+        </div>
+    </div>
+</div>
