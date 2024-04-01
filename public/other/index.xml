@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Others on docsGo</title>
+    <link>http://localhost:1313/docsgo/other/</link>
+    <description>Recent content in Others on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 29 Mar 2024 09:46:46 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/other/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Jumpserver</title>
+      <link>http://localhost:1313/docsgo/other/jumpserver/</link>
+      <pubDate>Fri, 29 Mar 2024 09:46:46 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/other/jumpserver/</guid>
+      <description>官网：https://www.jumpserver.org/index.html&#xA;统一IT资产访问入口：&#xA;通过登录JumpServer可以访问已授权的服务器，通过统一的门户访问所有的IT资产&#xA;安全稳定运行的保障&#xA;​&#x9;通过Web页面和SSH客户端访问JumpServer。为了提升安全等级，JumpServer支持MFA多因子认证的方式，并且支持录像审计和SSH协议访问。JumpServer也完整具备4A（即身份验证、授权控制、账号管理、安全审计）四大核心功能，为服务器、网络设备、数据库和安全设备等内网设备提供了统一的安全管理保障&#xA;MFA认证：多重身份认证&#xA;登陆时加了一层安全层，要求用户使用 因素：&#xA;用户已知：用户名 、 密码 MFA：认证器得到验证码 如果别人窃取了 用户密码，那么他还需要窃取你的手机&#xA;访问：Https&#xA;数据库</description>
+    </item>
+  </channel>
+</rss>

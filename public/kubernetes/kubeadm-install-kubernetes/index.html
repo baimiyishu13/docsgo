@@ -1,0 +1,1082 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Kubeadm Install Kubernetes</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-01T11:18:20&#43;08:00">April 1, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#准备工作">准备工作</a>
+      <ul>
+        <li><a href="#harbor-部署">Harbor 部署</a></li>
+        <li><a href="#镜像">镜像</a></li>
+        <li><a href="#3安装ansible配置">3）安装ansible配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#gfs部署可选">GFS部署(可选)</a></li>
+    <li><a href="#初始化环境">初始化环境</a>
+      <ul>
+        <li><a href="#1修改hosts文件">1）修改hosts文件</a></li>
+        <li><a href="#2sudo账户可选">2）sudo账户（可选）</a></li>
+        <li><a href="#3关闭swap防火墙selinux修改limit">3）关闭swap、防火墙、selinux、修改limit</a></li>
+        <li><a href="#4基础软件安装">4）基础软件安装</a></li>
+        <li><a href="#5内核模块加载">5）内核模块加载</a></li>
+        <li><a href="#6安装docker">6）安装Docker</a></li>
+        <li><a href="#7内核配置">7）内核配置</a></li>
+        <li><a href="#8nfs挂载可选">8）NFS挂载（可选）</a></li>
+        <li><a href="#9时间同步">9）时间同步</a></li>
+      </ul>
+    </li>
+    <li><a href="#高可用配置">高可用配置</a>
+      <ul>
+        <li><a href="#1keepalived-和-haproxy">1）Keepalived 和 HAproxy</a></li>
+      </ul>
+    </li>
+    <li><a href="#初始化集群">初始化集群</a>
+      <ul>
+        <li><a href="#kubeadm--ks">kubeadm + ks</a></li>
+        <li><a href="#kubeadm">kubeadm</a></li>
+        <li><a href="#calico安装">calico安装</a></li>
+        <li><a href="#nfs-sc-可选">NFS SC (可选)</a></li>
+        <li><a href="#gfs">GFS</a></li>
+        <li><a href="#ks">KS</a></li>
+        <li><a href="#kubekey">KubeKey</a></li>
+        <li><a href="#离线安装集群方式">离线安装集群方式</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h1 id="kubernetes--kubesphere">Kubernetes + KubeSphere</h1>
+<h2 id="准备工作">准备工作</h2>
+<h3 id="harbor-部署">Harbor 部署</h3>
+<blockquote>
+<p>harbor-offline-installer-v2.1.2.tgz</p>
+</blockquote>
+<p><a href="https://github.com/goharbor/harbor/releases/tag/v2.1.2">https://github.com/goharbor/harbor/releases/tag/v2.1.2</a></p>
+<p>可参考安装文档：官方：https://goharbor.io/docs/2.1.0/install-config/quick-install-script/</p>
+<p>上传harbor包，与 docker-compose-Linux-x86_64</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mv /tmp/docker-compose-Linux-x86_64 /usr/local/bin/docker-compose
+</span></span><span style="display:flex;"><span>chmod +x /usr/local/bin/docker-compose
+</span></span><span style="display:flex;"><span>ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+</span></span></code></pre></div><p>编辑配置文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>tar -zxvf /tmp/harbor-offline-installer-v2.1.2.tgz -C /root
+</span></span></code></pre></div><p>进入解压的 <code>harbor</code> 目录</p>
+<p>⚠️：拷贝harbor.yml的备份文件为 <code>harbor.yml</code></p>
+<ol>
+<li>编辑文件 <code>/root/harbor/harbor.yml</code> 注释掉https的相关配置</li>
+<li>默认端口：<code>8080</code></li>
+<li>主机地址：<code>hostname:</code>  修改为主机 <code>IP</code></li>
+<li>存储目录: <code>data_volume: /data/harbor</code></li>
+</ol>
+<p>运行脚本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>bash install.sh
+</span></span></code></pre></div><p>创建Harbor 库 <code>bash create_project_harbor.sh</code></p>
+<p>⚠️：按需添加需要的库名称，运行该脚本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://dockerhub.kubekey.local&#34;</span>  
+</span></span><span style="display:flex;"><span>user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>passwd<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Harbor12345&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>harbor_projects<span style="color:#f92672">=(</span>library
+</span></span><span style="display:flex;"><span>    kubesphere
+</span></span><span style="display:flex;"><span>    calico
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> project in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>harbor_projects[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;creating </span>$project<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    curl -u <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>user<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>passwd<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/v2.0/projects&#34;</span> -d <span style="color:#e6db74">&#34;{ \&#34;project_name\&#34;: \&#34;</span><span style="color:#e6db74">${</span>project<span style="color:#e6db74">}</span><span style="color:#e6db74">\&#34;, \&#34;public\&#34;: true}&#34;</span> -k
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><hr>
+<h3 id="镜像">镜像</h3>
+<p>1.20.6链接: <a href="https://caiyun.139.com/m/i?1L5BSzYqo0WAo">https://caiyun.139.com/m/i?1L5BSzYqo0WAo</a>  提取码:xeh2</p>
+<p>查看k8s版本对应的images</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubeadm config images list --kubernetes-version<span style="color:#f92672">=</span>1.20.6
+</span></span></code></pre></div><hr>
+<h3 id="3安装ansible配置">3）安装ansible配置</h3>
+<p>⚠️：建议在 Harbor 节点安装，作为主控端，其余节点作为被控端。</p>
+<p>脚本<code>init_ansible.sh</code> 用于快速安装和配置 Ansible 环境，包括禁用主机密钥检查和设置解释器。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; init_ansible.sh
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">yum install -y ansible &amp;&gt;/dev/null
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sed -i &#39;s/^#host_key_checking = False/host_key_checking = False/&#39; /etc/ansible/ansible.cfg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sed -i &#39;/^\[defaults\]$/a interpreter_python = auto_legacy_silent&#39; /etc/ansible/ansible.cfg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>bash init_ansible.sh
+</span></span></code></pre></div><p>生成 Ansible 的主机清单文件 <code>/etc/ansible/hosts</code>。这个清单文件定义了一组主机及其相关变量，参考一下示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/ansible/hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[all]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">c3-master1 ansible_host=10.232.23.157
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">c3-master2 ansible_host=10.232.23.131 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">c3-master3 ansible_host=10.232.23.134
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">c3-node1 ansible_host=10.232.23.156
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[all:vars]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ansible_become=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ansible_become_method=sudo
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ansible_become_pass=**-**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ansible_ssh_user=swdys
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ansible_ssh_pass=**-**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><hr>
+<h2 id="gfs部署可选">GFS部署(可选)</h2>
+<p>部署环境(研发环境)</p>
+<p>参考：https://docs.gluster.org/en/latest/Install-Guide/Install/#community-packages</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ansible gfs -m ping
+</span></span><span style="display:flex;"><span>ansible gfs -m shell -a <span style="color:#e6db74">&#39;yum install glusterfs-server -y&#39;</span>
+</span></span><span style="display:flex;"><span>ansible gfs -m shell -a <span style="color:#e6db74">&#39;systemctl start glusterd&#39;</span>
+</span></span><span style="display:flex;"><span>ansible gfs -m shell -a <span style="color:#e6db74">&#39;systemctl enable glusterd&#39;</span>
+</span></span><span style="display:flex;"><span>gluster volume create gv0 replica <span style="color:#ae81ff">3</span> master1:/data node1:/data node2:/data force
+</span></span><span style="display:flex;"><span>gluster volume start gv0
+</span></span><span style="display:flex;"><span>gluster volume info
+</span></span><span style="display:flex;"><span>ansible all -m shell -a <span style="color:#e6db74">&#39;yum install glusterfs-client -y&#39;</span>
+</span></span><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; gfs.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Create Mount Directories and Update /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install nfs-utils package
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      package:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: glusterfs-client
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Create directories
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      file:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: directory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - /var/openebs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - /dockerdata-nfs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Add mount configuration to /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ item.source }} {{ item.destination }} glusterfs defaults,_netdev 0 0&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { source: &#34;master1:/gv0&#34;, destination: &#34;/var/openebs&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { source: &#34;master1:/gv0&#34;, destination: &#34;/dockerdata-nfs&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Mount file system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: mount -a
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h2 id="初始化环境">初始化环境</h2>
+<h3 id="1修改hosts文件">1）修改hosts文件</h3>
+<p>编辑 <code>/etc/hosts</code> 文件，将 IP 地址和主机名的映射关系添加到该文件中，参考一下示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt;/etc/hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10.232.23.157 c3-master1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10.232.23.131 c3-master2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10.232.23.134 c3-master3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10.232.23.156 c3-node1 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>用于设置主机的主机名:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; hostname.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Hostname
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Set hostname
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: hostnamectl set-hostname &#34;{{ inventory_hostname }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>批量将指定的 IP 地址和主机名添加到所有主机的 <code>/etc/hosts</code> 文件中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; hosts-all.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Append /etc/hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Append /etc/hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ item.ip }} {{ item.hostname }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { ip: &#34;10.209.8.66&#34;, hostname: &#34;mirrors.bclinux.org&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { ip: &#34;10.232.23.157&#34;, hostname: &#34;c3-master1&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { ip: &#34;10.232.23.131&#34;, hostname: &#34;c3-master2&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { ip: &#34;10.232.23.134&#34;, hostname: &#34;c3-master3&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { ip: &#34;10.232.23.156&#34;, hostname: &#34;c3-node1&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="2sudo账户可选">2）sudo账户（可选）</h3>
+<p>示例：创建用户wlznhpt 密码: 12345 sudu设置ALL=(ALL) NOPASSWD: ALL</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; create_user.yml   
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Create user and configure sudo permissions
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  vars:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    username: wlznhpt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    password: 12345
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Create user
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      user:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: &#34;{{ username }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        password: &#34;{{ password | password_hash(&#39;sha512&#39;) }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        createhome: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become_user: root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Add user to the wheel group
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      user:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: &#34;{{ username }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        groups: wheel
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        append: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become_user: root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Configure sudoers
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /etc/sudoers
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ username }} ALL=(ALL) NOPASSWD: ALL&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        validate: &#39;visudo -cf %s&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        backup: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become_user: root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>shell脚本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat &lt;&lt;EOF &gt; sudo.sh
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置要创建的用户名和密码</span>
+</span></span><span style="display:flex;"><span>username<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wlznhpt&#34;</span>
+</span></span><span style="display:flex;"><span>password<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Wgzyc#@2017&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建用户并设置密码</span>
+</span></span><span style="display:flex;"><span>useradd -m <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;</span>$username<span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>password<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | chpasswd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加用户到wheel组</span>
+</span></span><span style="display:flex;"><span>usermod -aG wheel <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 配置sudoers</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>username<span style="color:#e6db74">}</span><span style="color:#e6db74"> ALL=(ALL) NOPASSWD: ALL&#34;</span> &gt;&gt; /etc/sudoers
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重新加载sudoers文件以使更改生效</span>
+</span></span><span style="display:flex;"><span>visudo -c -f /etc/sudoers <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;sudoers file is valid&#34;</span> <span style="color:#f92672">||</span> echo <span style="color:#e6db74">&#34;sudoers file is NOT valid&#34;</span>
+</span></span></code></pre></div><h3 id="3关闭swap防火墙selinux修改limit">3）关闭swap、防火墙、selinux、修改limit</h3>
+<p>任务包括：</p>
+<ol>
+<li>设置 SELinux：通过修改 <code>/etc/selinux/config</code> 文件，将 SELinux 状态设置为 <code>disabled</code>。</li>
+<li>禁用 Swap：使用 <code>swapoff -a</code> 命令禁用当前的 Swap 分区，并通过修改 <code>/etc/fstab</code> 文件来永久禁用 Swap。</li>
+<li>停止和禁用防火墙</li>
+<li>修改 <code>limits.conf</code>：向 <code>/etc/security/limits.conf</code> 文件中添加行，修改系统的限制设置。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; system.yml   
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: System Settings
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: &#34;Disable SELinux enforcing&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: /usr/sbin/setenforce 0  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ignore_errors: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Modify SELinux configuration file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/selinux/config
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        regexp: &#39;^SELINUX=&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#39;SELINUX=disabled&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Disable Swap
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: swapoff -a
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Permanently Disable Swap
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: absent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        regexp: &#39;^.*\sswap\s.*$&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Stop and Disable Firewall
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: firewalld
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: stopped
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: no
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Modify limits
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /etc/security/limits.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;*   hard   nofile  65535&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;*   soft   nofile  65535&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;*   soft   nproc   65535&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;*   hard   nproc   65535&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="4基础软件安装">4）基础软件安装</h3>
+<p>用于在目标主机上安装所需的软件包</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; install_soft.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: install
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install required packages
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      yum:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - socat
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - conntrack
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - ebtables
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - ipset
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - ipvsadm
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - bash-completion
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - openssl
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - openssl-devel
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - vim
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - telnet
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="5内核模块加载">5）内核模块加载</h3>
+<p>用于在目标主机上加载内核模块。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; load_kernel.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: load_kernel
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: &#34;modprobe&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      modprobe:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       name: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      with_items:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_rr
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_wrr
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_sh
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - nf_conntrack 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: &#34;lsmod&#34;  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: /sbin/lsmod | grep {{ item }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      with_items:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_rr
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_wrr
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - ip_vs_sh
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       - nf_conntrack
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="6安装docker">6）安装Docker</h3>
+<p>版本：v 19.03.9</p>
+<p>将生成一个名为 <code>/etc/docker/daemon.json</code> 的文件，并将以下内容写入该文件</p>
+<p>⚠️注意修改仓库地址：<code>&quot;insecure-registries&quot;:[&quot;10.232.23.144:8080&quot;],</code> 为 <code>Harbor IP</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/docker/daemon.json
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{ 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;data-root&#34;: &#34;/data/docker/data-root&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;exec-opts&#34;: [&#34;native.cgroupdriver=systemd&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;log-driver&#34;: &#34;json-file&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;insecure-registries&#34;:[&#34;172.32.165.74:8080&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;log-opts&#34;: {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;max-size&#34;: &#34;100m&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  },
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;storage-driver&#34;: &#34;overlay2&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;storage-opts&#34;: [
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;overlay2.override_kernel_check=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/docker/daemon.json
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{ 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;data-root&#34;: &#34;/data/docker/data-root&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;exec-opts&#34;: [&#34;native.cgroupdriver=systemd&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;log-driver&#34;: &#34;json-file&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;insecure-registries&#34;:[&#34;mirrors.com:80&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;log-opts&#34;: {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;max-size&#34;: &#34;100m&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  },
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;storage-driver&#34;: &#34;overlay2&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;storage-opts&#34;: [
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;overlay2.override_kernel_check=true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>用于在目标主机上安装和配置 Docker（19.03.13版本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; docker.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Install Docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  vars:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    docker_package: &#34;docker-v.19.03.13.zip&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Create deployment directory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      file:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /root/deployment/Kube-v1.20.6/kube/rpm
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: directory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        mode: &#39;0755&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy Docker RPM package
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        src: &#34;/root/deployment/Kube-v1.20.6/kube/rpm/{{ docker_package }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: &#34;/root/deployment/Kube-v1.20.6/kube/rpm/{{ docker_package }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        mode: 0644
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Unzip Docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: &#34;unzip /root/deployment/Kube-v1.20.6/kube/rpm/{{ docker_package }} -d /root/deployment/Kube-v1.20.6/kube/rpm/&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install Docker RPM
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: &#34;yum install -y /root/deployment/Kube-v1.20.6/kube/rpm/dockerrpm/*.rpm&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Start Docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      systemd:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: started
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy daemon.json configuration file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        src: /etc/docker/daemon.json
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/docker/daemon.json
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      notify: Restart Docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  handlers:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Restart Docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      systemd:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: docker
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: restarted
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>所有主机登陆：<code>admin/Harbor12345</code>:Harbor默认地址（注意修改仓库地址）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span> ansible all -m shell -a <span style="color:#e6db74">&#39;docker login 172.32.165.74:8080:8080 -uadmin -pHarbor12345&#39;</span>
+</span></span></code></pre></div><h3 id="7内核配置">7）内核配置</h3>
+<p>用于在目标主机上修改内核参数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; modify_kernel.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Modify Kernel Parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Set sysctl parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /etc/sysctl.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;net.bridge.bridge-nf-call-ip6tables = 1&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;net.bridge.bridge-nf-call-iptables = 1&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;vm.swappiness=0&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;net.core.somaxconn=32768&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;net.ipv4.ip_forward=1&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#34;fs.inotify.max_user_watches = 2097152&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Reload sysctl
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: sysctl -p
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="8nfs挂载可选">8）NFS挂载（可选）</h3>
+<p>在所有主机上创建挂载目录、安装 nfs-utils 包、配置 /etc/fstab 文件并挂载 NFS 文件系统</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; nfs.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Create Mount Directories and Update /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install nfs-utils package
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      package:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: nfs-utils
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Create directories
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      file:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: &#34;{{ item }}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: directory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - /var/openebs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - /dockerdata-nfs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Add mount configuration to /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      lineinfile:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: /etc/fstab
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        line: &#34;{{ item.source }} {{ item.destination }} nfs rw,nfsvers=3 0 0&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      loop:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { source: &#34;zdnb1.dynamic2.cmcc.com:/share-d74931bb&#34;, destination: &#34;/var/openebs&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - { source: &#34;zdnb1.dynamic2.cmcc.com:/share-d74931bb&#34;, destination: &#34;/dockerdata-nfs&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Mount file system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: mount -a
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="9时间同步">9）时间同步</h3>
+<p>⚠️：先查看是否开启时间同步，已有则忽略此步骤</p>
+<p>在所有主机上进行时间同步的过程。</p>
+<ul>
+<li>包括安装 <code>chronyd</code> 软件包、修改配置文件、重启服务、开启时间同步功能，并显示节点的当前时间</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; chronyd.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Time Synchronization
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  vars:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ntp_server: # NTP server address
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ntp_cidr: # Allow hosts from the local network to access the time server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install the chronyd package
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      dnf:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: chrony
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Modify the time server configuration file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content: |
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          server {{ ntp_server }} iburst
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          allow {{ ntp_cidr }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          local stratum 10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          driftfile /var/lib/chrony/drift
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          makestep 1.0 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          rtcsync
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          logdir /var/log/chrony
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          log measurements statistics tracking
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: &#34;/etc/chrony.conf&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Restart chronyd service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: chronyd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: restarted
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Enable time synchronization
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: timedatectl set-ntp true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Display node time
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      command: date
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      register: current_date
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Print node time
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      debug:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        var: current_date.stdout
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h2 id="高可用配置">高可用配置</h2>
+<h3 id="1keepalived-和-haproxy">1）Keepalived 和 HAproxy</h3>
+<p>使用 Keepalived 和 HAproxy 创建高可用 Kubernetes 集群</p>
+<p>高可用 Kubernetes 集群能够确保应用程序在运行时不会出现服务中断，这也是生产的需求之一</p>
+<p>用于在<code>master</code>节点上安装和配置 HAProxy 和 Keepalived。</p>
+<p>⚠️：修改 <code>hosts</code> 为master节点 的<code>hostname</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; lb.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Load Balancer Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: c3-master1,c3-master2,c3-master3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Install required packages
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      package:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          - haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          - keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: present
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Start and enable HAProxy on boot
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: started
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Start and enable Keepalived on boot
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: started
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>用于负载均衡 Kubernetes API Server。文件中包含了全局设置和默认配置，以及针对 <code>kube_apiserver</code> 的前端和后端配置：</p>
+<p>⚠️：需修改 <code>backend kube_apiserver_back</code> 中 <code>server</code> 为master节点信息</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /root/deploy/lb/haproxy.cfg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">global
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    log         127.0.0.1 local2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    chroot      /var/lib/haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    pidfile     /var/run/haproxy.pid
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    maxconn     40000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    user        haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    group       haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    daemon
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    stats socket /var/lib/haproxy/stats
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaults
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    mode                    http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    log                     global
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    option                  httplog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    option                  dontlognull
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    option http-server-close
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#    option forwardfor       except 127.0.0.0/8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    option                  redispatch
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    retries                 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout http-request    10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout queue           1m
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout connect         10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout client          1m
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout server          1m
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout http-keep-alive 10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    timeout check           10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    maxconn                 3000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">frontend kube_apiserver
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    mode                 tcp
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    bind                 *:16443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    option               tcplog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    default_backend      kube_apiserver_back
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">backend kube_apiserver_back
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    mode        tcp
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    balance     roundrobin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server  c3-master1 10.232.23.157:6443 check
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server  c3-master2 10.232.23.131:6443 check
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server  c3-master3 10.232.23.134:6443 check
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>复制 <code>haproxy.cfg</code> 文件到指定位置，并根据主机名的条件复制相应的 <code>keepalived.conf</code> 文件</p>
+<p>⚠️：修改五处信息：<code>hosts</code>、<code>vars</code>、<code>interface_name</code>、<code>src</code> 、<code>when</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; lbfile.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: Load Balancer Configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: c3-master1,c3-master2,c3-master3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  vars:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    virtual_ip: &#34;10.232.23.159&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    interface_name: &#34;eth1&#34;        
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy haproxy.cfg file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        src: /root/deploy/lb/haproxy.cfg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/haproxy/haproxy.cfg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy master1_keepalived.conf to c3-master1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content: |
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          ! Configuration File for keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          global_defs {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">             router_id LVS_DEVEL
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          vrrp_instance VI_1 {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              state MASTER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              interface {{ interface_name }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_router_id 126
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              priority 120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              nopreempt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              advert_int 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              authentication {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_type PASS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_pass K8SHA_KA_AUTH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_ipaddress {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  {{ virtual_ip }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/keepalived/keepalived.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      when: inventory_hostname == &#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy master2_keepalived.conf to c3-master2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content: |
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          ! Configuration File for keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          global_defs {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">             router_id LVS_DEVEL
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          vrrp_instance VI_1 {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              state BACKUP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              interface {{ interface_name }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_router_id 126
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              priority 100
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              nopreempt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              advert_int 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              authentication {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_type PASS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_pass K8SHA_KA_AUTH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_ipaddress {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  {{ virtual_ip }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/keepalived/keepalived.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      when: inventory_hostname == &#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Copy master3_keepalived.conf to c3-master3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content: |
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          ! Configuration File for keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          global_defs {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">             router_id LVS_DEVEL
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          vrrp_instance VI_1 {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              state BACKUP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              interface {{ interface_name }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_router_id 126
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              priority 80
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              nopreempt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              advert_int 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              authentication {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_type PASS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  auth_pass K8SHA_KA_AUTH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              virtual_ipaddress {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  {{ virtual_ip }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">              }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /etc/keepalived/keepalived.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      when: inventory_hostname == &#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Restart HAProxy service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: haproxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: restarted
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: Restart Keepalived service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: keepalived
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: restarted
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>最后使用查看是否监听</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>netstart -lntp | grep <span style="color:#ae81ff">16443</span>
+</span></span></code></pre></div><h2 id="初始化集群">初始化集群</h2>
+<h3 id="kubeadm--ks">kubeadm + ks</h3>
+<h3 id="kubeadm">kubeadm</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; kube120.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- name: kube 120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  become: yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  gather_facts: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  vars:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kube_package: kube120.zip
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    dir: &#34;/home/secu/&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tasks:  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: cp kube RPM all
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      copy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        src: {{ dir }}{{ kube_package }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        dest: /home/secu/{{ kube_package }}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        mode: 0644
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: uzip kube120 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: &#34;unzip /home/secu/{{ kube_package }} -d /home/secu/&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: install kube120 RPM 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      shell: &#34;yum install -y /home/secu/kube120/*.rpm&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - name: start kubelet 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: kubelet
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        state: started
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>kubeadm命令初始化</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubeadm init --kubernetes-version<span style="color:#f92672">=</span>v1.20.6 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --apiserver-advertise-address<span style="color:#f92672">=</span>172.32.165.68 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --pod-network-cidr<span style="color:#f92672">=</span>10.244.0.0/16 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --service-cidr<span style="color:#f92672">=</span>10.96.0.0/16 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --upload-certs <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --v<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --image-repository<span style="color:#f92672">=</span>10.232.23.144:8080/kubesphere <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --control-plane-endpoint<span style="color:#f92672">=</span>10.232.23.159:16443
+</span></span></code></pre></div><p>初始化失败执行：然后重新初始化</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubeadm reset -f ; ipvsadm --clear  ; rm -rf ~/.kube
+</span></span></code></pre></div><p>查看kubelet 日志</p>
+<h3 id="calico安装">calico安装</h3>
+<p>仅在 <code>master1</code> 节点上执行以下操作：</p>
+<p>下载 Calico 配置文件，确保版本匹配：</p>
+<ul>
+<li>calico验证版本是否适配k8s集群版本：https://docs.tigera.io/calico/3.25/getting-started/kubernetes/requirements</li>
+<li>YAML 文件：<a href="https://docs.projectcalico.org/v3.25/manifests/calico.yaml">calico.yaml v3.25</a></li>
+</ul>
+<p>修改 <code>calico.yaml</code> 文件中的镜像地址</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sed -i <span style="color:#e6db74">&#39;s/image: calico/image: 10.217.2.67:8080\/calico/g&#39;</span> calico.yaml
+</span></span><span style="display:flex;"><span>kubectl apply -f calico.yaml
+</span></span></code></pre></div><p>修改<code>calico.yaml</code></p>
+<p>在</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>- name: CLUSTER_TYPE
+</span></span><span style="display:flex;"><span>  value: <span style="color:#e6db74">&#34;k8s,bgp&#34;</span>
+</span></span></code></pre></div><p>下增加两行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>- name:IP_AUTODETECTION_METHOD
+</span></span><span style="display:flex;"><span>  value:<span style="color:#e6db74">&#34;interface=enp0s3&#34;</span>
+</span></span></code></pre></div><p><code>enp0s3</code>是我机器的网卡名</p>
+<h3 id="nfs-sc-可选">NFS SC (可选)</h3>
+<p>Storage Classes</p>
+<p>使用kubeadm + ks 需要提前 提供 默认的Storage Classes</p>
+<p>NFS：https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/tree/master/charts/nfs-subdir-external-provisioner</p>
+<p>目的：ks部署时需要：根据PVC 去动态制备PV</p>
+<p>准备工作：</p>
+<ol>
+<li>安装 Helm</li>
+<li>镜像 registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2</li>
+<li>准备 Charts 包</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>helm install my-release nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server<span style="color:#f92672">=</span>x.x.x.x --set nfs.path<span style="color:#f92672">=</span>/exported/path -n kube-system
+</span></span></code></pre></div><h3 id="gfs">GFS</h3>
+<p><a href="https://www.kubesphere.io/zh/docs/v3.4/reference/storage-system-installation/glusterfs-server/">https://www.kubesphere.io/zh/docs/v3.4/reference/storage-system-installation/glusterfs-server/</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Secret
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: heketi-secret
+</span></span><span style="display:flex;"><span>  namespace: kube-system
+</span></span><span style="display:flex;"><span>type: kubernetes.io/glusterfs
+</span></span><span style="display:flex;"><span>data:
+</span></span><span style="display:flex;"><span>  key: <span style="color:#e6db74">&#34;MTIzNDU2&#34;</span>    <span style="color:#75715e">#请替换为您自己的密钥。Base64 编码。</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: storage.k8s.io/v1
+</span></span><span style="display:flex;"><span>kind: StorageClass
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  annotations:
+</span></span><span style="display:flex;"><span>    storageclass.beta.kubernetes.io/is-default-class: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span>    storageclass.kubesphere.io/supported-access-modes: <span style="color:#e6db74">&#39;[&#34;ReadWriteOnce&#34;,&#34;ReadOnlyMany&#34;,&#34;ReadWriteMany&#34;]&#39;</span>
+</span></span><span style="display:flex;"><span>  name: glusterfs
+</span></span><span style="display:flex;"><span>parameters:
+</span></span><span style="display:flex;"><span>  clusterid: <span style="color:#e6db74">&#34;ab2a2129-4728-4ae5-af26-30816bb5c9c5&#34;</span>    <span style="color:#75715e">#请替换为您自己的 GlusterFS 集群 ID。</span>
+</span></span><span style="display:flex;"><span>  gidMax: <span style="color:#e6db74">&#34;50000&#34;</span>
+</span></span><span style="display:flex;"><span>  gidMin: <span style="color:#e6db74">&#34;40000&#34;</span>
+</span></span><span style="display:flex;"><span>  restauthenabled: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span>  resturl: <span style="color:#e6db74">&#34;http://192.168.0.2:8080&#34;</span>    <span style="color:#75715e">#Gluster REST 服务/Heketi 服务 URL 可按需供应 gluster 存储卷。请替换为您自己的 URL。</span>
+</span></span><span style="display:flex;"><span>  restuser: admin
+</span></span><span style="display:flex;"><span>  secretName: heketi-secret
+</span></span><span style="display:flex;"><span>  secretNamespace: kube-system
+</span></span><span style="display:flex;"><span>  volumetype: <span style="color:#e6db74">&#34;replicate:3&#34;</span>    <span style="color:#75715e">#请替换为您自己的存储卷类型。</span>
+</span></span><span style="display:flex;"><span>provisioner: kubernetes.io/glusterfs
+</span></span><span style="display:flex;"><span>reclaimPolicy: Delete
+</span></span><span style="display:flex;"><span>volumeBindingMode: Immediate
+</span></span><span style="display:flex;"><span>allowVolumeExpansion: true
+</span></span></code></pre></div><h3 id="ks">KS</h3>
+<p>建议参考官方文档部署（离线安装）：<a href="https://v3-1.docs.kubesphere.io/zh/docs/installing-on-kubernetes/on-prem-kubernetes/install-ks-on-linux-airgapped/">部署文档</a></p>
+<p>部署：</p>
+<ol>
+<li>镜像仓库，准备安装镜像，推送镜像至私有仓库</li>
+<li>下载部署两个文件</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>https://github.com/kubesphere/ks-installer/releases/download/v3.1.1/cluster-configuration.yaml
+</span></span><span style="display:flex;"><span>https://github.com/kubesphere/ks-installer/releases/download/v3.1.1/kubesphere-installer.yaml
+</span></span></code></pre></div><ol>
+<li>编辑 r 添加您的私有镜像仓库</li>
+</ol>
+<p>⚠️：<code>dockerhub.kubekey.local</code> 换成：HarborIP:8080</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  persistence:
+</span></span><span style="display:flex;"><span>    storageClass: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  authentication:
+</span></span><span style="display:flex;"><span>    jwtSecret: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  local_registry: dockerhub.kubekey.local <span style="color:#75715e"># Add this line manually; make sure you use your own registry address.</span>
+</span></span></code></pre></div><ol>
+<li>安装</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubectl apply -f kubesphere-installer.yaml
+</span></span><span style="display:flex;"><span>kubectl apply -f cluster-configuration.yaml
+</span></span></code></pre></div><p>检查安装日志：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubectl logs -n kubesphere-system <span style="color:#66d9ef">$(</span>kubectl get pod -n kubesphere-system -l app<span style="color:#f92672">=</span>ks-install -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.items[0].metadata.name}&#39;</span><span style="color:#66d9ef">)</span> -f
+</span></span></code></pre></div><p>通过 NodePort (<code>IP:30880</code>) 使用默认帐户和密码 (<code>admin/P@88w0rd</code>) 访问 Web 控制台。</p>
+<h3 id="kubekey">KubeKey</h3>
+<hr>
+<p>参考： <a href="https://www.kubesphere.io/zh/docs/v3.3/installing-on-linux/introduction/air-gapped-installation/">在Linux上安装 KubeSphere 和 Kubernetes</a></p>
+<p>版本对应：https://kubesphere.io/zh/docs/v3.4/installing-on-linux/introduction/kubekey/</p>
+<h3 id="离线安装集群方式">离线安装集群方式</h3>
+<p>部署文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -L -O https://github.com/kubesphere/ks-installer/releases/download/v3.1.1/cluster-configuration.yaml
+</span></span><span style="display:flex;"><span>curl -L -O https://github.com/kubesphere/ks-installer/releases/download/v3.1.1/kubesphere-installer.yaml
+</span></span></code></pre></div><p>执行以下命令下载 KubeKey 并解压：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -sfL https://get-kk.kubesphere.io | VERSION<span style="color:#f92672">=</span>v3.0.7 sh -
+</span></span></code></pre></div><p>一、示例配置文件</p>
+<p>执行以下命令生成示例配置文件用于安装：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./kk create config <span style="color:#f92672">[</span>--with-kubernetes version<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--with-kubesphere version<span style="color:#f92672">]</span> <span style="color:#f92672">[(</span>-f | --file<span style="color:#f92672">)</span> path<span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./kk create config --with-kubernetes v1.17.9 --with-kubesphere v3.1.1 -f config-sample.yaml
+</span></span></code></pre></div><p>备注</p>
+<ul>
+<li>请确保 Kubernetes 版本和您下载的版本一致。</li>
+<li>如果您在这一步的命令中不添加标志 <code>--with-kubesphere</code>，则不会部署 KubeSphere，只能使用配置文件中的 <code>addons</code> 字段安装，或者在您后续使用 <code>./kk create cluster</code> 命令时再次添加这个标志。</li>
+</ul>
+<p>二、编辑配置文件</p>
+<p>注意点：</p>
+<ol>
+<li>离线安装时，必须指定 <code>privateRegistry</code>，在本示例中是 <code>dockerhub.kubekey.local</code>。</li>
+<li>k8s 版本</li>
+<li>lb.kubesphere.local 地址</li>
+<li>privateRegistry 镜像仓库地址</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>apiVersion: kubekey.kubesphere.io/v1alpha1
+</span></span><span style="display:flex;"><span>kind: Cluster
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: sample
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  hosts:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">{</span>name: master, address: 192.168.0.2, internalAddress: 192.168.0.2, password: Qcloud@123<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">{</span>name: node1, address: 192.168.0.3, internalAddress: 192.168.0.3, password: Qcloud@123<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">{</span>name: node2, address: 192.168.0.4, internalAddress: 192.168.0.4, password: Qcloud@123<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  roleGroups:
+</span></span><span style="display:flex;"><span>    etcd:
+</span></span><span style="display:flex;"><span>    - master
+</span></span><span style="display:flex;"><span>    master:
+</span></span><span style="display:flex;"><span>    - master
+</span></span><span style="display:flex;"><span>    worker:
+</span></span><span style="display:flex;"><span>    - master
+</span></span><span style="display:flex;"><span>    - node1
+</span></span><span style="display:flex;"><span>    - node2
+</span></span><span style="display:flex;"><span>  controlPlaneEndpoint:
+</span></span><span style="display:flex;"><span>    domain: lb.kubesphere.local
+</span></span><span style="display:flex;"><span>    address: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    port: <span style="color:#ae81ff">6443</span>
+</span></span><span style="display:flex;"><span>  kubernetes:
+</span></span><span style="display:flex;"><span>    version: v1.17.9
+</span></span><span style="display:flex;"><span>    imageRepo: kubesphere
+</span></span><span style="display:flex;"><span>    clusterName: cluster.local
+</span></span><span style="display:flex;"><span>  network:
+</span></span><span style="display:flex;"><span>    plugin: calico
+</span></span><span style="display:flex;"><span>    kubePodsCIDR: 10.233.64.0/18
+</span></span><span style="display:flex;"><span>    kubeServiceCIDR: 10.233.0.0/18
+</span></span><span style="display:flex;"><span>  registry:
+</span></span><span style="display:flex;"><span>    registryMirrors: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>    insecureRegistries: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>    privateRegistry: dockerhub.kubekey.local  <span style="color:#75715e"># Add the private image registry address here. </span>
+</span></span><span style="display:flex;"><span>  addons: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: installer.kubesphere.io/v1alpha1
+</span></span><span style="display:flex;"><span>kind: ClusterConfiguration
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: ks-installer
+</span></span><span style="display:flex;"><span>  namespace: kubesphere-system
+</span></span><span style="display:flex;"><span>  labels:
+</span></span><span style="display:flex;"><span>    version: v3.1.1
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  persistence:
+</span></span><span style="display:flex;"><span>    storageClass: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  authentication:
+</span></span><span style="display:flex;"><span>    jwtSecret: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  zone: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  local_registry: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  etcd:
+</span></span><span style="display:flex;"><span>    monitoring: false
+</span></span><span style="display:flex;"><span>    endpointIps: localhost
+</span></span><span style="display:flex;"><span>    port: <span style="color:#ae81ff">2379</span>
+</span></span><span style="display:flex;"><span>    tlsEnable: true
+</span></span><span style="display:flex;"><span>  common:
+</span></span><span style="display:flex;"><span>    redis:
+</span></span><span style="display:flex;"><span>      enabled: false
+</span></span><span style="display:flex;"><span>    redisVolumSize: 2Gi
+</span></span><span style="display:flex;"><span>    openldap:
+</span></span><span style="display:flex;"><span>      enabled: false
+</span></span><span style="display:flex;"><span>    openldapVolumeSize: 2Gi
+</span></span><span style="display:flex;"><span>    minioVolumeSize: 20Gi
+</span></span><span style="display:flex;"><span>    monitoring:
+</span></span><span style="display:flex;"><span>      endpoint: http://prometheus-operated.kubesphere-monitoring-system.svc:9090
+</span></span><span style="display:flex;"><span>    es:
+</span></span><span style="display:flex;"><span>      elasticsearchMasterVolumeSize: 4Gi
+</span></span><span style="display:flex;"><span>      elasticsearchDataVolumeSize: 20Gi
+</span></span><span style="display:flex;"><span>      logMaxAge: <span style="color:#ae81ff">7</span>
+</span></span><span style="display:flex;"><span>      elkPrefix: logstash
+</span></span><span style="display:flex;"><span>      basicAuth:
+</span></span><span style="display:flex;"><span>        enabled: false
+</span></span><span style="display:flex;"><span>        username: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        password: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      externalElasticsearchUrl: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      externalElasticsearchPort: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  console:
+</span></span><span style="display:flex;"><span>    enableMultiLogin: true
+</span></span><span style="display:flex;"><span>    port: <span style="color:#ae81ff">30880</span>
+</span></span><span style="display:flex;"><span>  alerting:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># thanosruler:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   replicas: 1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  auditing:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>  devops:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>    jenkinsMemoryLim: 2Gi
+</span></span><span style="display:flex;"><span>    jenkinsMemoryReq: 1500Mi
+</span></span><span style="display:flex;"><span>    jenkinsVolumeSize: 8Gi
+</span></span><span style="display:flex;"><span>    jenkinsJavaOpts_Xms: 512m
+</span></span><span style="display:flex;"><span>    jenkinsJavaOpts_Xmx: 512m
+</span></span><span style="display:flex;"><span>    jenkinsJavaOpts_MaxRAM: 2g
+</span></span><span style="display:flex;"><span>  events:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>    ruler:
+</span></span><span style="display:flex;"><span>      enabled: true
+</span></span><span style="display:flex;"><span>      replicas: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  logging:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>    logsidecar:
+</span></span><span style="display:flex;"><span>      enabled: true
+</span></span><span style="display:flex;"><span>      replicas: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  metrics_server:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>  monitoring:
+</span></span><span style="display:flex;"><span>    storageClass: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    prometheusMemoryRequest: 400Mi
+</span></span><span style="display:flex;"><span>    prometheusVolumeSize: 20Gi
+</span></span><span style="display:flex;"><span>  multicluster:
+</span></span><span style="display:flex;"><span>    clusterRole: none
+</span></span><span style="display:flex;"><span>  network:
+</span></span><span style="display:flex;"><span>    networkpolicy:
+</span></span><span style="display:flex;"><span>      enabled: false
+</span></span><span style="display:flex;"><span>    ippool:
+</span></span><span style="display:flex;"><span>      type: none
+</span></span><span style="display:flex;"><span>    topology:
+</span></span><span style="display:flex;"><span>      type: none
+</span></span><span style="display:flex;"><span>  notification:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>  openpitrix:
+</span></span><span style="display:flex;"><span>    store:
+</span></span><span style="display:flex;"><span>      enabled: false
+</span></span><span style="display:flex;"><span>  servicemesh:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>  kubeedge:
+</span></span><span style="display:flex;"><span>    enabled: false
+</span></span><span style="display:flex;"><span>    cloudCore:
+</span></span><span style="display:flex;"><span>      nodeSelector: <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;node-role.kubernetes.io/worker&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      tolerations: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>      cloudhubPort: <span style="color:#e6db74">&#34;10000&#34;</span>
+</span></span><span style="display:flex;"><span>      cloudhubQuicPort: <span style="color:#e6db74">&#34;10001&#34;</span>
+</span></span><span style="display:flex;"><span>      cloudhubHttpsPort: <span style="color:#e6db74">&#34;10002&#34;</span>
+</span></span><span style="display:flex;"><span>      cloudstreamPort: <span style="color:#e6db74">&#34;10003&#34;</span>
+</span></span><span style="display:flex;"><span>      tunnelPort: <span style="color:#e6db74">&#34;10004&#34;</span>
+</span></span><span style="display:flex;"><span>      cloudHub:
+</span></span><span style="display:flex;"><span>        advertiseAddress:
+</span></span><span style="display:flex;"><span>          - <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        nodeLimit: <span style="color:#e6db74">&#34;100&#34;</span>
+</span></span><span style="display:flex;"><span>      service:
+</span></span><span style="display:flex;"><span>        cloudhubNodePort: <span style="color:#e6db74">&#34;30000&#34;</span>
+</span></span><span style="display:flex;"><span>        cloudhubQuicNodePort: <span style="color:#e6db74">&#34;30001&#34;</span>
+</span></span><span style="display:flex;"><span>        cloudhubHttpsNodePort: <span style="color:#e6db74">&#34;30002&#34;</span>
+</span></span><span style="display:flex;"><span>        cloudstreamNodePort: <span style="color:#e6db74">&#34;30003&#34;</span>
+</span></span><span style="display:flex;"><span>        tunnelNodePort: <span style="color:#e6db74">&#34;30004&#34;</span>
+</span></span><span style="display:flex;"><span>    edgeWatcher:
+</span></span><span style="display:flex;"><span>      nodeSelector: <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;node-role.kubernetes.io/worker&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      tolerations: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>      edgeWatcherAgent:
+</span></span><span style="display:flex;"><span>        nodeSelector: <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;node-role.kubernetes.io/worker&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        tolerations: <span style="color:#f92672">[]</span>
+</span></span></code></pre></div><h4 id="开始安装">开始安装</h4>
+<p>确定完成上面所有步骤后，您可以执行以下命令。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./kk create cluster -f config-sample.yaml
+</span></span></code></pre></div><p>将可执行文件 <code>kk</code> 和包含 Kubernetes 二进制文件的文件夹 <code>kubekey</code> 传输至任务机机器用于安装后，必须将它们放在相同目录中，然后再执行上面的命令。</p>
+<p>检查安装日志：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>kubectl logs -n kubesphere-system <span style="color:#66d9ef">$(</span>kubectl get pod -n kubesphere-system -l app<span style="color:#f92672">=</span>ks-install -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.items[0].metadata.name}&#39;</span><span style="color:#66d9ef">)</span> -f
+</span></span></code></pre></div><p>通过 <code>http://{IP}:30880</code> 使用默认帐户和密码 <code>admin/P@88w0rd</code> 访问 KubeSphere 的 Web 控制台。</p>
+
+        </div>
+    </div>
+</div>

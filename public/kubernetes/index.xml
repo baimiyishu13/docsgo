@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kubernetes on docsGo</title>
+    <link>http://localhost:1313/docsgo/kubernetes/</link>
+    <description>Recent content in Kubernetes on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 Apr 2024 11:18:20 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubeadm Install Kubernetes</title>
+      <link>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</link>
+      <pubDate>Mon, 01 Apr 2024 11:18:20 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</guid>
+      <description>Kubernetes + KubeSphere 准备工作 Harbor 部署 harbor-offline-installer-v2.1.2.tgz&#xA;https://github.com/goharbor/harbor/releases/tag/v2.1.2&#xA;可参考安装文档：官方：https://goharbor.io/docs/2.1.0/install-config/quick-install-script/&#xA;上传harbor包，与 docker-compose-Linux-x86_64&#xA;mv /tmp/docker-compose-Linux-x86_64 /usr/local/bin/docker-compose chmod +x /usr/local/bin/docker-compose ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose 编辑配置文件&#xA;tar -zxvf /tmp/harbor-offline-installer-v2.1.2.tgz -C /root 进入解压的 harbor 目录&#xA;⚠️：拷贝harbor.yml的备份文件为 harbor.yml&#xA;编辑文件 /root/harbor/harbor.yml 注释掉https的相关配置 默认端口：8080 主机地址：hostname: 修改为主机 IP 存储目录: data_volume: /data/harbor 运行脚本：&#xA;bash install.sh 创建Harbor 库 bash create_project_harbor.sh&#xA;⚠️：按需添加需要的库名称，运行该脚本&#xA;#!/usr/bin/env bash url=&amp;#34;https://dockerhub.kubekey.local&amp;#34; user=&amp;#34;admin&amp;#34; passwd=&amp;#34;Harbor12345&amp;#34; harbor_projects=(library kubesphere calico ) for project in &amp;#34;${harbor_projects[@]}&amp;#34;; do echo &amp;#34;creating $project&amp;#34; curl -u &amp;#34;${user}:${passwd}&amp;#34; -X POST -H &amp;#34;Content-Type: application/json&amp;#34; &amp;#34;${url}/api/v2.</description>
+    </item>
+  </channel>
+</rss>
