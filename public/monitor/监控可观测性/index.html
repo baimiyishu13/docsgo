@@ -1,0 +1,177 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>监控可观测性</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-02T09:42:02&#43;08:00">April 2, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#数据采集">数据采集</a></li>
+        <li><a href="#数据监控">数据监控</a></li>
+        <li><a href="#监控告警">监控告警</a></li>
+        <li><a href="#数据观测">数据观测</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#功能介绍">功能介绍</a></li>
+        <li><a href="#优势">优势</a></li>
+        <li><a href="#监控中心架构">监控中心架构</a></li>
+        <li><a href="#victorametrics监控">VictoraMetrics监控</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#前提条件">前提条件</a></li>
+        <li><a href="#接入监控中心-1">接入监控中心</a></li>
+        <li><a href="#采集指标组件安装">采集指标组件安装</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h1 id="可观测性体系概述">可观测性体系概述</h1>
+<p>云原生监控可观测性是指在云原生架构中，通过使用各种工具和技术来实现对应用程序和基础设施的监控告警、日志、故障排除等功能的一套完整的解决方案。</p>
+<p>可观测性架构分层和主要的可观测能力:</p>
+<!-- raw HTML omitted -->
+<h3 id="数据采集">数据采集</h3>
+<p>**指标采集：**提供基于Prometheus的云原生监控插件，相比于开源版本，具备轻量化，开箱即用等优势。<a href="https://prometheus.io/docs/instrumenting/exporters/">云原生监控插件</a></p>
+<h3 id="数据监控">数据监控</h3>
+<p>victoriaMetrics：是一个支持高可用、经济高效且可扩展的监控解决方案和时间序列数据库，可用于 Prometheus 监控数据做长期远程存储。实时监控相关资源，分析健康状态，提供灵活丰富的数据可视化功能，帮助及时发现故障，全面掌握实时运行状况。</p>
+<h3 id="监控告警">监控告警</h3>
+<p>alertmanager：它支持丰富的告警通知渠道，而且很容易做到告警信息进行去重，降噪，分组等，是一款前卫的告警通知系统。通过在定义告警规则，周期性的对告警规则进行计算，如果满足告警触发条件就会向 Alertmanager 发送告警信息。</p>
+<h3 id="数据观测">数据观测</h3>
+<p>Grafana：是一个可视化面板，有着非常漂亮的图表和布局展示，功能齐全的度量仪表盘和图形编辑器，支持 Graphite、zabbix、InfluxDB、Prometheus、OpenTSDB、Elasticsearch 等作为数据源，比 Prometheus 自带的图表展示功能强大太多，更加灵活，有丰富的插件，功能更加强大。</p>
+<h1 id="监控系统概述">监控系统概述</h1>
+<p>监控系统是可实时监控应用及资源，采集各项指标及事件等数据以分析健康状态，提供全面、清晰、多维度数据可视化能力，兼容主流开源组件，并提供快捷故障定位的能力。</p>
+<h3 id="功能介绍">功能介绍</h3>
+<p><strong>洞察力</strong>：提供了采集主机信息，采集数据库信息，以及Kubernetes原生类型的容器监控能力，支持集群、节点、工作负载、容器组和事件的监控。</p>
+<p>**仪表盘：**仪表盘可将不同图表汇聚到同一个屏幕上，通过不同的仪表形式来展示资源数据，进而全面、深入地掌握监控数据。</p>
+<h3 id="优势">优势</h3>
+<ul>
+<li>监控中心深度整合云原生监控项目victoriaMetrics。对关键指标、事件等运维数据进行统一采集、存储和可视化展现，精心打造云原生应用的良好可观测性能力。</li>
+<li>将基础设施监控和应用负载监控进行关联，提供全栈监控，能够随时随地清晰地感知基础设施和应用负载状态。</li>
+<li>能够对Kubernetes集群、节点、容器组（Pod）等进行详细监控，对业务提供端到端追踪和可视化，提供集群健康诊断能力，大大缩短问题分析定位时间。</li>
+<li>提供开箱即用的插件安装、数据采集、云原生监控能力，相比基于开源组件构建的监控能力，在可靠性、高可用、安装部署便捷性上更具有竞争力，能够更好地为应用保驾护航。</li>
+<li>提供了轻量化的指标采集插件，和社区Prometheus相比，资源使用量大大降低，部署模式方便快捷。</li>
+</ul>
+<h3 id="监控中心架构">监控中心架构</h3>
+<!-- raw HTML omitted -->
+<p>监控插件将在用户集群中采集exporter暴露的指标，通过vmagent RemoteWrite的方式，将数据写入至VictoraMetrics实例。</p>
+<p>监控中心将基于VictoraMetrics实例中存储的指标，提供容器洞察、健康诊断、仪表盘的功能。</p>
+<p>将集群内的监控指标通过Token认证鉴权的方式上报三方监控平台，并且做TLS数据加密。</p>
+<h3 id="victorametrics监控">VictoraMetrics监控</h3>
+<p><a href="https://victoriametrics.com/">VictoriaMetrics(VM)</a> 是一个支持高可用、经济高效且可扩展的监控解决方案和时间序列数据库，可用来解决 Prometheus 的高可用和远程存储的问题，是一个可水平扩容的本地全量持久化存储方案，VictoriaMetrics 不仅仅是时序数据库，它的优势主要体现在一下几点。</p>
+<ul>
+<li>对外支持 Prometheus 相关的 API，可以直接用于 Grafana 作为 Prometheus 数据源使用</li>
+<li>指标数据摄取和查询具备高性能和良好的可扩展性，性能比 InfluxDB 和 TimescaleDB 高出 20 倍</li>
+<li>在处理高基数时间序列时，内存方面也做了优化，比 InfluxDB 少 10x 倍，比 Prometheus、Thanos 或 Cortex 少 7 倍</li>
+<li>高性能的数据压缩方式，与 TimescaleDB 相比，可以将多达 70 倍的数据点存入有限的存储空间，与 Prometheus、Thanos 或 Cortex 相比，所需的存储空间减少 7 倍</li>
+<li>它针对具有高延迟 IO 和低 IOPS 的存储进行了优化</li>
+<li>提供全局的查询视图，多个 Prometheus 实例或任何其他数据源可能会将数据摄取到 VictoriaMetrics</li>
+</ul>
+<h1 id="接入监控中心">接入监控中心</h1>
+<p>接入监控中心将在集群中安装监控插件，该插件提供监控中心的指标采集功能。安装后将采集集群中的指标并上报监控中心VictoriaMetrics。</p>
+<h3 id="前提条件">前提条件</h3>
+<p>接入监控前，需要用户集群可以访问IP 1.15.176.240 端口8427 。</p>
+<h3 id="接入监控中心-1">接入监控中心</h3>
+<p>前提：向管理员获取 Token 和 TLS证书。</p>
+<ul>
+<li>
+<p><strong>安装VMAgent</strong> （worker节点）</p>
+<ol>
+<li>下载包</li>
+</ol>
+<pre tabindex="0"><code>wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.99.0/vmutils-linux-amd64-v1.99.0.tar.gz
+</code></pre><ol start="2">
+<li>证书文件放置在 <code>/etc/ssl/certs</code></li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cert.pem  key.pem
+</span></span></code></pre></div><ol start="3">
+<li>创建目录 /data 已存在则忽略，减压<code>vmutils-linux-amd64-v1.99.0.tar.gz</code> 到 <code>data</code> 目录</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mkdir /data
+</span></span><span style="display:flex;"><span>tar -zxvf vmutils-linux-amd64-v1.99.0.tar.gz -C /data
+</span></span></code></pre></div><ol start="4">
+<li>创建配置文件, <code>datacenter</code> 标签用于区分环境 【需添加两个标签】</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt;/data/vmagent.yml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">global:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  external_labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    datacenter: test # 环境标签1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    heihutao: test   # 环境标签1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">scrape_configs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  #- job_name: node-exporter # 监控节点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  #  static_configs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  #  - targets: [&#39;1.1.1.1:9101&#39;，&#39;1.1.1.2:9101&#39;]  # 监控节IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><ol start="5">
+<li>Systemd创建Linux服务, <code>$Token</code> 替换成从管理员获取的<code>Token</code></li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/systemd/system/vmagent.service 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=vmagent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/data/vmagent-prod -tls -tlsCertFile=/etc/ssl/certs/cert.pem -tlsKeyFile=/etc/ssl/certs/key.pem -remoteWrite.bearerToken=$Token -promscrape.config=/data/vmagent.yml -remoteWrite.url=https://1.15.176.240:8427/api/v1/write
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=always
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><ol start="6">
+<li>启动服务</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemctl start vmagent.service 
+</span></span><span style="display:flex;"><span>systemctl status vmagent.service 
+</span></span><span style="display:flex;"><span>systemctl enable vmagent.service 
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="采集指标组件安装">采集指标组件安装</h3>
+<h1 id="使用仪表盘">使用仪表盘</h1>
+
+        </div>
+    </div>
+</div>
