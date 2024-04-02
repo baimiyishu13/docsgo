@@ -6,7 +6,28 @@
     <description>Recent content in Shells on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Mon, 01 Apr 2024 17:03:58 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/shell/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Systemd创建Linux服务</title>
+      <link>http://localhost:1313/docsgo/shell/systemd%E5%88%9B%E5%BB%BAlinux%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Mon, 01 Apr 2024 17:03:58 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/systemd%E5%88%9B%E5%BB%BAlinux%E6%9C%8D%E5%8A%A1/</guid>
+      <description>Systemd创建Linux服务 🤔 需要创建一个脚本并在后台运行它&#xA;可以采取几种方法 也许最简单的方法就是在命令末尾添加一个&amp;amp; 另外，如果想关闭终端，追加nohup。⚠️ 如果的脚本由于某种原因存在，需要手动重新启动它。 更好的方法是使用Linux 的： systemd 展示如何创建一个简单的 systemd 服务，该服务可以在后台运行脚本并在出现故障时重新启动它&#xA;systemd 启动示例 创建一个简单的 Python HTTP 服务器 vim my_server.py 接受 HTTP GET 请求并将Hello字符串返回给客户端 from http.server import BaseHTTPRequestHandler, HTTPServer hostName = &amp;#34;localhost&amp;#34; serverPort = 8080 class MyServer(BaseHTTPRequestHandler): def do_GET(self): self.send_response(200) self.send_header(&amp;#34;Content-type&amp;#34;, &amp;#34;text/html&amp;#34;) self.end_headers() self.wfile.write(bytes(&amp;#34;Hello\n&amp;#34;, &amp;#34;utf-8&amp;#34;)) if __name__ == &amp;#34;__main__&amp;#34;: webServer = HTTPServer((hostName, serverPort), MyServer) print(&amp;#34;Server started http://%s:%s&amp;#34; % (hostName, serverPort)) try: webServer.serve_forever() except KeyboardInterrupt: pass webServer.server_close() 尝试在前台运行，确保py脚本正常&#xA;python3 my_server.py 然后打开一个新窗口并，尝试使用命令访问服务器curl。</description>
+    </item>
+    <item>
+      <title>Root Ssh Login Sh</title>
+      <link>http://localhost:1313/docsgo/shell/root-ssh-login-sh/</link>
+      <pubDate>Mon, 01 Apr 2024 15:58:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/root-ssh-login-sh/</guid>
+      <description>配置SSH以允许root用户无密码登录&#xA;脚本：&#xA;#!/bin/bash print_script_header() { echo &amp;#34;-----------------------------------------------&amp;#34; echo &amp;#34;# 脚本: root_ssh_login.sh&amp;#34; echo &amp;#34;# 描述: 配置SSH以允许root用户无密码登录&amp;#34; echo &amp;#34;# 作者:&amp;#34; echo &amp;#34;# 日期: 2024&amp;#34; echo &amp;#34;-----------------------------------------------&amp;#34; } # 示例用法 users=(&amp;#34;root&amp;#34;) input(){ # 提示用户输入节点，以空格分隔 read -p &amp;#34;请输入节点名称（以空格分隔）: &amp;#34; nodes_input # 将输入的节点字符串分割成数组 IFS=&amp;#39; &amp;#39; read -ra nodes &amp;lt;&amp;lt;&amp;lt; &amp;#34;$nodes_input&amp;#34; } # 函数：提示用户输入密码并创建password.txt prompt_for_password() { read -s -p &amp;#34;请输入密码: &amp;#34; password echo &amp;#34;$password&amp;#34; &amp;gt; /tmp/password.txt } # 函数：检查并使用yum安装sshpass install_sshpass() { if ! command -v sshpass &amp;amp;&amp;gt; /dev/null; then echo &amp;#34;提示：sshpass未安装，正在安装.</description>
+    </item>
+    <item>
+      <title>Mysqldump</title>
+      <link>http://localhost:1313/docsgo/shell/mysqldump/</link>
+      <pubDate>Thu, 28 Mar 2024 16:11:37 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/shell/mysqldump/</guid>
+      <description>🍭 mysqldump ✅ 执行 mysqldump.sh 完成全量备份 变量 (必须):&#xA;BACKUP_DIR：备份目录 MYSQL_UNAME：用户 MYSQL_PWORD：密码 PATH：mysqldump命令路径 KEEP_BACKUPS_FOR：保留天数(默认7天) 🌐 恢复(示例)&#xA;for file in ./2024-03-07/*.sql.gz; do gunzip &amp;gt; &amp;#34;$file&amp;#34; | mysql -u your_username -p your_database_name; done ⛳️ cron(示例)&#xA;例：每天定时凌晨1点10分备份数据库&#xA;10 1 * * * /bin/bash /data/mysql/.sh/mysql_backup.sh 脚本：&#xA;#!/bin/bash #============================================================================== #TITLE: mysql_backup.sh #DESCRIPTION: 自动执行日常 mysql 备份的脚本 #DATE: 2024.03.07 #VERSION: 0.1 #USAGE: ./mysql_backup.sh #CRON: # 每天凌晨 00:00 执行数据库备份的 cron 示例 # 0 0 * * * /Users/[your user name]/scripts/mysql_backup.</description>
+    </item>
   </channel>
 </rss>
