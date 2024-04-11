@@ -158,3 +158,57 @@ gather_facts
 
 
 
+
+
+## 加密
+
+未加密
+
+```yaml
+root@ubuntu-c:/ansible/study/chapter3# cat api_key.yml 
+---
+myapp_api_key: "dgbvuiabufihnaeifhnajdnfa"
+root@ubuntu-c:/ansible/study/chapter3# cat main.yml 
+---
+- name: install
+  hosts: app
+  become: true
+
+  vars_files:
+    - api_key.yml
+
+  tasks:
+    - shell: echo $API_KEY
+      environment:
+        API_KEY: "{{ myapp_api_key }}"
+      register: echo_apikey 
+    - debug: var=echo_apikey.stdout
+```
+
+加密：
+
+```yaml
+root@ubuntu-c:/ansible/study/chapter3# ansible-vault encrypt api_key.yml 
+New Vault password: 
+Confirm New Vault password: 
+Encryption successful
+root@ubuntu-c:/ansible/study/chapter3# cat api_key.yml 
+$ANSIBLE_VAULT;1.1;AES256
+33383965396666646635313061353936373236646132383765373937633765623337323835333464
+3434353266316337346335323466626432303566363033340a656561653836613762326561313434
+32316563623434633838613634363937666630333463326564633132316664656430613366316663
+6230303233373934330a363038343261346131363863656565623363326634376364393831306331
+61313566373832306665386334643435656438656535643930313662363134313234373236303630
+6333336330623265306636343766383430653435643861626530
+```
+
+执行：
+
+```sh
+ansible-playbook  main.yml --ask-vault-password
+```
+
+其实这样很不方便，尤其是是 CICD中。
+
+
+
