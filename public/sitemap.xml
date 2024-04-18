@@ -65,9 +65,6 @@
     <loc>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</loc>
     <lastmod>2024-04-04T14:52:05+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/monitor/</loc>
-    <lastmod>2024-04-03T15:30:58+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/docsgo/monitor/yugabytedb/</loc>
     <lastmod>2024-04-03T15:30:58+08:00</lastmod>
   </url><url>
@@ -144,6 +141,9 @@
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/ansible/</loc>
+    <lastmod>2024-03-24T13:09:35+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/monitor/</loc>
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/categories/</loc>
