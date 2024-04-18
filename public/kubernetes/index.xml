@@ -6,8 +6,22 @@
     <description>Recent content in Kubernetes on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Apr 2024 11:18:20 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 08 Apr 2024 10:46:46 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Nginx Ingress重定向</title>
+      <link>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</link>
+      <pubDate>Mon, 08 Apr 2024 10:46:46 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</guid>
+      <description>官网参考：https://kubernetes.github.io/ingress-nginx/examples/rewrite/&#xA;metadata: annotations: nginx.ingress.kubernetes.io/app-root: /pumer/project/** 测试访问：&#xA;[root@k8sworker1 ~]# curl portal.**.com &amp;lt;html&amp;gt; &amp;lt;head&amp;gt;&amp;lt;title&amp;gt;302 Found&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt; &amp;lt;body bgcolor=&amp;#34;white&amp;#34;&amp;gt; &amp;lt;center&amp;gt;&amp;lt;h1&amp;gt;302 Found&amp;lt;/h1&amp;gt;&amp;lt;/center&amp;gt; &amp;lt;hr&amp;gt;&amp;lt;center&amp;gt;nginx/1.13.9&amp;lt;/center&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; </description>
+    </item>
+    <item>
+      <title>重定向配置</title>
+      <link>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 08 Apr 2024 10:45:06 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Kubeadm Install Kubernetes</title>
       <link>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</link>

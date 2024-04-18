@@ -1,5 +1,5 @@
 +++
-title = '4 Ansible Role'
+title = 'Ansible Role'
 date = 2024-04-10T20:28:09+08:00
 draft = true
 +++

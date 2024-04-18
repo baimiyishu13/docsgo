@@ -6,14 +6,140 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Apr 2024 09:42:02 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 17 Apr 2024 22:03:44 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible 分子测试</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-%E5%88%86%E5%AD%90%E6%B5%8B%E8%AF%95/</link>
+      <pubDate>Wed, 17 Apr 2024 22:03:44 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-%E5%88%86%E5%AD%90%E6%B5%8B%E8%AF%95/</guid>
+      <description>Ansible Molecule 是一个用于 Ansible 角色的测试框架。它可以帮助我们创建、运行和测试 Ansible Playbooks。Molecule 提供了一种创建和管理虚拟机的方法，这些虚拟机可以用于测试 Ansible Playbooks。它还提供了一种方法来验证 Playbooks 的行为，这是通过运行一系列的测试来完成的。&#xA;结合 GitHub 使用 Ansible Molecule 的好处包括：&#xA;版本控制：GitHub 提供了一个平台，可以跟踪和管理 Ansible Playbooks 的版本。这意味着你可以轻松地回滚到以前的版本，或者查看 Playbook 的历史记录。 协作：GitHub 允许多个开发者同时在同一个项目上工作。这意味着你可以与团队成员共享和协作 Ansible Playbooks，而不必担心版本冲突。 持续集成/持续部署（CI/CD）：GitHub Actions 可以自动运行 Molecule 测试，每当你提交新的代码到 GitHub 时，它都会自动运行测试。这可以确保你的 Ansible Playbooks 总是按预期工作。 代码审查：GitHub 提供了代码审查工具，这可以帮助你确保 Ansible Playbooks 的质量。你可以在合并代码之前，要求其他开发者审查你的代码。 文档：GitHub 提供了一个平台，可以编写和存储 Ansible Playbooks 的文档。这可以帮助你和你的团队更好地理解和使用 Playbooks。 分子测试文件：node-exporter为例&#xA;converge.yml&#xA;--- - name: Converge hosts: all become: true pre_tasks: - name: Update yum cache. yum: update_cache: yes when: ansible_os_family == &amp;#39;RedHat&amp;#39; changed_when: false roles: - role: node-exporter molecule.</description>
+    </item>
+    <item>
+      <title>Ansible Tower_AWX</title>
+      <link>http://localhost:1313/docsgo/ansible/study/tower_awx/</link>
+      <pubDate>Tue, 16 Apr 2024 19:40:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/tower_awx/</guid>
+      <description>tower 或 AWX 满足 CI和CD的自动化需求，运行playbook 以及角色。&#xA;界面：</description>
+    </item>
+    <item>
+      <title>Ansible 问答</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-%E9%97%AE%E7%AD%94/</link>
+      <pubDate>Thu, 11 Apr 2024 14:14:05 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-%E9%97%AE%E7%AD%94/</guid>
+      <description>1、Ansible 最佳实践是什么&#xA;对于Devops来说，根据经验&#xA;如果有超过 100行的任务文件，我就开始考虑如何将其分解，一个playbook 超过百行，将要考虑如何分解 docker 容器最酷、最强大的特性之一是它们是不可变的。您不在 docker 容器上运行更新。使用更新的库构建新的 docker 映像后，您将停止旧容器并启动新容器。&#xA;并非所有基础设施都是一成不变的。其中一些是可变的。考虑一个标准的 Linux 服务器。它需要系统更新，需要安装应用程序依赖项，并且需要应用程序软件本身可用。这就是 Ansible 的用武之地。Ansible 用于远程配置可变基础设施。&#xA;2、Ansible 变量最佳位置&#xA;3、Ansible CICD&#xA;会用CI来测试Ansible Playbook、Role，与Ansible 分子测试一起使用&#xA;4、对于一个复杂的任务，涉及到很多文件，特别是如果它不是自己写的&#xA;我的问题是，对于那些在 k8s 之外运行虚拟机的人，如何仅使用 Terraform 配置或设置虚拟机？&#xA;你似乎明白了要点。 Terraform 无法取代 ansible，但您可以通过全力以赴进行容器编排来完全消除对 ansible 的需求。&#xA;根据我们自己的观察，我们在虚拟机上获得的性能比在同一虚拟机上运行的容器中获得的性能更好。&#xA;抽象级别&amp;hellip;裸机 &amp;gt; HyperVisor &amp;gt; VM &amp;gt; 容器&amp;hellip;.. 与裸机 &amp;gt; 操作系统 &amp;gt; 容器。&#xA;Terraform 旨在构建基础设施。它可以执行主机配置，但这不是它的主要目标。&#xA;Ansible 旨在配置系统。是的，它可以构建系统，但这不是它的主要目标&#xA;问题在于 Ansible 没有任何状态来跟踪之前的更改以及现在需要删除、创建或更新的内容。此外，Ansible 的相当一部分模块不是幂等的，在检查模式下也无法运行并获得准确的结果，这可能会导致重复工作。因此，您最好使用 Terraform 作为 IaC，并使用 Ansible 进行配置管理和构建黄金映像。&#xA;对于 IaC，您需要幂等性以及将当前状态与先前状态进行比较的能力。&#xA;我将 Ansible 用于云资源中的配置，并使用 Terraform 资源。让 Terraform 处理系统，让 Ansible 处理随时间变化的配置。效果超级好。</description>
+    </item>
+    <item>
+      <title>Ansible Galaxy</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-galaxy/</link>
+      <pubDate>Thu, 11 Apr 2024 09:41:25 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-galaxy/</guid>
+      <description>示例文件&#xA;root@ubuntu-c:~/ansible/episode/00-galaxy# ls ansible.cfg main.yml requiremerts.yml ansible.cfg&#xA;指定 role path [defaults] INVENTORY = inventory roles_path = ./roles main.yml&#xA;--- - name: install hosts: app become: true roles: - role: elliotweiser.osx-command-line-tools - role: geerlingguy.homebrew requiremerts.yml&#xA;--- roles: - name: elliotweiser.osx-command-line-tools version: 2.3.0 - name: geerlingguy.homebrew version: 4.0.0 执行安装请求：&#xA;ansible-galaxy install -r requiremerts.yml 确保 ansible playbook 正确&#xA;yamllint ansible-playbook &amp;ndash;syntax-check ansible-lint molecule test ansible-playbook &amp;ndash;check fail\assect</description>
+    </item>
+    <item>
+      <title>Ansible Role</title>
+      <link>http://localhost:1313/docsgo/ansible/study/4-ansible-role/</link>
+      <pubDate>Wed, 10 Apr 2024 20:28:09 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/4-ansible-role/</guid>
+      <description>handlers: - name: restart solr systemd: name: solr state: restarted enabled: yes 写为：&#xA;handlers: - ipmort_tasks: handlers/apache.yml 文件&#xA;root@ubuntu-c:/ansible/study/chapter4# cat handlers/apache.yml --- - name: restart solr systemd: name: solr state: restarted enabled: yes 作用：导入，开始运行之前&#xA;tasks部分：更具可读性&#xA;ipmort_tasks 作用：导入，开始运行之前 运行中产生的：动态定义 --- - hosts: solr become: true vars_files: - vars.yml pre_tasks: - name: Update yum yum: update_cache: yes handlers: - ipmort_tasks: handlers/apache.yml tasks: - ipmort_tasks: tasks/apache.yml - incude_tasks: tasks/logs.yml - ipmort_tasks: tasks/apache.yml - ipmort_tasks: tasks/apache.</description>
+    </item>
+    <item>
+      <title>Ansible 变量</title>
+      <link>http://localhost:1313/docsgo/ansible/study/3-ansible%E5%8F%98%E9%87%8F/</link>
+      <pubDate>Wed, 10 Apr 2024 12:51:25 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/3-ansible%E5%8F%98%E9%87%8F/</guid>
+      <description>Handler Playbook handlers, environment vars, and variables&#xA;handler: - name: restart httpd - name: restart nginx ... notifi: - restart httpd - restart nginx --- handler: - name: restart httpd systemd: ... notifi: restart nginx - name: restart nginx ... notifi: restart httpd handler 将在剧本末尾执行&#xA;如果想立刻重启：&#xA;- name: make restart handlers meta: flush_handlers 如果任务中有失败，那么久不会到最后一步执行handler&#xA;参数&#xA;--force-handlers Vars --- vars: k: v vars_files: - vars/main.yaml yaml&#xA;--- - name: install hosts: app become: true tasks: - name: Add env var lineinfile: path: &amp;#34;/etc/bashrc&amp;#34; regexp: &amp;#39;^ENV_VAR=&amp;#39; state: present line: &amp;#39;EVC_VAR=value&amp;#39; 使用 shell 模块会更简单</description>
+    </item>
+    <item>
+      <title>Ansible Playbook</title>
+      <link>http://localhost:1313/docsgo/ansible/study/2-playbook%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Tue, 09 Apr 2024 10:45:10 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/2-playbook%E7%AE%80%E4%BB%8B/</guid>
+      <description>工作中大多时间使用的 playbook&#xA;传递清单文件 哪些服务器执行 命令 -f 指定并行、&amp;ndash;limit指定主机 -b：成为 root，默认使用 sudo&#xA;后台运行：&#xA;ansible multi -B 3600 -P 0 -a &amp;#34;yum -y update&amp;#34; -B 3600：这个选项设置了任务的超时时间（以秒为单位）&#xA;-P 0：这个选项设置了Ansible的轮询间隔（以秒为单位）。在这个例子中，Ansible将不会轮询任务的状态，也就是说，Ansible将会立即返回，而不会等待任务完成。&#xA;提供了一个JobID&#xA;ansible multi -b -m async_status -a &amp;#34;jid=j993071582105.3469&amp;#34; shell script&#xA;#!/bin/bash yum install --quiet -y httpd httpd-devel # copy config files cp httpd.conf /etc/httpd/conf/httpd.conf cp httpd-vhosts /etc/httpd/conf/httpd-vhosts.conf service httpd start chkconfig httpd on ansible playbook&#xA;root@ubuntu-c:~/ansible/study/chapter2# cat main.yml --- - hosts: solr become: true vars_files: - vars.</description>
+    </item>
+    <item>
+      <title>Ansible 临时任务和清单组</title>
+      <link>http://localhost:1313/docsgo/ansible/study/2-%E4%B8%B4%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%92%8C%E6%B8%85%E5%8D%95%E7%BB%84/</link>
+      <pubDate>Mon, 08 Apr 2024 22:45:34 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/2-%E4%B8%B4%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%92%8C%E6%B8%85%E5%8D%95%E7%BB%84/</guid>
+      <description>HOC&#xA;ansible 快速完成任务的一种方式&#xA;例如：&#xA;快速添加和删除特定用户的访问权限，可以使用这些来管理主机文件 主机文件、DNS文件，快速复制文件、重启服务等 不必编写剧本和测试剧本。&#xA;因为有事需要快速获取更改一些信息。&#xA;inenvtory 文件&#xA;[app] centos1 centos2 [db] centos3 ansible 默认情况下是 以并行运行 默认是 5，可以 使用 -f 指定&#xA;root@ubuntu-c:~/ansible/study/adhoc# ansible multi -a &amp;#39;hostname&amp;#39; -f 1 centos1 | CHANGED | rc=0 &amp;gt;&amp;gt; centos1 centos2 | CHANGED | rc=0 &amp;gt;&amp;gt; centos2 centos3 | CHANGED | rc=0 &amp;gt;&amp;gt; db-test 控制系统有足够的CPU和内存 甚至可以将并行设置成 100+&#xA;setup：服务器几乎所有信息&#xA;限制在一台服务器上运行&#xA;ansible multi -a &amp;#39;hostname&amp;#39; --limit &amp;#34;centos1&amp;#34; 可以使用正则匹配</description>
+    </item>
+    <item>
+      <title>Ansible 简介</title>
+      <link>http://localhost:1313/docsgo/ansible/study/1-ansible%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Mon, 08 Apr 2024 15:56:38 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/1-ansible%E7%AE%80%E4%BB%8B/</guid>
+      <description>Ansible 简述 此前，很多的shell 脚本的编写，没有任何真正容易简单的事情。并不像是编写Shell脚本 并在服务器上运行那么简单，尤其是必须在服务器上安装东西。&#xA;Ansible的出现使事情变得更加简单：&#xA;不必了解某些特定的编程语言 基本上可以将 Shell 脚本简单的转换成 Ansible 脚本 - “剧本”，甚至无需使用特殊的 ansible 模块 或逻辑，非常轻松的运行所有服务器。 作为初级到中级的Linux 管理员，需要掌握大规模基础设施的自动化。&#xA;Devops for Ansible&#xA;Devops 对我来说 更多的是一种哲学，而不一定是一个职位或者角色。这种理念是开发和运维紧密联系。 当开发人员接管管道，从某种意义上来说，能够将开发和运维混合在一起。 仍然是需要 SRE 或 系统管理员来运行服务器并确保应用程序的正常运行，并且还有专门构建应用程序的开发人员。 从Ansible 历史&#xA;最初：允许在多台服务器上运行命令。 目标：清晰、完整、快速、高效和安全。 Ansible 通过SSH与机器服务器交互，无需安装代理-守护进程或者在服务器上为自动化工具提供端口。&#xA;安全：使用安全传输协议&#xA;很多时候自动化的动机时：希望能够设置服务器，或者构建容器。&#xA;喜欢ansible 原因之一：可以将 shell脚本，shell 命令以及其他的任务转移到Ansible中，让Ansible去做它们。&#xA;安装 Ansible pip3 install ansible 版本：&#xA;ansible@ubuntu-c:~$ ansible --version ansible [core 2.14.11] config file = None configured module search path = [&amp;#39;/home/ansible/.ansible/plugins/modules&amp;#39;, &amp;#39;/usr/share/ansible/plugins/modules&amp;#39;] ansible python module location = /usr/local/lib/python3.</description>
+    </item>
+    <item>
+      <title>Nginx Ingress重定向</title>
+      <link>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</link>
+      <pubDate>Mon, 08 Apr 2024 10:46:46 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</guid>
+      <description>官网参考：https://kubernetes.github.io/ingress-nginx/examples/rewrite/&#xA;metadata: annotations: nginx.ingress.kubernetes.io/app-root: /pumer/project/** 测试访问：&#xA;[root@k8sworker1 ~]# curl portal.**.com &amp;lt;html&amp;gt; &amp;lt;head&amp;gt;&amp;lt;title&amp;gt;302 Found&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt; &amp;lt;body bgcolor=&amp;#34;white&amp;#34;&amp;gt; &amp;lt;center&amp;gt;&amp;lt;h1&amp;gt;302 Found&amp;lt;/h1&amp;gt;&amp;lt;/center&amp;gt; &amp;lt;hr&amp;gt;&amp;lt;center&amp;gt;nginx/1.13.9&amp;lt;/center&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; </description>
+    </item>
+    <item>
+      <title>重定向配置</title>
+      <link>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 08 Apr 2024 10:45:06 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ansible 入门</title>
+      <link>http://localhost:1313/docsgo/ansible/study/0-%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Sun, 07 Apr 2024 21:14:26 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/0-%E5%85%A5%E9%97%A8/</guid>
+      <description>ansible 和 Terraform 是最受欢迎的基础设施代码之一&#xA;从表面上看，Ansible 可以完成与 Terraform 相同类型的基础设施配置。然而，它们在架构上有根本的不同——Ansible 是一个命令式脚本执行引擎，它将按照代码中列出的顺序运行任务，而 Terraform 是一个声明式执行引擎，它将并行化彼此不直接依赖的任务。因此，除了非常小的代码库之外，Terraform 的执行速度比 Ansible 快得多。&#xA;（顺便说一句，大规模执行速度慢是 Ansible 的主要弱点。）&#xA;Terraform 基于图形的性质还使得可以使用与创建基础设施完全相同的代码来销毁基础设施，而 Ansible 需要单独的剧本来创建和销毁。对于定期创建和销毁的环境（例如，开发/测试/登台），Terraform 的方法既可以大幅提高生产力，又可以减少人为错误的机会。&#xA;最后，虽然这不一定是 Ansible 的技术缺陷，但在基础设施配置方面，Terraform 迄今为止拥有最多的社区和开发理念。与任何其他基础设施配置工具相比，您更有可能找到 Terraform 的支持资源，并且您希望以编程方式配置的新产品可能会首先在 Terraform 中获得支持。&#xA;Ansible：开源的配置管理、软件配置和应用部署工具集。&#xA;软件定义基础设施 Modules：Ansible成功的一个主要因素是因为有大量的模块可供公开使用。&#xA;🚀 Ansble 实验环境 环境：Docker - MAC（Docker Desktop） Docker compose 建立环境 Ansible 是无代理的架构，SSH 配置主机之间无密码连接 🧪实验&#xA;访问：http://localhost:1000&#xA;密码：root/ansible、password&#xA;连接到其他主机不希望使用密码：&#xA;SSH 私有和公钥 控制端 私钥将与被控端的公钥进行验证&#xA;ansible@ubuntu-c:~$ ssh-keygen ... +---[RSA 3072]----+ |*...==B=oo. | |oo .o++oo. o | |. . o o= + .</description>
+    </item>
+    <item>
+      <title>0 入门</title>
+      <link>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Sun, 07 Apr 2024 21:03:20 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>IstioCon2023</title>
+      <link>http://localhost:1313/docsgo/istio/istiocon2023/</link>
+      <pubDate>Sun, 07 Apr 2024 20:32:01 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istiocon2023/</guid>
+      <description>流量管理的安全性和可观察性&#xA;未来：&#xA;将sidecar替换为节点组件，该组件处理 MTLS加密吗L4策略，并参与网格的可观察性工作负载，流量仅通过该组件进行重定向&#xA;新性的CNI 功能与Istio存在重叠，比如服务解析</description>
+    </item>
+    <item>
+      <title>Istio的数据包的生命周期</title>
+      <link>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
+      <pubDate>Sun, 07 Apr 2024 17:10:33 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
+      <description>网络、容器 Kubernetes pod 真实的情况和工作原理</description>
+    </item>
+    <item>
+      <title>基础设施即代码</title>
+      <link>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Sat, 06 Apr 2024 21:44:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Istio入门</title>
+      <link>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Thu, 04 Apr 2024 14:52:05 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</guid>
+      <description>实验环境：minikube&#xA;➜ ~ kubectl get node NAME STATUS ROLES AGE VERSION minikube Ready control-plane 11m v1.27.4 简述：架构、安装、实验 （了解总体再逐个细化）&#xA;Istio：开源服务网格，用来保护微服务&#xA;构建在 Envoy 之上：一个处理微服务之间所有流量的高效代理&#xA;IStio 工作原理：在环境中每个微服务旁注入一个 sidecar 容器，sidecar 容器拦截进出的微服务的所有流量，处理流量路由，负载均衡，服务发现和其他重要的网络任务。&#xA;Istio还提供：&#xA;高级流量管理功能：金丝雀，A/B测试 故障注入 首先，Istio 为现代微服务架构提供了多项优势，通过抽象服务发现、负载均衡、流量路由的复杂性来简化网络管理。&#xA;其次，Istio 提供了高级安全功能，列入双向的TLS 身份验证、基于角色的访问控制和流量加密。&#xA;最后，Istio 提供了可观察性功能，例如分布式跟踪、指标收集和日志记录。&#xA;安装：大多数使用 Helm 安装&#xA;参考：https://istio.io/latest/zh/docs/setup/install/helm/&#xA;➜ ~ helm search repo istio/base NAME CHART VERSION&#x9;APP VERSION&#x9;DESCRIPTION istio/base&#x9;1.21.0 1.21.0 Helm chart for deploying Istio cluster resource... 查看默认值：&#xA;helm show values istio/base 使用 treeaform创建</description>
+    </item>
+    <item>
+      <title>YugabyteDB</title>
+      <link>http://localhost:1313/docsgo/monitor/yugabytedb/</link>
+      <pubDate>Wed, 03 Apr 2024 15:30:58 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/monitor/yugabytedb/</guid>
+      <description>参考：https://docs.yugabyte.com/preview/explore/observability/prometheus-integration/macos/&#xA;下载:&#xA;wget https://github.com/yugabyte/yb-sample-apps/releases/download/v1.4.1/yb-sample-apps.jar -O yb-sample-apps.jar 运行&#xA;java -jar ./yb-sample-apps.jar \ --workload CassandraKeyValue \ --nodes 127.0.0.1:9043 \ --num_threads_read 1 \ --num_threads_write 1 java -jar ./yb-sample-apps.jar \ --workload CassandraKeyValue \ --nodes 10.61.200.238:5433 \ --num_threads_read 1 \ --num_threads_write 1 \ --username thingswise_admin \ --password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf java -jar yb-sample-apps.jar --workload CassandraKeyValue --nodes 10.61.200.238:9043 --username thingswise_admin --password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf --ssl_key /etc/ssl/yugabyte/yugabytedb.crt java -jar yb-sample-apps.jar \ --workload CassandraKeyValue \ --nodes 127.0.0.1:9042 \ --username thingswise_admin \ --password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf \ --ssl /etc/ssl/yugabyte/yugabytedb.</description>
+    </item>
     <item>
       <title>监控可观测性</title>
       <link>http://localhost:1313/docsgo/monitor/%E7%9B%91%E6%8E%A7%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/</link>
       <pubDate>Tue, 02 Apr 2024 09:42:02 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/monitor/%E7%9B%91%E6%8E%A7%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/</guid>
-      <description>可观测性体系概述 云原生监控可观测性是指在云原生架构中，通过使用各种工具和技术来实现对应用程序和基础设施的监控告警、日志、故障排除等功能的一套完整的解决方案。&#xA;可观测性架构分层和主要的可观测能力:&#xA;数据采集 **指标采集：**提供基于Prometheus的云原生监控插件，相比于开源版本，具备轻量化，开箱即用等优势。云原生监控插件&#xA;数据监控 victoriaMetrics：是一个支持高可用、经济高效且可扩展的监控解决方案和时间序列数据库，可用于 Prometheus 监控数据做长期远程存储。实时监控相关资源，分析健康状态，提供灵活丰富的数据可视化功能，帮助及时发现故障，全面掌握实时运行状况。&#xA;监控告警 alertmanager：它支持丰富的告警通知渠道，而且很容易做到告警信息进行去重，降噪，分组等，是一款前卫的告警通知系统。通过在定义告警规则，周期性的对告警规则进行计算，如果满足告警触发条件就会向 Alertmanager 发送告警信息。&#xA;数据观测 Grafana：是一个可视化面板，有着非常漂亮的图表和布局展示，功能齐全的度量仪表盘和图形编辑器，支持 Graphite、zabbix、InfluxDB、Prometheus、OpenTSDB、Elasticsearch 等作为数据源，比 Prometheus 自带的图表展示功能强大太多，更加灵活，有丰富的插件，功能更加强大。&#xA;监控系统概述 监控系统是可实时监控应用及资源，采集各项指标及事件等数据以分析健康状态，提供全面、清晰、多维度数据可视化能力，兼容主流开源组件，并提供快捷故障定位的能力。&#xA;功能介绍 洞察力：提供了采集主机信息，采集数据库信息，以及Kubernetes原生类型的容器监控能力，支持集群、节点、工作负载、容器组和事件的监控。&#xA;**仪表盘：**仪表盘可将不同图表汇聚到同一个屏幕上，通过不同的仪表形式来展示资源数据，进而全面、深入地掌握监控数据。&#xA;优势 监控中心深度整合云原生监控项目victoriaMetrics。对关键指标、事件等运维数据进行统一采集、存储和可视化展现，精心打造云原生应用的良好可观测性能力。 将基础设施监控和应用负载监控进行关联，提供全栈监控，能够随时随地清晰地感知基础设施和应用负载状态。 能够对Kubernetes集群、节点、容器组（Pod）等进行详细监控，对业务提供端到端追踪和可视化，提供集群健康诊断能力，大大缩短问题分析定位时间。 提供开箱即用的插件安装、数据采集、云原生监控能力，相比基于开源组件构建的监控能力，在可靠性、高可用、安装部署便捷性上更具有竞争力，能够更好地为应用保驾护航。 提供了轻量化的指标采集插件，和社区Prometheus相比，资源使用量大大降低，部署模式方便快捷。 监控中心架构 监控插件将在用户集群中采集exporter暴露的指标，通过vmagent RemoteWrite的方式，将数据写入至VictoraMetrics实例。&#xA;监控中心将基于VictoraMetrics实例中存储的指标，提供容器洞察、健康诊断、仪表盘的功能。&#xA;将集群内的监控指标通过Token认证鉴权的方式上报三方监控平台，并且做TLS数据加密。&#xA;VictoraMetrics监控 VictoriaMetrics(VM) 是一个支持高可用、经济高效且可扩展的监控解决方案和时间序列数据库，可用来解决 Prometheus 的高可用和远程存储的问题，是一个可水平扩容的本地全量持久化存储方案，VictoriaMetrics 不仅仅是时序数据库，它的优势主要体现在一下几点。&#xA;对外支持 Prometheus 相关的 API，可以直接用于 Grafana 作为 Prometheus 数据源使用 指标数据摄取和查询具备高性能和良好的可扩展性，性能比 InfluxDB 和 TimescaleDB 高出 20 倍 在处理高基数时间序列时，内存方面也做了优化，比 InfluxDB 少 10x 倍，比 Prometheus、Thanos 或 Cortex 少 7 倍 高性能的数据压缩方式，与 TimescaleDB 相比，可以将多达 70 倍的数据点存入有限的存储空间，与 Prometheus、Thanos 或 Cortex 相比，所需的存储空间减少 7 倍 它针对具有高延迟 IO 和低 IOPS 的存储进行了优化 提供全局的查询视图，多个 Prometheus 实例或任何其他数据源可能会将数据摄取到 VictoriaMetrics 接入监控中心 接入监控中心将在集群中安装监控插件，该插件提供监控中心的指标采集功能。安装后将采集集群中的指标并上报监控中心VictoriaMetrics。</description>
+      <description>监控简述 概述 一个技术的出现必定有它的原因（解决了什么问题）&#xA;在现代的 DevOps 中手动处理变得越来越复杂，因此需要更多的自动化；&#xA;通常会拥有：&#xA;多个项目、多个集群 运行非常多的容器，并且有成千上百的不同进程在运行 基础设施和 应用是相连的 因此需要去保持这样的设置去平稳运行、并且没有应用程序去停机，时间是非常重要的，也是有挑战性的。&#xA;需要解决：&#xA;无法了解硬件级别或上层发生的情况 应用程序级别、如 Error、响应延迟、硬件故障、或过载，可能耗尽资源等 在如此复杂的环境中，当部署大量的服务和应用程序时，可能出现很多问题，其中任何一个都可能导致程序崩溃，并且导致其他服务失败。&#xA;突然的应用程序对用户变得不可用，必须快速的确定这整个应用程序中是到底出现了什么问题 并且在手动调试过程中可能会很困难 且 耗时 示例场景 服务器内存不足，并启动了一个正在运行的容器，该容器在 Kubernetes 集群中两个数据库 Pod 之间提供数据，这反过来又导致：&#xA;两个数据库部分失败，该数据库被身份验证服务器使用，该服务器也停止工作，因为数据库变得不可用 然后依赖于该身份验证服务的应用程序无法再对 UI 中的用户进行身份验证 用户角度：只看到 UI 中的错误，无法登陆 所以：遇到这种情况，如何知道实际上出了什么问题，对集群内部发生的情况如果看不到事件发生的整个事件链的红线，只看到错误，如何去排查修复，以便检查服务是否有返回并运行正常，是否现实异常，服务是否在正常运行，为什么会崩溃。&#xA;拥有一个工具使得搜索问题过程更加高效&#xA;持续监控服务是否正常运行 在一项服务崩溃时立即那个运维人员发出告警 以便确切的知道发生了什么，甚至可以在问题发生前识别问题 提醒运维人员 例如在上述例子中，可以去定期检查每台 服务器的内存，做内存上限告警（当在一段时间内飙升到某个值，例如70%）或者不间断的去增加。&#xA;另外一种情况：突然停止看到应用程序的日志，因为 elasticsear 可接受的日志因为磁盘空间的不足或 elasticsear 再次达到为其分配的存储限制， 监控工具将 持续检查磁盘空间 ，可以额告诉监控何时触发告警。&#xA;第三种情况：即应用程序由于一项服务奔溃而突然变得很慢，并开始在网络中循环发生数百条错误信息，这会产生高网络流量并减慢其他服务的速度，有一个工具可以检测网络负载中的此类峰值，并且告诉哪个服务负责导致的，可以及时发出告警 解决这个问题。&#xA;自动监控和警报：Promethers 监视特定的事物，该事物可以是如何东西，可以是整个Linux服务器、Windows服务器、也可以是独立的Apache服务器、单个应用程序 或 像数据库这样的服务，以及Prometheus 监视的哪些东西称为目标.&#xA;每个目标（targets）都有Linux serevr的监视单位，可以是 CPU、内存、磁盘、网路等，也可以是异常数据请求、请求持续时间以及 想要监视的目标的单位称之为 指标，指标是保存着 TSDB&#xA;收集指标 一个有趣的问题：如何去从目标收集这些指标&#xA;prometheus 从 http 端点从 metrics 中提取指标数据 默认情况下是 主机IP+端口:/metrics 目标必须公开/metrics接口，且必须采用 prometheus能够理解的格式 一些服务本身有/metrics 一些没有，因此需要额外的组件来执行此操作 ，该组件是导出器 Exporter</description>
     </item>
     <item>
       <title>Systemd创建Linux服务</title>

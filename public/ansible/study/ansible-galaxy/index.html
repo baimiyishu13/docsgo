@@ -1,0 +1,80 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Ansible Galaxy</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-11T09:41:25&#43;08:00">April 11, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>示例文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>root@ubuntu-c:~/ansible/episode/00-galaxy# ls
+</span></span><span style="display:flex;"><span>ansible.cfg  main.yml  requiremerts.yml
+</span></span></code></pre></div><p>ansible.cfg</p>
+<ul>
+<li>指定 role path</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>[<span style="color:#ae81ff">defaults]</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">INVENTORY = inventory</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">roles_path = ./roles</span>
+</span></span></code></pre></div><p>main.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">app</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">become</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">roles</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">role</span>: <span style="color:#ae81ff">elliotweiser.osx-command-line-tools</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">role</span>: <span style="color:#ae81ff">geerlingguy.homebrew</span>
+</span></span></code></pre></div><p>requiremerts.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roles</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">elliotweiser.osx-command-line-tools</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#ae81ff">2.3.0</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">geerlingguy.homebrew</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#ae81ff">4.0.0</span>
+</span></span></code></pre></div><hr>
+<p>执行安装请求：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible-galaxy install -r requiremerts.yml
+</span></span></code></pre></div><p>确保 ansible playbook 正确</p>
+<ol>
+<li>yamllint</li>
+<li>ansible-playbook &ndash;syntax-check</li>
+<li>ansible-lint</li>
+<li>molecule test</li>
+<li>ansible-playbook &ndash;check</li>
+</ol>
+<p>fail\assect</p>
+
+        </div>
+    </div>
+</div>

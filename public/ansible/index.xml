@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on docsGo</title>
+    <link>http://localhost:1313/docsgo/ansible/</link>
+    <description>Recent content in Home on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 17 Apr 2024 22:03:44 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/ansible/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible 分子测试</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-%E5%88%86%E5%AD%90%E6%B5%8B%E8%AF%95/</link>
+      <pubDate>Wed, 17 Apr 2024 22:03:44 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-%E5%88%86%E5%AD%90%E6%B5%8B%E8%AF%95/</guid>
+      <description>Ansible Molecule 是一个用于 Ansible 角色的测试框架。它可以帮助我们创建、运行和测试 Ansible Playbooks。Molecule 提供了一种创建和管理虚拟机的方法，这些虚拟机可以用于测试 Ansible Playbooks。它还提供了一种方法来验证 Playbooks 的行为，这是通过运行一系列的测试来完成的。&#xA;结合 GitHub 使用 Ansible Molecule 的好处包括：&#xA;版本控制：GitHub 提供了一个平台，可以跟踪和管理 Ansible Playbooks 的版本。这意味着你可以轻松地回滚到以前的版本，或者查看 Playbook 的历史记录。 协作：GitHub 允许多个开发者同时在同一个项目上工作。这意味着你可以与团队成员共享和协作 Ansible Playbooks，而不必担心版本冲突。 持续集成/持续部署（CI/CD）：GitHub Actions 可以自动运行 Molecule 测试，每当你提交新的代码到 GitHub 时，它都会自动运行测试。这可以确保你的 Ansible Playbooks 总是按预期工作。 代码审查：GitHub 提供了代码审查工具，这可以帮助你确保 Ansible Playbooks 的质量。你可以在合并代码之前，要求其他开发者审查你的代码。 文档：GitHub 提供了一个平台，可以编写和存储 Ansible Playbooks 的文档。这可以帮助你和你的团队更好地理解和使用 Playbooks。 分子测试文件：node-exporter为例&#xA;converge.yml&#xA;--- - name: Converge hosts: all become: true pre_tasks: - name: Update yum cache. yum: update_cache: yes when: ansible_os_family == &amp;#39;RedHat&amp;#39; changed_when: false roles: - role: node-exporter molecule.</description>
+    </item>
+    <item>
+      <title>Ansible Tower_AWX</title>
+      <link>http://localhost:1313/docsgo/ansible/study/tower_awx/</link>
+      <pubDate>Tue, 16 Apr 2024 19:40:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/tower_awx/</guid>
+      <description>tower 或 AWX 满足 CI和CD的自动化需求，运行playbook 以及角色。&#xA;界面：</description>
+    </item>
+    <item>
+      <title>Ansible 问答</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-%E9%97%AE%E7%AD%94/</link>
+      <pubDate>Thu, 11 Apr 2024 14:14:05 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-%E9%97%AE%E7%AD%94/</guid>
+      <description>1、Ansible 最佳实践是什么&#xA;对于Devops来说，根据经验&#xA;如果有超过 100行的任务文件，我就开始考虑如何将其分解，一个playbook 超过百行，将要考虑如何分解 docker 容器最酷、最强大的特性之一是它们是不可变的。您不在 docker 容器上运行更新。使用更新的库构建新的 docker 映像后，您将停止旧容器并启动新容器。&#xA;并非所有基础设施都是一成不变的。其中一些是可变的。考虑一个标准的 Linux 服务器。它需要系统更新，需要安装应用程序依赖项，并且需要应用程序软件本身可用。这就是 Ansible 的用武之地。Ansible 用于远程配置可变基础设施。&#xA;2、Ansible 变量最佳位置&#xA;3、Ansible CICD&#xA;会用CI来测试Ansible Playbook、Role，与Ansible 分子测试一起使用&#xA;4、对于一个复杂的任务，涉及到很多文件，特别是如果它不是自己写的&#xA;我的问题是，对于那些在 k8s 之外运行虚拟机的人，如何仅使用 Terraform 配置或设置虚拟机？&#xA;你似乎明白了要点。 Terraform 无法取代 ansible，但您可以通过全力以赴进行容器编排来完全消除对 ansible 的需求。&#xA;根据我们自己的观察，我们在虚拟机上获得的性能比在同一虚拟机上运行的容器中获得的性能更好。&#xA;抽象级别&amp;hellip;裸机 &amp;gt; HyperVisor &amp;gt; VM &amp;gt; 容器&amp;hellip;.. 与裸机 &amp;gt; 操作系统 &amp;gt; 容器。&#xA;Terraform 旨在构建基础设施。它可以执行主机配置，但这不是它的主要目标。&#xA;Ansible 旨在配置系统。是的，它可以构建系统，但这不是它的主要目标&#xA;问题在于 Ansible 没有任何状态来跟踪之前的更改以及现在需要删除、创建或更新的内容。此外，Ansible 的相当一部分模块不是幂等的，在检查模式下也无法运行并获得准确的结果，这可能会导致重复工作。因此，您最好使用 Terraform 作为 IaC，并使用 Ansible 进行配置管理和构建黄金映像。&#xA;对于 IaC，您需要幂等性以及将当前状态与先前状态进行比较的能力。&#xA;我将 Ansible 用于云资源中的配置，并使用 Terraform 资源。让 Terraform 处理系统，让 Ansible 处理随时间变化的配置。效果超级好。</description>
+    </item>
+    <item>
+      <title>Ansible Galaxy</title>
+      <link>http://localhost:1313/docsgo/ansible/study/ansible-galaxy/</link>
+      <pubDate>Thu, 11 Apr 2024 09:41:25 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/ansible-galaxy/</guid>
+      <description>示例文件&#xA;root@ubuntu-c:~/ansible/episode/00-galaxy# ls ansible.cfg main.yml requiremerts.yml ansible.cfg&#xA;指定 role path [defaults] INVENTORY = inventory roles_path = ./roles main.yml&#xA;--- - name: install hosts: app become: true roles: - role: elliotweiser.osx-command-line-tools - role: geerlingguy.homebrew requiremerts.yml&#xA;--- roles: - name: elliotweiser.osx-command-line-tools version: 2.3.0 - name: geerlingguy.homebrew version: 4.0.0 执行安装请求：&#xA;ansible-galaxy install -r requiremerts.yml 确保 ansible playbook 正确&#xA;yamllint ansible-playbook &amp;ndash;syntax-check ansible-lint molecule test ansible-playbook &amp;ndash;check fail\assect</description>
+    </item>
+    <item>
+      <title>Ansible Role</title>
+      <link>http://localhost:1313/docsgo/ansible/study/4-ansible-role/</link>
+      <pubDate>Wed, 10 Apr 2024 20:28:09 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/4-ansible-role/</guid>
+      <description>handlers: - name: restart solr systemd: name: solr state: restarted enabled: yes 写为：&#xA;handlers: - ipmort_tasks: handlers/apache.yml 文件&#xA;root@ubuntu-c:/ansible/study/chapter4# cat handlers/apache.yml --- - name: restart solr systemd: name: solr state: restarted enabled: yes 作用：导入，开始运行之前&#xA;tasks部分：更具可读性&#xA;ipmort_tasks 作用：导入，开始运行之前 运行中产生的：动态定义 --- - hosts: solr become: true vars_files: - vars.yml pre_tasks: - name: Update yum yum: update_cache: yes handlers: - ipmort_tasks: handlers/apache.yml tasks: - ipmort_tasks: tasks/apache.yml - incude_tasks: tasks/logs.yml - ipmort_tasks: tasks/apache.yml - ipmort_tasks: tasks/apache.</description>
+    </item>
+    <item>
+      <title>Ansible 变量</title>
+      <link>http://localhost:1313/docsgo/ansible/study/3-ansible%E5%8F%98%E9%87%8F/</link>
+      <pubDate>Wed, 10 Apr 2024 12:51:25 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/3-ansible%E5%8F%98%E9%87%8F/</guid>
+      <description>Handler Playbook handlers, environment vars, and variables&#xA;handler: - name: restart httpd - name: restart nginx ... notifi: - restart httpd - restart nginx --- handler: - name: restart httpd systemd: ... notifi: restart nginx - name: restart nginx ... notifi: restart httpd handler 将在剧本末尾执行&#xA;如果想立刻重启：&#xA;- name: make restart handlers meta: flush_handlers 如果任务中有失败，那么久不会到最后一步执行handler&#xA;参数&#xA;--force-handlers Vars --- vars: k: v vars_files: - vars/main.yaml yaml&#xA;--- - name: install hosts: app become: true tasks: - name: Add env var lineinfile: path: &amp;#34;/etc/bashrc&amp;#34; regexp: &amp;#39;^ENV_VAR=&amp;#39; state: present line: &amp;#39;EVC_VAR=value&amp;#39; 使用 shell 模块会更简单</description>
+    </item>
+    <item>
+      <title>Ansible Playbook</title>
+      <link>http://localhost:1313/docsgo/ansible/study/2-playbook%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Tue, 09 Apr 2024 10:45:10 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/2-playbook%E7%AE%80%E4%BB%8B/</guid>
+      <description>工作中大多时间使用的 playbook&#xA;传递清单文件 哪些服务器执行 命令 -f 指定并行、&amp;ndash;limit指定主机 -b：成为 root，默认使用 sudo&#xA;后台运行：&#xA;ansible multi -B 3600 -P 0 -a &amp;#34;yum -y update&amp;#34; -B 3600：这个选项设置了任务的超时时间（以秒为单位）&#xA;-P 0：这个选项设置了Ansible的轮询间隔（以秒为单位）。在这个例子中，Ansible将不会轮询任务的状态，也就是说，Ansible将会立即返回，而不会等待任务完成。&#xA;提供了一个JobID&#xA;ansible multi -b -m async_status -a &amp;#34;jid=j993071582105.3469&amp;#34; shell script&#xA;#!/bin/bash yum install --quiet -y httpd httpd-devel # copy config files cp httpd.conf /etc/httpd/conf/httpd.conf cp httpd-vhosts /etc/httpd/conf/httpd-vhosts.conf service httpd start chkconfig httpd on ansible playbook&#xA;root@ubuntu-c:~/ansible/study/chapter2# cat main.yml --- - hosts: solr become: true vars_files: - vars.</description>
+    </item>
+    <item>
+      <title>Ansible 临时任务和清单组</title>
+      <link>http://localhost:1313/docsgo/ansible/study/2-%E4%B8%B4%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%92%8C%E6%B8%85%E5%8D%95%E7%BB%84/</link>
+      <pubDate>Mon, 08 Apr 2024 22:45:34 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/2-%E4%B8%B4%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%92%8C%E6%B8%85%E5%8D%95%E7%BB%84/</guid>
+      <description>HOC&#xA;ansible 快速完成任务的一种方式&#xA;例如：&#xA;快速添加和删除特定用户的访问权限，可以使用这些来管理主机文件 主机文件、DNS文件，快速复制文件、重启服务等 不必编写剧本和测试剧本。&#xA;因为有事需要快速获取更改一些信息。&#xA;inenvtory 文件&#xA;[app] centos1 centos2 [db] centos3 ansible 默认情况下是 以并行运行 默认是 5，可以 使用 -f 指定&#xA;root@ubuntu-c:~/ansible/study/adhoc# ansible multi -a &amp;#39;hostname&amp;#39; -f 1 centos1 | CHANGED | rc=0 &amp;gt;&amp;gt; centos1 centos2 | CHANGED | rc=0 &amp;gt;&amp;gt; centos2 centos3 | CHANGED | rc=0 &amp;gt;&amp;gt; db-test 控制系统有足够的CPU和内存 甚至可以将并行设置成 100+&#xA;setup：服务器几乎所有信息&#xA;限制在一台服务器上运行&#xA;ansible multi -a &amp;#39;hostname&amp;#39; --limit &amp;#34;centos1&amp;#34; 可以使用正则匹配</description>
+    </item>
+    <item>
+      <title>Ansible 简介</title>
+      <link>http://localhost:1313/docsgo/ansible/study/1-ansible%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Mon, 08 Apr 2024 15:56:38 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/1-ansible%E7%AE%80%E4%BB%8B/</guid>
+      <description>Ansible 简述 此前，很多的shell 脚本的编写，没有任何真正容易简单的事情。并不像是编写Shell脚本 并在服务器上运行那么简单，尤其是必须在服务器上安装东西。&#xA;Ansible的出现使事情变得更加简单：&#xA;不必了解某些特定的编程语言 基本上可以将 Shell 脚本简单的转换成 Ansible 脚本 - “剧本”，甚至无需使用特殊的 ansible 模块 或逻辑，非常轻松的运行所有服务器。 作为初级到中级的Linux 管理员，需要掌握大规模基础设施的自动化。&#xA;Devops for Ansible&#xA;Devops 对我来说 更多的是一种哲学，而不一定是一个职位或者角色。这种理念是开发和运维紧密联系。 当开发人员接管管道，从某种意义上来说，能够将开发和运维混合在一起。 仍然是需要 SRE 或 系统管理员来运行服务器并确保应用程序的正常运行，并且还有专门构建应用程序的开发人员。 从Ansible 历史&#xA;最初：允许在多台服务器上运行命令。 目标：清晰、完整、快速、高效和安全。 Ansible 通过SSH与机器服务器交互，无需安装代理-守护进程或者在服务器上为自动化工具提供端口。&#xA;安全：使用安全传输协议&#xA;很多时候自动化的动机时：希望能够设置服务器，或者构建容器。&#xA;喜欢ansible 原因之一：可以将 shell脚本，shell 命令以及其他的任务转移到Ansible中，让Ansible去做它们。&#xA;安装 Ansible pip3 install ansible 版本：&#xA;ansible@ubuntu-c:~$ ansible --version ansible [core 2.14.11] config file = None configured module search path = [&amp;#39;/home/ansible/.ansible/plugins/modules&amp;#39;, &amp;#39;/usr/share/ansible/plugins/modules&amp;#39;] ansible python module location = /usr/local/lib/python3.</description>
+    </item>
+    <item>
+      <title>Ansible 入门</title>
+      <link>http://localhost:1313/docsgo/ansible/study/0-%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Sun, 07 Apr 2024 21:14:26 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/ansible/study/0-%E5%85%A5%E9%97%A8/</guid>
+      <description>ansible 和 Terraform 是最受欢迎的基础设施代码之一&#xA;从表面上看，Ansible 可以完成与 Terraform 相同类型的基础设施配置。然而，它们在架构上有根本的不同——Ansible 是一个命令式脚本执行引擎，它将按照代码中列出的顺序运行任务，而 Terraform 是一个声明式执行引擎，它将并行化彼此不直接依赖的任务。因此，除了非常小的代码库之外，Terraform 的执行速度比 Ansible 快得多。&#xA;（顺便说一句，大规模执行速度慢是 Ansible 的主要弱点。）&#xA;Terraform 基于图形的性质还使得可以使用与创建基础设施完全相同的代码来销毁基础设施，而 Ansible 需要单独的剧本来创建和销毁。对于定期创建和销毁的环境（例如，开发/测试/登台），Terraform 的方法既可以大幅提高生产力，又可以减少人为错误的机会。&#xA;最后，虽然这不一定是 Ansible 的技术缺陷，但在基础设施配置方面，Terraform 迄今为止拥有最多的社区和开发理念。与任何其他基础设施配置工具相比，您更有可能找到 Terraform 的支持资源，并且您希望以编程方式配置的新产品可能会首先在 Terraform 中获得支持。&#xA;Ansible：开源的配置管理、软件配置和应用部署工具集。&#xA;软件定义基础设施 Modules：Ansible成功的一个主要因素是因为有大量的模块可供公开使用。&#xA;🚀 Ansble 实验环境 环境：Docker - MAC（Docker Desktop） Docker compose 建立环境 Ansible 是无代理的架构，SSH 配置主机之间无密码连接 🧪实验&#xA;访问：http://localhost:1000&#xA;密码：root/ansible、password&#xA;连接到其他主机不希望使用密码：&#xA;SSH 私有和公钥 控制端 私钥将与被控端的公钥进行验证&#xA;ansible@ubuntu-c:~$ ssh-keygen ... +---[RSA 3072]----+ |*...==B=oo. | |oo .o++oo. o | |. . o o= + .</description>
+    </item>
+  </channel>
+</rss>

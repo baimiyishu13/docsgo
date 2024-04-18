@@ -1,0 +1,74 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Ansible 临时任务和清单组</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-08T22:45:34&#43;08:00">April 8, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>HOC</p>
+<p>ansible 快速完成任务的一种方式</p>
+<p>例如：</p>
+<ul>
+<li>快速添加和删除特定用户的访问权限，可以使用这些来管理主机文件</li>
+<li>主机文件、DNS文件，快速复制文件、重启服务等</li>
+</ul>
+<p>不必编写剧本和测试剧本。</p>
+<p>因为有事需要快速获取更改一些信息。</p>
+<p>inenvtory 文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#66d9ef">[app]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">centos1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">centos2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[db]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">centos3</span>
+</span></span></code></pre></div><p>ansible 默认情况下是 以并行运行 默认是 5，可以 使用 -f 指定</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>root@ubuntu-c:~/ansible/study/adhoc# ansible multi -a <span style="color:#e6db74">&#39;hostname&#39;</span> -f <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>centos1 | CHANGED | rc<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> &gt;&gt;
+</span></span><span style="display:flex;"><span>centos1
+</span></span><span style="display:flex;"><span>centos2 | CHANGED | rc<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> &gt;&gt;
+</span></span><span style="display:flex;"><span>centos2
+</span></span><span style="display:flex;"><span>centos3 | CHANGED | rc<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> &gt;&gt;
+</span></span><span style="display:flex;"><span>db-test
+</span></span></code></pre></div><p>控制系统有足够的CPU和内存 甚至可以将并行设置成 100+</p>
+<ol>
+<li></li>
+</ol>
+<p>setup：服务器几乎所有信息</p>
+<p>限制在一台服务器上运行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible multi -a <span style="color:#e6db74">&#39;hostname&#39;</span> --limit <span style="color:#e6db74">&#34;centos1&#34;</span>
+</span></span></code></pre></div><p>可以使用正则匹配</p>
+
+        </div>
+    </div>
+</div>

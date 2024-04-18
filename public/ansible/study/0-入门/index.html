@@ -1,0 +1,1282 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Ansible 入门</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-07T21:14:26&#43;08:00">April 7, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#-ansble--实验环境">🚀 Ansble  实验环境</a></li>
+    <li><a href="#-doc">📒 Doc</a>
+      <ul>
+        <li><a href="#-ansible的架构和设计">⛳️ Ansible的架构和设计</a></li>
+        <li><a href="#-ansible-inventories">🍄 Ansible inventories</a></li>
+        <li><a href="#-ansible-modules">📦 Ansible Modules</a></li>
+        <li><a href="#-ansible-playbook">📓 Ansible Playbook</a></li>
+        <li><a href="#-ansible-playbook-深入">🚀 Ansible Playbook 深入</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>ansible 和 Terraform 是最受欢迎的基础设施代码之一</p>
+<p>从表面上看，Ansible 可以完成与 Terraform 相同类型的基础设施配置。然而，它们在架构上有根本的不同——Ansible 是一个命令式脚本执行引擎，它将按照代码中列出的顺序运行任务，而 Terraform 是一个声明式执行引擎，它将并行化彼此不直接依赖的任务。因此，除了非常小的代码库之外，Terraform 的执行速度比 Ansible 快得多。</p>
+<p>（顺便说一句，大规模执行速度慢是 Ansible 的主要弱点。）</p>
+<p>Terraform 基于图形的性质还使得可以使用与创建基础设施完全相同的代码来销毁基础设施，而 Ansible 需要单独的剧本来创建和销毁。对于定期创建和销毁的环境（例如，开发/测试/登台），Terraform 的方法既可以大幅提高生产力，又可以减少人为错误的机会。</p>
+<p>最后，虽然这不一定是 Ansible 的技术缺陷，但在基础设施配置方面，Terraform 迄今为止拥有最多的社区和开发理念。与任何其他基础设施配置工具相比，您更有可能找到 Terraform 的支持资源，并且您希望以编程方式配置的新产品可能会首先在 Terraform 中获得支持。</p>
+<p>Ansible：开源的配置管理、软件配置和应用部署工具集。</p>
+<ul>
+<li>软件定义基础设施</li>
+</ul>
+<p>Modules：Ansible成功的一个主要因素是因为有大量的模块可供公开使用。</p>
+<h2 id="-ansble--实验环境">🚀 Ansble  实验环境</h2>
+<ol>
+<li>环境：Docker - MAC（Docker Desktop）</li>
+<li>Docker compose 建立环境</li>
+<li>Ansible 是无代理的架构，SSH 配置主机之间无密码连接</li>
+</ol>
+<p>🧪<a href="https://github.com/spurin/diveintoansible-lab?tab=readme-ov-file">实验</a></p>
+<p>访问：http://localhost:1000</p>
+<p>密码：root/ansible、password</p>
+<p>连接到其他主机不希望使用密码：</p>
+<ul>
+<li>SSH 私有和公钥</li>
+</ul>
+<p>控制端 私钥将与被控端的公钥进行验证</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible@ubuntu-c:~$ ssh-keygen 
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>+---<span style="color:#f92672">[</span>RSA 3072<span style="color:#f92672">]</span>----+
+</span></span><span style="display:flex;"><span>|*...<span style="color:#f92672">==</span>B<span style="color:#f92672">=</span>oo.      |
+</span></span><span style="display:flex;"><span>|oo .o++oo. o     |
+</span></span><span style="display:flex;"><span>|. .  o o<span style="color:#f92672">=</span> + .    |
+</span></span><span style="display:flex;"><span>|   . ..* <span style="color:#f92672">=</span> o     |
+</span></span><span style="display:flex;"><span>|  . . <span style="color:#f92672">=</span> S o . o  |
+</span></span><span style="display:flex;"><span>| . + . o . . o . |
+</span></span><span style="display:flex;"><span>|  . o . o . . .  |
+</span></span><span style="display:flex;"><span>| . .   o .   . . |
+</span></span><span style="display:flex;"><span>| .E.    o     .  |
+</span></span><span style="display:flex;"><span>+----<span style="color:#f92672">[</span>SHA256<span style="color:#f92672">]</span>-----+
+</span></span><span style="display:flex;"><span>ansible@ubuntu-c:~$ ls .ssh/
+</span></span><span style="display:flex;"><span>id_rsa  id_rsa.pub  known_hosts  known_hosts.old
+</span></span><span style="display:flex;"><span>ansible@ubuntu-c:~$ cat .ssh/id_rsa.pub 
+</span></span><span style="display:flex;"><span>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDFYBkgsKG7u9s/pc+S8iUsdlYvVslFqsYD1XZ364pHXaaOO7th1JuFDa9p20rFzDT3cfpBvyOvgyIfFMNADZ53dMODBDAWpOQHcMPKaCFeiom/dTl5ub2NKIsQeN1HApfVqOXKpEUdXPuAIr+UJoMLegX8ASvdprn/X5LnsluOdCTk44fA5WxFadAJlfk7dNE2dh8XDG/Gg6M/37n+Ncaed3KHqja6y329easyR/bMwPh9XfHOwqLovgVgI2UVZDNmnsCCVNYfbpFy4bbpszGuVhvymwDr/nRZkx2b3lSDtJfKucopxG+HXphDgC7/8/OzFEVAv7voLeO9ZWIzIVdPCXy2u86peP+3crDKu+DyZqY7ZszMKTKed52kqubF+qD7hWssajSYrdJgduttTZVD/AsRrAIyN4dkyi7C8kTHOScAgvgUIhsFcN90oufnStV0Si9+Z+7Hn+6dtkRmO7Poxi2vq7dNcWsajASQLthrnpD6WpPjj2wxSoRs+GbGQIM<span style="color:#f92672">=</span> ansible@ubuntu-c
+</span></span></code></pre></div><ul>
+<li>公钥：添加了用户 主机名</li>
+</ul>
+<p>复制公钥 &mdash; &gt; 其他主机</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> server in ubuntu1 ubuntu2 ubuntu3 centos1 centos2 centos3; <span style="color:#66d9ef">do</span> ssh-copy-id ansible@<span style="color:#e6db74">${</span>server<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>解决手动输入密码方法：<code>sshpass</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo apt updat
+</span></span><span style="display:flex;"><span>$ sudo apt install sshpass
+</span></span></code></pre></div><p>创建一个：password.txt密码文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ echo passowrd &gt;&gt; password.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> user in root ansible
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">for</span> node in centos ubuntu
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">for</span> instance in <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>       c<span style="color:#e6db74">${</span>user<span style="color:#e6db74">}</span>@<span style="color:#e6db74">${</span>node<span style="color:#e6db74">}${</span>instance<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>删除密码文件</p>
+<pre tabindex="0"><code>rm password.txt
+</code></pre><p>🎯 快速测试</p>
+<ul>
+<li>检查</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ansible -i,ubuntu1,ubuntu2,ubuntu3,centos1,centos2,centos3 all -m ping
+</span></span></code></pre></div><p>删除了 <code>rm .ssh/known_hosts</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ git clone https://github.com/spurin/diveintoansible.git
+</span></span></code></pre></div><h2 id="-doc">📒 Doc</h2>
+<h3 id="-ansible的架构和设计">⛳️ Ansible的架构和设计</h3>
+<h3 id="-ansible-inventories">🍄 Ansible inventories</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible@ubuntu-c:~/diveintoansible/Ansible Architecture and Design/Inventories/01$ cat ansible.cfg 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>defaults<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>inventory <span style="color:#f92672">=</span> hosts
+</span></span><span style="display:flex;"><span>ansible@ubuntu-c:~/diveintoansible/Ansible Architecture and Design/Inventories/01$ cat hosts 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>all<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos1
+</span></span></code></pre></div><p>在删除文件<code>rm -rf /home/ansible/.ssh/known_hosts</code></p>
+<p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110210608919.png" alt="image-20240110210608919"
+    
+    
+    />
+</p>
+<p>Ansible 尝试使用 ssh 连接 centos1：等待手动输入</p>
+<ul>
+<li>可以使用 忽略检查！</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ANSIBLE_HOST_KEY_CHECKING<span style="color:#f92672">=</span>False
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110210850867.png" alt="image-20240110210850867"
+    
+    
+    />
+</p>
+<p>虽然环境变量很简单，不希望每次都记住使用它</p>
+<p>🎯 <code>ansible.cfg</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>defaults<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>inventory <span style="color:#f92672">=</span> hosts
+</span></span><span style="display:flex;"><span>host_key_checking <span style="color:#f92672">=</span> False
+</span></span></code></pre></div><p>多主机：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible@ubuntu-c:~/diveintoansible/Ansible Architecture and Design/Inventories/03$ cat hosts 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>centos<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos1
+</span></span><span style="display:flex;"><span>centos2
+</span></span><span style="display:flex;"><span>centos3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>ubuntu<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu1
+</span></span><span style="display:flex;"><span>ubuntu2
+</span></span><span style="display:flex;"><span>ubuntu3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ ansible all -m ping 
+</span></span><span style="display:flex;"><span>$ ansible centos -m ping
+</span></span><span style="display:flex;"><span>$ ansible ubuntu -m ping
+</span></span><span style="display:flex;"><span>$ ansible <span style="color:#e6db74">&#39;*&#39;</span> -m ping
+</span></span></code></pre></div><p>选项：<code>-o</code>  简要输出</p>
+<p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110211616276.png" alt="image-20240110211616276"
+    
+    
+    />
+</p>
+<p>选项：<code>--list-hosts</code> <img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110211737464.png" alt="image-20240110211737464"
+    
+    
+    />
+</p>
+<p>正则：</p>
+<ul>
+<li><code>~</code>: 匹配以指定模式开始的字符串。</li>
+<li><code>.*</code>: 匹配任意数量的任意字符（除了换行符）。</li>
+<li><code>3</code>: 匹配字符 &ldquo;3&rdquo;。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ansible ~.*3 --list-hosts
+</span></span><span style="display:flex;"><span>  hosts <span style="color:#f92672">(</span>2<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>    centos3
+</span></span><span style="display:flex;"><span>    ubuntu3
+</span></span></code></pre></div><p>🍄 以 sudo 执行</p>
+<p>理想情况下，应该使用 ansible的升级权限 - root权限</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>control<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu-c ansible_connection<span style="color:#f92672">=</span>local
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>centos<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos1 ansible_user<span style="color:#f92672">=</span>root ansible_port<span style="color:#f92672">=</span><span style="color:#ae81ff">22</span>
+</span></span><span style="display:flex;"><span>centos2 ansible_user<span style="color:#f92672">=</span>root
+</span></span><span style="display:flex;"><span>centos3 ansible_user<span style="color:#f92672">=</span>root
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>ubuntu<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu1 ansible_become<span style="color:#f92672">=</span>true ansible_become_pass<span style="color:#f92672">=</span>password
+</span></span><span style="display:flex;"><span>ubuntu2 ansible_become<span style="color:#f92672">=</span>true ansible_become_pass<span style="color:#f92672">=</span>password
+</span></span><span style="display:flex;"><span>ubuntu3 ansible_become<span style="color:#f92672">=</span>true ansible_become_pass<span style="color:#f92672">=</span>password
+</span></span></code></pre></div><p>实验环境可以这样做，在生产中通常以普通用户连接到主机，然后再升级到 sudo 用户</p>
+<p>当 ssh 默认端口被修改后：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>centos1 ansible_user<span style="color:#f92672">=</span>root ansible_port<span style="color:#f92672">=</span><span style="color:#ae81ff">2222</span>
+</span></span><span style="display:flex;"><span>centos1:2222 ansible_user<span style="color:#f92672">=</span>root
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110214146135.png" alt="image-20240110214146135"
+    
+    
+    />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>control<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu-c ansible_connection<span style="color:#f92672">=</span>local
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>centos<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos1 ansible_user<span style="color:#f92672">=</span>root ansible_port<span style="color:#f92672">=</span><span style="color:#ae81ff">2222</span>
+</span></span><span style="display:flex;"><span>centos<span style="color:#f92672">[</span>2:3<span style="color:#f92672">]</span> ansible_user<span style="color:#f92672">=</span>root
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>ubuntu<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu<span style="color:#f92672">[</span>1:3<span style="color:#f92672">]</span> ansible_become<span style="color:#f92672">=</span>true ansible_become_pass<span style="color:#f92672">=</span>password
+</span></span></code></pre></div><p>🚀 子 vars</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>control<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu-c ansible_connection<span style="color:#f92672">=</span>local
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>centos<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos1 ansible_port<span style="color:#f92672">=</span><span style="color:#ae81ff">2222</span>
+</span></span><span style="display:flex;"><span>centos<span style="color:#f92672">[</span>2:3<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>centos:vars<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ansible_user<span style="color:#f92672">=</span>root
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>ubuntu<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ubuntu<span style="color:#f92672">[</span>1:3<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>ubuntu:vars<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ansible_become<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>ansible_become_pass<span style="color:#f92672">=</span>password
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>linux:children<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>centos
+</span></span><span style="display:flex;"><span>ubuntu
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240110215507024.png" alt="image-20240110215507024"
+    
+    
+    />
+</p>
+<p>🚀 使用 [all:var] 将所有变量应用于主机</p>
+<ul>
+<li>不会覆盖原有</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>all:vars<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ansible_port<span style="color:#f92672">=</span><span style="color:#ae81ff">1234</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>defaults<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>inventory <span style="color:#f92672">=</span> hosts.json
+</span></span><span style="display:flex;"><span>host_key_checking <span style="color:#f92672">=</span> False
+</span></span></code></pre></div><p>🚀 hosts.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">control</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ubuntu-c</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ansible_connection</span>: <span style="color:#ae81ff">local</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">centos</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">centos1</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ansible_port</span>: <span style="color:#ae81ff">2222</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">centos2</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">centos3</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">vars</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ansible_user</span>: <span style="color:#ae81ff">root</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">ubuntu</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ubuntu1</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ubuntu2</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ubuntu3</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">vars</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ansible_become</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ansible_become_pass</span>: <span style="color:#ae81ff">password</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">linux</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">children</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">centos</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ubuntu</span>:
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>也可以是 json 文件</p>
+<p>也可以手动指定</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ls
+</span></span><span style="display:flex;"><span>ansible.cfg  hosts  hosts.json  hosts.yaml
+</span></span><span style="display:flex;"><span>$ ansible all -i hosts.yaml --list-hosts
+</span></span><span style="display:flex;"><span>  hosts <span style="color:#f92672">(</span>7<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>    ubuntu-c
+</span></span><span style="display:flex;"><span>    centos1
+</span></span><span style="display:flex;"><span>    centos2
+</span></span><span style="display:flex;"><span>    centos3
+</span></span><span style="display:flex;"><span>    ubuntu1
+</span></span><span style="display:flex;"><span>    ubuntu2
+</span></span><span style="display:flex;"><span>    ubuntu3
+</span></span></code></pre></div><p>其他选项 ：-e 指定额外变量</p>
+<h3 id="-ansible-modules">📦 Ansible Modules</h3>
+<h4 id="-setup">🧩 setup</h4>
+<p>收集远程主机中有用的变量，在随后的playbook中使用</p>
+<h4 id="-file">🧩 file</h4>
+<p>Ansible 的 <code>file</code> 模块用于管理文件系统中的文件和目录。它提供了一些常见的文件和目录操作，例如创建、删除、修改权限等。以下是一些 <code>file</code> 模块的常见用法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ansible all -m file -a <span style="color:#e6db74">&#39;path=/tmp/test state=touch mode=&#39;</span>0644<span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>$ ssh centos2 ls -l /tmp/test
+</span></span><span style="display:flex;"><span>-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">11</span> 02:31 /tmp/test
+</span></span></code></pre></div><h4 id="-color">🧩 Color</h4>
+<ul>
+<li>红色：失败</li>
+<li>黄色：成功 且变化</li>
+<li>绿色：成功</li>
+</ul>
+<h4 id="-idempotnce">🧩 Idempotnce</h4>
+<p>在 Ansible 中，&ldquo;Idempotence&rdquo; 是指无论你运行一个任务多少次，系统的状态都不会被改变。这是 Ansible 的一个核心原则，确保在重复执行任务时不会导致不必要的变更。</p>
+<p>例如，<code>file</code> 模块和 <code>copy</code> 模块都是具有幂等性的模块。当你使用这些模块来创建目录、复制文件等操作时，Ansible 会检查系统的当前状态，只有当需要的变更尚未发生时才执行操作，否则将跳过任务。 <img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240111104123360.png" alt="image-20240111104123360"
+    
+    
+    />
+</p>
+<h4 id="-copy">🧩 Copy</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ansible all -m copy -a <span style="color:#e6db74">&#39;src=http://localhost:1313/docsgo/tmp/x dest=/tmp/x&#39;</span>
+</span></span></code></pre></div><ul>
+<li>&ldquo;checksum&rdquo;: &ldquo;da39a3ee5e6b4b0d3255bfef95601890afd80709&rdquo;, 会校验文件是否被复制</li>
+</ul>
+<p>参数：remote_src=yes 【例：每个节点的/tmp/x 文件 复制到 自己的/tmp/xx】非复制控制节点</p>
+<ul>
+<li>文件路径是相对于远程主机的，而不是相对于 Ansible 控制节点</li>
+</ul>
+<h4 id="-command">🧩 command</h4>
+<p>不会传递重定向等shell常用变量</p>
+<h4 id="-fetch">🧩 fetch</h4>
+<p><code>fetch</code> 模块用于从远程主机复制文件到 Ansible 控制节点</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible all -m file -a <span style="color:#e6db74">&#39;path=/tmp/test_modules.txt state=touch&#39;</span>
+</span></span><span style="display:flex;"><span>ansible all -m fetch -a <span style="color:#e6db74">&#39;src=http://localhost:1313/docsgo/tmp/test_modules.txt dest=/tmp/&#39;</span>
+</span></span><span style="display:flex;"><span>$ ls /tmp/centos1/tmp/test_modules.txt 
+</span></span><span style="display:flex;"><span>/tmp/centos1/tmp/test_modules.txt
+</span></span></code></pre></div><h4 id="-ansible-doc">🧩 Ansible-doc</h4>
+<h3 id="-ansible-playbook">📓 Ansible Playbook</h3>
+<ul>
+<li>Yaml</li>
+<li>Playbook 构成、变量、模块、jinja2、执行</li>
+</ul>
+<h4 id="-yaml">⛵️ YAML</h4>
+<p>show_yaml_python.sh</p>
+<pre tabindex="0"><code>python3 -c &#39;import yaml,pprint;pprint.pprint(yaml.load(open(&#34;test.yaml&#34;).read(), Loader=yaml.FullLoader))&#39;
+</code></pre><p>Python - Ansible 转换</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Every YAML file should start with three dashes</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Every YAML file should end with three dots</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
+<li>可以表示 YAML的开始和结束</li>
+</ul>
+<p>其他：</p>
+<ol>
+<li>单引号、双引号、最终都会被解释成单引号</li>
+<li>值为数字，没有引号 - 整数，有引号-字符串</li>
+<li>处理布尔值非常全面（除了y、n）</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible@ubuntu-c:~/diveintoansible/Ansible Playbooks, Introduction/YAML/11$ cat test.yaml 
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Every YAML file should start with three dashes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- item <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>- item <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>- item <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>- item <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>- item <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Every YAML file should end with three dots</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>ansible@ubuntu-c:~/diveintoansible/Ansible Playbooks, Introduction/YAML/11$ ./show_yaml_python.sh 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#e6db74">&#39;item 1&#39;</span>, <span style="color:#e6db74">&#39;item 2&#39;</span>, <span style="color:#e6db74">&#39;item 3&#39;</span>, <span style="color:#e6db74">&#39;item 4&#39;</span>, <span style="color:#e6db74">&#39;item 5&#39;</span><span style="color:#f92672">]</span>
+</span></span></code></pre></div><ul>
+<li>Python 列表</li>
+</ul>
+<h4 id="-playbook-1">🍿 Playbook-1</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML文档以文档分隔符---开头</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 减号在YAML中表示一个列表项。Playbook包含一系列plays，每个play都是一个字典</span>
+</span></span><span style="display:flex;"><span>- 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: 指定play将在哪些主机上运行以及它将使用的选项</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Vars: 应用于play的变量，会在所有目标系统上生效</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: 执行在play中的任务列表，此部分也可用于前后任务</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Handlers: 从任务的notify键执行的处理程序列表</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Roles: 要导入play的角色列表</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 三个点表示YAML文档的结尾</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>执行一个 playbook</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ls
+</span></span><span style="display:flex;"><span>ansible.cfg  centos_motd  hosts  motd_playbook.yaml
+</span></span></code></pre></div><p><code>motd_playbook.yaml:</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">centos</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">user</span>: <span style="color:#ae81ff">root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Vars: variables that will apply to the play, on all target systems</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the playbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Configure a MOTD (message of the day)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">copy</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">src</span>: <span style="color:#ae81ff">centos_motd</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/etc/motd</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Handlers: the list of handlers that are executed as a notify key from a task</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Roles: list of roles to be imported into the play</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240112212639216.png" alt="image-20240112212639216"
+    
+    
+    />
+</p>
+<p>定义其他参数：</p>
+<ul>
+<li>become</li>
+<li>connection</li>
+<li>gather_facts：在不使用任何 收集信息时，可以关闭</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>real    0m1.779s
+</span></span><span style="display:flex;"><span>user    0m0.819s
+</span></span><span style="display:flex;"><span>sys     0m0.364s
+</span></span></code></pre></div><p>关闭gather_facts后</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ time ansible-playbook motd_playbook.yaml
+</span></span><span style="display:flex;"><span>real    0m0.868s
+</span></span><span style="display:flex;"><span>user    0m0.549s
+</span></span><span style="display:flex;"><span>sys     0m0.183s
+</span></span></code></pre></div><p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">linux</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Vars: variables that will apply to the play, on all target systems</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">vars</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">motd_centos</span>: <span style="color:#e6db74">&#34;Welcome to CentOS Linux - Ansible Rocks\n&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">motd_ubuntu</span>: <span style="color:#e6db74">&#34;Welcome to Ubuntu Linux - Ansible Rocks\n&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the playbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Configure a MOTD (message of the day)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">copy</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">content</span>: <span style="color:#e6db74">&#34;{{ motd_centos }}&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/etc/motd</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">notify</span>: <span style="color:#ae81ff">MOTD changed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#34;CentOS&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Configure a MOTD (message of the day)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">copy</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">content</span>: <span style="color:#e6db74">&#34;{{ motd_ubuntu }}&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/etc/motd</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">notify</span>: <span style="color:#ae81ff">MOTD changed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#34;Ubuntu&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Handlers: the list of handlers that are executed as a notify key from a task</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">handlers</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MOTD changed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#ae81ff">The MOTD was changed</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Roles: list of roles to be imported into the play</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
+<li>notify：当任务有变化时，触发handlers</li>
+</ul>
+<p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240112221218695.png" alt="image-20240112221218695"
+    
+    
+    />
+</p>
+<p><code>ansible_distribution</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ansible all -m setup | grep -w <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;CentOS&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;CentOS&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;CentOS&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ansible_distribution&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu&#34;</span>,
+</span></span></code></pre></div><h4 id="-vars">🫘 Vars</h4>
+<p>变量作为用户输入：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">vars_prompt</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">username</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">private</span>: <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the playbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Test vars_prompt</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;{{ username }}&#34;</span>
+</span></span></code></pre></div><p><code>private: False</code>：这表示用户输入的值不会被视为私密信息，即输入的内容将会被显示在屏幕上。</p>
+<p>主机变量：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the playbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Test hostvars with an ansible fact and collect ansible_port, dot notation, default if not found</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;{{ hostvars[ansible_hostname].ansible_port | default(&#39;22&#39;) }}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Test hostvars with an ansible fact and collect ansible_port, dict notation, default if not found</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;{{ hostvars[ansible_hostname][&#39;ansible_port&#39;] | default(&#39;22&#39;) }}&#34;</span>
+</span></span></code></pre></div><p>playbook 传入变量方式</p>
+<ul>
+<li>ini</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#a6e22e">ansible-playbook variables_playbook.yaml -e extra_vars_key</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;extra vars value&#34;</span>
+</span></span></code></pre></div><ul>
+<li>json</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ansible-playbook</span> <span style="color:#960050;background-color:#1e0010">variables_playbook.yaml</span> <span style="color:#960050;background-color:#1e0010">-e</span> {<span style="color:#f92672">&#34;extra_vars_key&#34;</span>: <span style="color:#e6db74">&#34;extra vars value&#34;</span>}
+</span></span></code></pre></div><ul>
+<li>yaml</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">ansible-playbook variables_playbook.yaml -e {extra_vars_key: extra vars value}</span>
+</span></span></code></pre></div><h4 id="-playbook-2">🎗️ Playbook-2</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ tree
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── ansible.cfg
+</span></span><span style="display:flex;"><span>├── facts_playbook.yaml
+</span></span><span style="display:flex;"><span>├── group_vars
+</span></span><span style="display:flex;"><span>│   ├── centos
+</span></span><span style="display:flex;"><span>│   └── ubuntu
+</span></span><span style="display:flex;"><span>├── host_vars
+</span></span><span style="display:flex;"><span>│   ├── centos1
+</span></span><span style="display:flex;"><span>│   └── ubuntu-c
+</span></span><span style="display:flex;"><span>└── hosts
+</span></span></code></pre></div><p><code>group_vars</code>、<code>host_vars</code> 和 <code>hosts</code> 文件是用来组织和管理变量的方式，这有助于更好地控制和配置主机和主机组。</p>
+<ol>
+<li><strong><code>group_vars</code>：</strong>
+<ul>
+<li>这个目录中包含了用于整个主机组（也称为inventory group）的变量。</li>
+<li>每个文件的文件名对应一个主机组的名字。</li>
+<li>这些变量可以被主机组内的所有主机所共享。</li>
+</ul>
+</li>
+<li><strong><code>host_vars</code>：</strong>
+<ul>
+<li>这个目录中包含了用于单个主机的变量。</li>
+<li>每个文件的文件名对应一个主机的名字。</li>
+<li>这些变量只对特定的主机生效。</li>
+</ul>
+</li>
+<li><strong><code>hosts</code> 文件：</strong>
+<ul>
+<li>这是 Ansible 的 inventory 文件，其中定义了所有被管理的主机。</li>
+<li>在 <code>hosts</code> 文件中，您可以将主机分组，这些组可以对应到 <code>group_vars</code> 中的变量。</li>
+<li>通过在 <code>hosts</code> 文件中定义主机和主机组，您可以有选择地将变量应用到不同的主机或主机组。</li>
+</ul>
+</li>
+</ol>
+<h4 id="-jinja2">🎨 Jinja2</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ tree
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── ansible.cfg
+</span></span><span style="display:flex;"><span>├── group_vars
+</span></span><span style="display:flex;"><span>│   ├── centos
+</span></span><span style="display:flex;"><span>│   └── ubuntu
+</span></span><span style="display:flex;"><span>├── host_vars
+</span></span><span style="display:flex;"><span>│   ├── centos1
+</span></span><span style="display:flex;"><span>│   └── ubuntu-c
+</span></span><span style="display:flex;"><span>├── hosts
+</span></span><span style="display:flex;"><span>├── jinja2_playbook.yaml
+</span></span><span style="display:flex;"><span>└── template.j2
+</span></span></code></pre></div><p><code>jinja2_playbook.yaml</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Jinja2 template</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">src</span>: <span style="color:#ae81ff">template.j2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#e6db74">&#34;/tmp/{{ ansible_hostname }}_template.out&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">trim_blocks</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">mode</span>: <span style="color:#ae81ff">0644</span>
+</span></span></code></pre></div><p><code>template.j2</code>:</p>
+<pre tabindex="0"><code class="language-jinja2" data-lang="jinja2">--== Ansible Jinja2 if statement ==--
+
+{# If the hostname is ubuntu-c, include a message -#}
+{% if ansible_hostname == &#34;ubuntu-c&#34; -%}
+      This is ubuntu-c
+{% endif %}
+
+--== Ansible Jinja2 if elif statement ==--
+
+{% if ansible_hostname == &#34;ubuntu-c&#34; -%}
+   This is ubuntu-c
+{% elif ansible_hostname == &#34;centos1&#34; -%}
+   This is centos1 with it&#39;s modified SSH Port
+{% endif %}
+
+--== Ansible Jinja2 if elif else statement ==--
+
+{% if ansible_hostname == &#34;ubuntu-c&#34; -%}
+   This is ubuntu-c
+{% elif ansible_hostname == &#34;centos1&#34; -%}
+   This is centos1 with it&#39;s modified SSH Port
+{% else -%}
+   This is good old {{ ansible_hostname }}
+{% endif %}
+
+--== Ansible Jinja2 if variable is defined ( where variable is not defined ) ==--
+
+{% if example_variable is defined -%}
+   example_variable is defined
+{% else -%}
+   example_variable is not defined
+{% endif %}
+
+--== Ansible Jinja2 if varible is defined ( where variable is defined ) ==--
+
+{% set example_variable = &#39;defined&#39; -%}
+{% if example_variable is defined -%}
+   example_variable is defined
+{% else -%}
+   example_variable is not defined
+{% endif %}
+
+--== Ansible Jinja2 for statement ==--
+
+{% for entry in ansible_all_ipv4_addresses -%}
+   IP Address entry {{ loop.index }} = {{ entry }}
+{% endfor %}
+
+--== Ansible Jinja2 for range
+
+{% for entry in range(1, 11) -%}
+   {{ entry }}
+{% endfor %}
+
+--== Ansible Jinja2 for range, reversed (simulate while greater 5) ==--
+
+{% for entry in range(10, 0, -1) -%}
+   {% if entry == 5 -%}
+      {% break %}
+   {% endif -%}
+   {{ entry }}
+{% endfor %}
+
+--== Ansible Jinja2 for range, reversed (continue if odd) ==--
+
+{% for entry in range(10, 0, -1) -%}
+   {% if entry is odd -%}
+      {% continue %}
+   {% endif -%}
+   {{ entry }}
+{% endfor %}
+
+---=== Ansible Jinja2 filters ===---
+
+--== min [1, 2, 3, 4, 5] ==--
+
+{{ [1, 2, 3, 4, 5] | min }}
+
+--== max [1, 2, 3, 4, 5] ==--
+
+{{ [1, 2, 3, 4, 5] | max }}
+
+--== unique [1, 1, 2, 2, 3, 3, 4, 4, 5, 5] ==--
+
+{{ [1, 1, 2, 2, 3, 3, 4, 4, 5, 5] | unique }}
+
+--== difference [1, 2, 3, 4, 5] vs [2, 3, 4] ==--
+
+{{ [1, 2, 3, 4, 5] | difference([2, 3, 4]) }}
+
+--== random [&#39;rod&#39;, &#39;jane&#39;, &#39;freddy&#39;] ==--
+
+{{ [&#39;rod&#39;, &#39;jane&#39;, &#39;freddy&#39;] | random }}
+
+--== urlsplit hostname ==--
+
+{{ &#34;http://docs.ansible.com/ansible/latest/playbooks_filters.html&#34; | urlsplit(&#39;hostname&#39;) }}
+</code></pre><h4 id="playbook-创建和执行">Playbook 创建和执行</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> tree
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── ansible.cfg
+</span></span><span style="display:flex;"><span>├── files
+</span></span><span style="display:flex;"><span>│   └── playbook_stacker.zip
+</span></span><span style="display:flex;"><span>├── group_vars
+</span></span><span style="display:flex;"><span>│   ├── centos
+</span></span><span style="display:flex;"><span>│   └── ubuntu
+</span></span><span style="display:flex;"><span>├── host_vars
+</span></span><span style="display:flex;"><span>│   ├── centos1
+</span></span><span style="display:flex;"><span>│   └── ubuntu-c
+</span></span><span style="display:flex;"><span>├── hosts
+</span></span><span style="display:flex;"><span>├── nginx_playbook.yaml
+</span></span><span style="display:flex;"><span>├── templates
+</span></span><span style="display:flex;"><span>│   ├── index.html-ansible_managed.j2
+</span></span><span style="display:flex;"><span>│   ├── index.html-base.j2
+</span></span><span style="display:flex;"><span>│   ├── index.html-easter_egg.j2
+</span></span><span style="display:flex;"><span>│   └── index.html-logos.j2
+</span></span><span style="display:flex;"><span>└── vars
+</span></span><span style="display:flex;"><span>    └── logos.yaml
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240116122759223.png" alt="image-20240116122759223"
+    
+    
+    />
+</p>
+<p><code>nginx_playbook.yaml文件：</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">linux</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Vars: variables that will apply to the play, on all target systems</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">vars_files</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">vars/logos.yaml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install EPEL</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">yum</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">epel-release</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">update_cache</span>: <span style="color:#66d9ef">yes</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">latest</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#39;CentOS&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install Nginx</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">package</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">latest</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Restart nginx</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">restarted</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">notify</span>: <span style="color:#ae81ff">Check HTTP Service</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Template index.html-easter_egg.j2 to index.html on target</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">src</span>: <span style="color:#ae81ff">index.html-easter_egg.j2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#e6db74">&#34;{{ nginx_root_location }}/index.html&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">mode</span>: <span style="color:#ae81ff">0644</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install unzip</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">package</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">unzip</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">latest</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Unarchive playbook stacker game</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">unarchive</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">src</span>: <span style="color:#ae81ff">playbook_stacker.zip</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">dest</span>: <span style="color:#e6db74">&#34;{{ nginx_root_location }}&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">mode</span>: <span style="color:#ae81ff">0755</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Handlers: the list of handlers that are executed as a notify key from a task</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">handlers</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Check HTTP Service</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">uri</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">url</span>: <span style="color:#ae81ff">http://{{ ansible_default_ipv4.address }}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">status_code</span>: <span style="color:#ae81ff">200</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h3 id="-ansible-playbook-深入">🚀 Ansible Playbook 深入</h3>
+<ul>
+<li>Ansible Playbook 模块</li>
+<li>动态清单文件</li>
+<li>执行任务时收到的信息，在之后利用</li>
+<li>循环</li>
+<li>性能研究（异步、串行、并行）</li>
+<li>任务委托</li>
+<li>Ansible 变量（特殊的一组）</li>
+<li>块 - blocks</li>
+<li>信息保护 - vault</li>
+</ul>
+<h4 id="ansible-playbook-模块">Ansible Playbook 模块</h4>
+<p>上千种模块</p>
+<h5 id="set_fact">set_fact</h5>
+<p>在执行过程中允许动态的改变或添加事实</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">ubuntu3,centos3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set a fact</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">set_fact</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">our_fact</span>: <span style="color:#ae81ff">Ansible Rocks!</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Show custom fact</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;{{ our_fact }}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240116125011843.png" alt="image-20240116125011843"
+    
+    
+    />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">ubuntu3,centos3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set our installation variables for CentOS</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">set_fact</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_path</span>: <span style="color:#ae81ff">/usr/share/nginx/html</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_user</span>: <span style="color:#ae81ff">root</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#39;CentOS&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set our installation variables for Ubuntu</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">set_fact</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_port</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_path</span>: <span style="color:#ae81ff">/var/www/html</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">webserver_application_user</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#39;Ubuntu&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Show pre-set distribution based facts</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;webserver_application_port:{{ webserver_application_port }} webserver_application_path:{{ webserver_application_path }} webserver_application_user:{{ webserver_application_user }}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h5 id="pause">pause</h5>
+<p><a href="https://docs.ansible.com/ansible/2.9/modules/pause_module.html#pause-module">https://docs.ansible.com/ansible/2.9/modules/pause_module.html#pause-module</a></p>
+<ul>
+<li>将 playbook 执行暂停一段时间，或者直到确认提示为止。所有参数都是可选的。默认行为是暂停并出现提示。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># 暂停 10 s</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Pause our playbook for 10 seconds</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">pause</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">seconds</span>: <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 提示信息</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Prompt user to verify before continue</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">pause</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">prompt</span>: <span style="color:#ae81ff">Please check that the webserver is running, press enter to continue</span>
+</span></span></code></pre></div><h5 id="wait_for">wait_for</h5>
+<p>– 在继续之前等待条</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 80端口是否running</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Wait for the webserver to be running on port 80</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">wait_for</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><h5 id="add_host">add_host</h5>
+<p>add_host – 将主机（或者组）添加到 ansible-playbook 内存清单中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">$ cat add_host_playbook.yaml </span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">ubuntu-c</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Add centos1 to adhoc_group</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">add_host</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">centos1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">groups</span>: <span style="color:#ae81ff">adhoc_group1, adhoc_group2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">adhoc_group1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Ping all in adhoc_group1</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ping</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h5 id="group_by">group_by</h5>
+<ul>
+<li>使用事实创建临时组，以便稍后在剧本中使用。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">$ cat group_by_playbook.yaml </span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">all</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Create group based on ansible_distribution</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">group_by</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;custom_{{ ansible_distribution | lower }}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">custom_centos</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Ping all in custom_centos</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ping</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h5 id="fetch">fetch</h5>
+<ul>
+<li>从远程节点获取文件</li>
+</ul>
+<ul>
+<li>该模块的工作方式类似于<a href="https://docs.ansible.com/ansible/2.9/modules/copy_module.html#copy-module">copy</a>，但方向相反。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Store file into /tmp/fetched/host.example.com/tmp/somefile</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">fetch</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">src</span>: <span style="color:#ae81ff">/tmp/somefile</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/tmp/fetched</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Specifying a path directly</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">fetch</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">src</span>: <span style="color:#ae81ff">/tmp/somefile</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/tmp/prefix-{{ inventory_hostname }}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">flat</span>: <span style="color:#66d9ef">yes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Specifying a destination path</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">fetch</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">src</span>: <span style="color:#ae81ff">/tmp/uniquefile</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/tmp/special/</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">flat</span>: <span style="color:#66d9ef">yes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Storing in a path relative to the playbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">fetch</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">src</span>: <span style="color:#ae81ff">/tmp/uniquefile</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">special/prefix-{{ inventory_hostname }}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">flat</span>: <span style="color:#66d9ef">yes</span>
+</span></span></code></pre></div><h4 id="动态清单文件">动态清单文件</h4>
+<p>用最小的脚本创建动态清单文件、查询、使用_meta 性能提升、使用ansible_palybook 框架</p>
+<p>到目前，一直使用的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ tree
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── ansible.cfg
+</span></span><span style="display:flex;"><span>├── fetch_playbook.yaml
+</span></span><span style="display:flex;"><span>├── group_vars
+</span></span><span style="display:flex;"><span>│   ├── centos
+</span></span><span style="display:flex;"><span>│   └── ubuntu
+</span></span><span style="display:flex;"><span>├── host_vars
+</span></span><span style="display:flex;"><span>│   ├── centos1
+</span></span><span style="display:flex;"><span>│   └── ubuntu-c
+</span></span><span style="display:flex;"><span>└── hosts
+</span></span></code></pre></div><p>也可以使用 -i 指定清单文件</p>
+<p><code>$ cat inventory.py</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Dynamic inventory for Ansible in Python
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Use print functionality from Python 3 for compatibility</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> print_function
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> logging
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Attempt to import json, if it fails, import simplejson</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> simplejson <span style="color:#66d9ef">as</span> json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Inherit from object for Python 2/3 compatibility</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Inventory</span>(object):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Constructor</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, include_hostvars_in_list):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Configure logger</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#self.configure_logger()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Capture and store include_hostvars_in_list</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>include_hostvars_in_list <span style="color:#f92672">=</span> include_hostvars_in_list
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Capture the script command line arguments</span>
+</span></span><span style="display:flex;"><span>        parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
+</span></span><span style="display:flex;"><span>        parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--list&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;store_true&#39;</span>,
+</span></span><span style="display:flex;"><span>                            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;list inventory&#39;</span>)
+</span></span><span style="display:flex;"><span>        parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--host&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;store&#39;</span>,
+</span></span><span style="display:flex;"><span>                            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;show HOST variables&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If not called with --host or --list, show usage and exit</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>list <span style="color:#f92672">or</span> self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>host):
+</span></span><span style="display:flex;"><span>            parser<span style="color:#f92672">.</span>print_usage()
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Capture and store the inventory</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>define_inventory()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># When called with --list, print the inventory</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>list:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>print_json(self<span style="color:#f92672">.</span>list())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If called with --host, print host information</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>host:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>print_json(self<span style="color:#f92672">.</span>host())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">define_inventory</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>groups <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;centos&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;hosts&#34;</span>: [<span style="color:#e6db74">&#34;centos1&#34;</span>, <span style="color:#e6db74">&#34;centos2&#34;</span>, <span style="color:#e6db74">&#34;centos3&#34;</span>],
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;vars&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;ansible_user&#34;</span>: <span style="color:#e6db74">&#39;root&#39;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;control&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;hosts&#34;</span>: [<span style="color:#e6db74">&#34;ubuntu-c&#34;</span>],
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;ubuntu&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;hosts&#34;</span>: [<span style="color:#e6db74">&#34;ubuntu1&#34;</span>, <span style="color:#e6db74">&#34;ubuntu2&#34;</span>, <span style="color:#e6db74">&#34;ubuntu3&#34;</span>],
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;vars&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;ansible_become&#34;</span>: <span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;ansible_become_pass&#34;</span>: <span style="color:#e6db74">&#39;password&#39;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;linux&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;children&#34;</span>: [<span style="color:#e6db74">&#34;centos&#34;</span>, <span style="color:#e6db74">&#34;ubuntu&#34;</span>],
+</span></span><span style="display:flex;"><span>            }}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>hostvars <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;centos1&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;ansible_port&#39;</span>: <span style="color:#ae81ff">22</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;ubuntu-c&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;ansible_connection&#39;</span>: <span style="color:#e6db74">&#39;local&#39;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Pretty print JSON</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_json</span>(self, content):
+</span></span><span style="display:flex;"><span>        print(json<span style="color:#f92672">.</span>dumps(content, indent<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, sort_keys<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Return inventory dictionary</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">list</span>(self):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#self.logger.info(&#39;list executed&#39;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If include_hostvars_in_list is True, merge the hostvars</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># as _meta data</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>include_hostvars_in_list:
+</span></span><span style="display:flex;"><span>            merged <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>groups
+</span></span><span style="display:flex;"><span>            merged[<span style="color:#e6db74">&#39;_meta&#39;</span>] <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>            merged[<span style="color:#e6db74">&#39;_meta&#39;</span>][<span style="color:#e6db74">&#39;hostvars&#39;</span>] <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>hostvars
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> merged
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Otherwise, return the groups without hostvars</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>groups
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Return host dictionary</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">host</span>(self):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#self.logger.info(&#39;host executed for {}&#39;.format(self.args.host))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># If the requested hosts exists in hostvars, return it</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>host <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>hostvars:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>hostvars[self<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>host]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Otherwise, return an empty list</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Logger, for debugging as stdout is used by the script</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">configure_logger</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>logger <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>getLogger(<span style="color:#e6db74">&#39;ansible_dynamic_inventory&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>hdlr <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>FileHandler(<span style="color:#e6db74">&#39;/var/tmp/ansible_dynamic_inventory.log&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>formatter <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>Formatter(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>hdlr<span style="color:#f92672">.</span>setFormatter(self<span style="color:#f92672">.</span>formatter)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>logger<span style="color:#f92672">.</span>addHandler(self<span style="color:#f92672">.</span>hdlr) 
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>logger<span style="color:#f92672">.</span>setLevel(logging<span style="color:#f92672">.</span>DEBUG)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Call the Inventory class constructor (__init__)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Pass include_hostsvars_in_list as True to include hostvars</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># as _meta data in list output</span>
+</span></span><span style="display:flex;"><span>Inventory(include_hostvars_in_list<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><p><img
+    src="../../../../../devops_notes/ansible/images/ansible/image-20240116223851739.png" alt="image-20240116223851739"
+    
+    
+    />
+</p>
+<h4 id="注册和输出">注册和输出</h4>
+<ul>
+<li>如何利用注册输出、解决差异</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">register</span>: <span style="color:#ae81ff">hostname_output</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Show hostname_output</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">var</span>: <span style="color:#ae81ff">hostname_output.stdout</span>
+</span></span></code></pre></div><p>when</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">ansible_distribution == &#34;CentOS&#34; and ansible_distribution_major_version == &#34;8&#34;</span>
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">( ansible_distribution == &#34;CentOS&#34; and ansible_distribution_major_version == &#34;8&#34; ) or</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#ae81ff">( ansible_distribution == &#34;Ubuntu&#34; and ansible_distribution_major_version == &#34;20&#34; )</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">( ansible_distribution == &#34;CentOS&#34; and ansible_distribution_major_version | int &gt;= 8 ) or</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#ae81ff">( ansible_distribution == &#34;Ubuntu&#34; and ansible_distribution_major_version | int &gt;= 20 )</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: 
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution == &#34;CentOS&#34; </span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution_major_version | int &gt;= 8</span>
+</span></span></code></pre></div><p>register_when_playbook.yaml :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: 
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution == &#34;CentOS&#34; </span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution_major_version | int &gt;= 8</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">register</span>: <span style="color:#ae81ff">command_register</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install patch when changed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">yum</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">patch</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">present</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">command_register.changed</span>
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tasks</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Exploring register</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">command</span>: <span style="color:#ae81ff">hostname -s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution == &#34;CentOS&#34;</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">ansible_distribution_major_version | int &gt;= 8</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">register</span>: <span style="color:#ae81ff">command_register</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">bug</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">msg</span>: <span style="color:#e6db74">&#34;{{ command_register }}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install patch when changed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">yum</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">patch</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">state</span>: <span style="color:#ae81ff">present</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">command_register is changed</span>
+</span></span></code></pre></div><hr>
+<h4 id="ansible-性能问题">Ansible 性能问题</h4>
+<p>通过内置功能提升</p>
+<ul>
+<li>性能 和 瓶颈 问题</li>
+<li>轮询</li>
+<li>异步、异步状态处理</li>
+<li>串行执行</li>
+<li>批量执行</li>
+</ul>
+<p>Using Include and Import</p>
+<ol>
+<li>Include_tasks</li>
+<li>import_tasks</li>
+</ol>
+<p>执行结果很像，最大区别：import 预处理，include 执行遇到时处理，使用 when 时更明显</p>
+<p><a href="https://github.com/spurin/diveintoansible/blob/master/Structuring%20Ansible%20Playbooks/Using%20Include%20and%20Import/03/include_import_tasks_playbook.yaml">https://github.com/spurin/diveintoansible/blob/master/Structuring%20Ansible%20Playbooks/Using%20Include%20and%20Import/03/include_import_tasks_playbook.yaml</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># YAML documents begin with the document separator ---</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># The minus in YAML this indicates a list item.  The playbook contains a list</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># of plays, with each play being a dictionary</span>
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Hosts: where our play will run and options it will run with</span>
+</span></span><span style="display:flex;"><span>  hosts: centos1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Tasks: the list of tasks that will be executed within the play, this section</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># can also be used for pre and post tasks</span>
+</span></span><span style="display:flex;"><span>  tasks:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>     - debug:
+</span></span><span style="display:flex;"><span>         msg: <span style="color:#f92672">=====================</span> Testing include_tasks <span style="color:#f92672">=====================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># include_tasks is dynamic</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># The when statement is executed once, if the condition is met, all</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># tasks are executed</span>
+</span></span><span style="display:flex;"><span>     - include_tasks: include_tasks.yaml
+</span></span><span style="display:flex;"><span>       when: include_tasks_var is not defined
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>     - debug:
+</span></span><span style="display:flex;"><span>         msg: <span style="color:#f92672">=====================</span> Testing import_tasks <span style="color:#f92672">======================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># import_tasks is static</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># Each task that in the include will be independently executed against</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># the when condition</span>
+</span></span><span style="display:flex;"><span>     - import_tasks: import_tasks.yaml
+</span></span><span style="display:flex;"><span>       when: import_tasks_var is not defined
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Three dots indicate the end of a YAML document</span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h4 id="tags">Tags</h4>
+<p>使用标签进行细分</p>
+<p>默认情况下是<code>--tags &quot;all&quot;</code></p>
+<p>1.不希望执行整个剧本时非常有用</p>
+<pre tabindex="0"><code>--tags &#34;&#34;
+</code></pre><p>2.反之跳过</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>--skips-tags <span style="color:#e6db74">&#34;&#34;</span>
+</span></span></code></pre></div><p>3.设置标签用于整个 playbook</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>	<span style="color:#ae81ff">hosts linux</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tag</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">web</span>
+</span></span></code></pre></div><ul>
+<li>这样再指定其中的 tasks 中的 tags 时 会跳过 Facts</li>
+</ul>
+<p>4.总是运行【可以使用&ndash;skips-tags 跳过】</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>      <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">always</span>
+</span></span></code></pre></div><h4 id="roles">Roles</h4>
+<p>角色的本质是目录结构</p>
+<p>ansible-galaxy 挺松创建目录架构</p>
+
+        </div>
+    </div>
+</div>

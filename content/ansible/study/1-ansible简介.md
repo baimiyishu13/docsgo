@@ -1,5 +1,5 @@
 +++
-title = '1 Ansible简介'
+title = 'Ansible 简介'
 date = 2024-04-08T15:56:38+08:00
 draft = true
 +++

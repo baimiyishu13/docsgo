@@ -1,0 +1,66 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Istio入门</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-04T14:52:05&#43;08:00">April 4, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>实验环境：minikube</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  ~ kubectl get node
+</span></span><span style="display:flex;"><span>NAME       STATUS   ROLES           AGE   VERSION
+</span></span><span style="display:flex;"><span>minikube   Ready    control-plane   11m   v1.27.4
+</span></span></code></pre></div><p>简述：架构、安装、实验 （了解总体再逐个细化）</p>
+<p>Istio：开源服务网格，用来保护微服务</p>
+<p>构建在 Envoy 之上：一个处理微服务之间所有流量的高效代理</p>
+<p>IStio 工作原理：在环境中每个微服务旁注入一个 sidecar 容器，sidecar 容器拦截进出的微服务的所有流量，处理流量路由，负载均衡，服务发现和其他重要的网络任务。</p>
+<p>Istio还提供：</p>
+<ol>
+<li>高级流量管理功能：金丝雀，A/B测试</li>
+<li>故障注入</li>
+</ol>
+<p>首先，Istio 为现代微服务架构提供了多项优势，通过抽象服务发现、负载均衡、流量路由的复杂性来简化网络管理。</p>
+<p>其次，Istio 提供了高级安全功能，列入双向的TLS 身份验证、基于角色的访问控制和流量加密。</p>
+<p>最后，Istio 提供了可观察性功能，例如分布式跟踪、指标收集和日志记录。</p>
+<p>安装：大多数使用 Helm 安装</p>
+<p>参考：https://istio.io/latest/zh/docs/setup/install/helm/</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  ~ helm search repo istio/base
+</span></span><span style="display:flex;"><span>NAME      	CHART VERSION	APP VERSION	DESCRIPTION                                       
+</span></span><span style="display:flex;"><span>istio/base	1.21.0       	1.21.0     	Helm chart <span style="color:#66d9ef">for</span> deploying Istio cluster resource...
+</span></span></code></pre></div><p>查看默认值：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>helm show values istio/base
+</span></span></code></pre></div><p>使用 treeaform创建</p>
+
+        </div>
+    </div>
+</div>

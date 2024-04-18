@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Istios on docsGo</title>
+    <link>http://localhost:1313/docsgo/istio/</link>
+    <description>Recent content in Istios on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 07 Apr 2024 20:32:01 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/istio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IstioCon2023</title>
+      <link>http://localhost:1313/docsgo/istio/istiocon2023/</link>
+      <pubDate>Sun, 07 Apr 2024 20:32:01 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istiocon2023/</guid>
+      <description>流量管理的安全性和可观察性&#xA;未来：&#xA;将sidecar替换为节点组件，该组件处理 MTLS加密吗L4策略，并参与网格的可观察性工作负载，流量仅通过该组件进行重定向&#xA;新性的CNI 功能与Istio存在重叠，比如服务解析</description>
+    </item>
+    <item>
+      <title>Istio的数据包的生命周期</title>
+      <link>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
+      <pubDate>Sun, 07 Apr 2024 17:10:33 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
+      <description>网络、容器 Kubernetes pod 真实的情况和工作原理</description>
+    </item>
+    <item>
+      <title>Istio入门</title>
+      <link>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Thu, 04 Apr 2024 14:52:05 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</guid>
+      <description>实验环境：minikube&#xA;➜ ~ kubectl get node NAME STATUS ROLES AGE VERSION minikube Ready control-plane 11m v1.27.4 简述：架构、安装、实验 （了解总体再逐个细化）&#xA;Istio：开源服务网格，用来保护微服务&#xA;构建在 Envoy 之上：一个处理微服务之间所有流量的高效代理&#xA;IStio 工作原理：在环境中每个微服务旁注入一个 sidecar 容器，sidecar 容器拦截进出的微服务的所有流量，处理流量路由，负载均衡，服务发现和其他重要的网络任务。&#xA;Istio还提供：&#xA;高级流量管理功能：金丝雀，A/B测试 故障注入 首先，Istio 为现代微服务架构提供了多项优势，通过抽象服务发现、负载均衡、流量路由的复杂性来简化网络管理。&#xA;其次，Istio 提供了高级安全功能，列入双向的TLS 身份验证、基于角色的访问控制和流量加密。&#xA;最后，Istio 提供了可观察性功能，例如分布式跟踪、指标收集和日志记录。&#xA;安装：大多数使用 Helm 安装&#xA;参考：https://istio.io/latest/zh/docs/setup/install/helm/&#xA;➜ ~ helm search repo istio/base NAME CHART VERSION&#x9;APP VERSION&#x9;DESCRIPTION istio/base&#x9;1.21.0 1.21.0 Helm chart for deploying Istio cluster resource... 查看默认值：&#xA;helm show values istio/base 使用 treeaform创建</description>
+    </item>
+  </channel>
+</rss>

@@ -1,5 +1,5 @@
 +++
-title = '3 Ansible变量'
+title = 'Ansible 变量'
 date = 2024-04-10T12:51:25+08:00
 draft = true
 +++

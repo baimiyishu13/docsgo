@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Terraforms on docsGo</title>
+    <link>http://localhost:1313/docsgo/terraform/</link>
+    <description>Recent content in Terraforms on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 06 Apr 2024 21:44:54 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/terraform/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基础设施即代码</title>
+      <link>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Sat, 06 Apr 2024 21:44:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

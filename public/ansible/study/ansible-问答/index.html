@@ -1,0 +1,63 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Ansible 问答</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-11T14:14:05&#43;08:00">April 11, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>1、Ansible 最佳实践是什么</p>
+<p>对于Devops来说，根据经验</p>
+<ul>
+<li>如果有超过 100行的任务文件，我就开始考虑如何将其分解，一个playbook 超过百行，将要考虑如何分解</li>
+</ul>
+<p>docker 容器最酷、最强大的特性之一是它们是<em>不可变的</em>。您不在 docker 容器上运行更新。使用更新的库构建新的 docker 映像后，您将停止旧容器并启动新容器。</p>
+<p>并非所有基础设施都是一成不变的。其中一些是<em>可变的</em>。考虑一个标准的 Linux 服务器。它需要系统更新，需要安装应用程序依赖项，并且需要应用程序软件本身可用。这就是 Ansible 的用武之地。Ansible 用于远程配置可变基础设施。</p>
+<p>2、Ansible 变量最佳位置</p>
+<p>3、Ansible CICD</p>
+<p>会用CI来测试Ansible Playbook、Role，与Ansible 分子测试一起使用</p>
+<p>4、对于一个复杂的任务，涉及到很多文件，特别是如果它不是自己写的</p>
+<p>我的问题是，对于那些在 k8s 之外运行虚拟机的人，如何仅使用 Terraform 配置或设置虚拟机？</p>
+<p>你似乎明白了要点。 Terraform 无法取代 ansible，但您可以通过全力以赴进行容器编排来完全消除对 ansible 的需求。</p>
+<p>根据我们自己的观察，我们在虚拟机上获得的性能比在同一虚拟机上运行的容器中获得的性能更好。</p>
+<p>抽象级别&hellip;裸机 &gt; HyperVisor &gt; VM &gt; 容器&hellip;.. 与裸机 &gt; 操作系统 &gt; 容器。</p>
+<p>Terraform 旨在构建基础设施。它可以执行主机配置，但这不是它的主要目标。</p>
+<p>Ansible 旨在配置系统。是的，它可以构建系统，但这不是它的主要目标</p>
+<p>问题在于 Ansible 没有任何状态来跟踪之前的更改以及现在需要删除、创建或更新的内容。此外，Ansible 的相当一部分模块不是幂等的，在检查模式下也无法运行并获得准确的结果，这可能会导致重复工作。因此，您最好使用 Terraform 作为 IaC，并使用 Ansible 进行配置管理和构建黄金映像。</p>
+<p>对于 IaC，您需要幂等性以及将当前状态与先前状态进行比较的能力。</p>
+<p>我将 Ansible 用于云资源中的配置，并使用 Terraform 资源。让 Terraform 处理系统，让 Ansible 处理随时间变化的配置。效果超级好。</p>
+<p>Ansible 和 Terraform 是互补的，而不是等同的。你不会使用 ansible 来完成 Terraform 所要做的事情，反之亦然。</p>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>YugabyteDB</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-03T15:30:58&#43;08:00">April 3, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>参考：https://docs.yugabyte.com/preview/explore/observability/prometheus-integration/macos/</p>
+<p>下载:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://github.com/yugabyte/yb-sample-apps/releases/download/v1.4.1/yb-sample-apps.jar -O yb-sample-apps.jar
+</span></span></code></pre></div><p>运行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>java -jar ./yb-sample-apps.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --workload CassandraKeyValue <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --nodes 127.0.0.1:9043 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --num_threads_read <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --num_threads_write <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>java -jar ./yb-sample-apps.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --workload CassandraKeyValue <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --nodes 10.61.200.238:5433 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --num_threads_read <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --num_threads_write <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --username thingswise_admin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>java -jar yb-sample-apps.jar --workload CassandraKeyValue --nodes 10.61.200.238:9043 --username thingswise_admin --password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf --ssl_key /etc/ssl/yugabyte/yugabytedb.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>java -jar yb-sample-apps.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--workload CassandraKeyValue <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--nodes 127.0.0.1:9042 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--username thingswise_admin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--password 5gwqLJqeIPHBue0cDSyJN05fo4deEf38QW2guas41zNw6qlrbqm8AaCG4Embg8AbAdoA1yq2DWbdw1CQHgm484NE7AQGHxc7c281dWpUWf9JZGs2e2PckrAd9D1bVNDf <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--ssl /etc/ssl/yugabyte/yugabytedb.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> java -jar ./yb-sample-apps.jar --workload CassandraKeyValue <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>                                    --nodes localhost:9043 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>                                    --num_threads_write <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>                                    --num_threads_read <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>                                    --value_size <span style="color:#ae81ff">4096</span>
+</span></span></code></pre></div>
+        </div>
+    </div>
+</div>
