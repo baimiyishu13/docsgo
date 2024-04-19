@@ -44,9 +44,6 @@
     <loc>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</loc>
     <lastmod>2024-04-07T21:03:20+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/devsecops/</loc>
-    <lastmod>2024-04-07T21:03:20+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/docsgo/istio/istiocon2023/</loc>
     <lastmod>2024-04-07T20:32:01+08:00</lastmod>
   </url><url>
@@ -141,6 +138,9 @@
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/ansible/</loc>
+    <lastmod>2024-03-24T13:09:35+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/</loc>
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/monitor/</loc>

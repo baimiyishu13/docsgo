@@ -93,7 +93,7 @@
       <description>ansible 和 Terraform 是最受欢迎的基础设施代码之一&#xA;从表面上看，Ansible 可以完成与 Terraform 相同类型的基础设施配置。然而，它们在架构上有根本的不同——Ansible 是一个命令式脚本执行引擎，它将按照代码中列出的顺序运行任务，而 Terraform 是一个声明式执行引擎，它将并行化彼此不直接依赖的任务。因此，除了非常小的代码库之外，Terraform 的执行速度比 Ansible 快得多。&#xA;（顺便说一句，大规模执行速度慢是 Ansible 的主要弱点。）&#xA;Terraform 基于图形的性质还使得可以使用与创建基础设施完全相同的代码来销毁基础设施，而 Ansible 需要单独的剧本来创建和销毁。对于定期创建和销毁的环境（例如，开发/测试/登台），Terraform 的方法既可以大幅提高生产力，又可以减少人为错误的机会。&#xA;最后，虽然这不一定是 Ansible 的技术缺陷，但在基础设施配置方面，Terraform 迄今为止拥有最多的社区和开发理念。与任何其他基础设施配置工具相比，您更有可能找到 Terraform 的支持资源，并且您希望以编程方式配置的新产品可能会首先在 Terraform 中获得支持。&#xA;Ansible：开源的配置管理、软件配置和应用部署工具集。&#xA;软件定义基础设施 Modules：Ansible成功的一个主要因素是因为有大量的模块可供公开使用。&#xA;🚀 Ansble 实验环境 环境：Docker - MAC（Docker Desktop） Docker compose 建立环境 Ansible 是无代理的架构，SSH 配置主机之间无密码连接 🧪实验&#xA;访问：http://localhost:1000&#xA;密码：root/ansible、password&#xA;连接到其他主机不希望使用密码：&#xA;SSH 私有和公钥 控制端 私钥将与被控端的公钥进行验证&#xA;ansible@ubuntu-c:~$ ssh-keygen ... +---[RSA 3072]----+ |*...==B=oo. | |oo .o++oo. o | |. . o o= + .</description>
     </item>
     <item>
-      <title>0 入门</title>
+      <title>0. DevSecOps-入门</title>
       <link>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</link>
       <pubDate>Sun, 07 Apr 2024 21:03:20 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</guid>
