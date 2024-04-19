@@ -1,5 +1,5 @@
 +++
-title = 'Kubeadm Install Kubernetes'
+title = 'Kubeadm部署k8s集群'
 date = 2024-04-01T11:18:20+08:00
 draft = true
 +++
