@@ -4,12 +4,15 @@ date = 2024-04-01T11:18:20+08:00
 draft = true
 +++
 
-# Kubernetes + KubeSphere
+# Kubernetes
 
+注：部署环境为离线环境，镜像包需要推送到自建 Harbor 仓库。
+
+在线环境部署 与 该文章最大区别就是无需手动准备镜像，仅此而已。
 
 ## 准备工作
 
-### Harbor 部署
+### 1、Harbor 部署
 
 > harbor-offline-installer-v2.1.2.tgz
 
@@ -68,9 +71,7 @@ done
 
 ------
 
-### 镜像
-
-1.20.6链接: https://caiyun.139.com/m/i?1L5BSzYqo0WAo  提取码:xeh2  
+### 2、准备镜像
 
 查看k8s版本对应的images
 
@@ -78,9 +79,11 @@ done
 kubeadm config images list --kubernetes-version=1.20.6
 ```
 
-------
+使用外网下载
 
-### 3）安装ansible配置
+
+
+### 3、安装ansible配置
 
 ⚠️：建议在 Harbor 节点安装，作为主控端，其余节点作为被控端。
 
@@ -117,13 +120,13 @@ EOF
 
 ------
 
-## GFS部署(可选)
+
+
+## 4、GFS存储 (可选)
 
 部署环境(研发环境)
 
 参考：https://docs.gluster.org/en/latest/Install-Guide/Install/#community-packages
-
-
 
 ```shell
 ansible gfs -m ping
@@ -167,9 +170,11 @@ cat <<EOF > gfs.yaml
 EOF
 ```
 
+
+
 ## 初始化环境
 
-### 1）修改hosts文件
+### 1、修改hosts文件
 
 编辑 `/etc/hosts` 文件，将 IP 地址和主机名的映射关系添加到该文件中，参考一下示例：
 
@@ -219,7 +224,7 @@ cat <<EOF > hosts-all.yaml
 EOF
 ```
 
-### 2）sudo账户（可选）
+### 2、sudo账户（可选）
 
 示例：创建用户wlznhpt 密码: 12345 sudu设置ALL=(ALL) NOPASSWD: ALL
 
@@ -287,7 +292,7 @@ echo "${username} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 visudo -c -f /etc/sudoers && echo "sudoers file is valid" || echo "sudoers file is NOT valid"
 ```
 
-### 3）关闭swap、防火墙、selinux、修改limit
+### 3、关闭swap、防火墙、selinux、修改limit
 
 任务包括：
 
@@ -341,7 +346,7 @@ cat <<EOF > system.yml
 EOF
 ```
 
-### 4）基础软件安装
+### 4、基础软件安装
 
 用于在目标主机上安装所需的软件包
 
@@ -369,7 +374,7 @@ cat <<EOF > install_soft.yaml
 EOF
 ```
 
-### 5）内核模块加载
+### 5、内核模块加载
 
 用于在目标主机上加载内核模块。
 
@@ -401,9 +406,11 @@ cat <<EOF > load_kernel.yaml
 EOF
 ```
 
-### 6）安装Docker
+### 6、安装Docker
 
 版本：v 19.03.9
+
+k8s 版本超过1.24 版本，则需部署 containerd，而非 Docker
 
 将生成一个名为 `/etc/docker/daemon.json` 的文件，并将以下内容写入该文件
 
@@ -502,7 +509,9 @@ EOF
  ansible all -m shell -a 'docker login 172.32.165.74:8080:8080 -uadmin -pHarbor12345'
 ```
 
-### 7）内核配置
+
+
+### 7、内核配置
 
 用于在目标主机上修改内核参数。
 
@@ -533,7 +542,9 @@ cat <<EOF > modify_kernel.yaml
 EOF
 ```
 
-### 8）NFS挂载（可选）
+
+
+### 8、NFS存储挂载（可选）
 
 在所有主机上创建挂载目录、安装 nfs-utils 包、配置 /etc/fstab 文件并挂载 NFS 文件系统
 
@@ -571,7 +582,9 @@ cat <<EOF > nfs.yaml
 EOF
 ```
 
-### 9）时间同步
+
+
+### 9、时间同步
 
 ⚠️：先查看是否开启时间同步，已有则忽略此步骤
 
@@ -627,9 +640,11 @@ cat <<EOF > chronyd.yaml
 EOF
 ```
 
-## 高可用配置
 
-### 1）Keepalived 和 HAproxy
+
+## 高可用配置 LB
+
+### 1、Keepalived 和 HAproxy
 
 使用 Keepalived 和 HAproxy 创建高可用 Kubernetes 集群
 
@@ -830,11 +845,15 @@ EOF
 netstart -lntp | grep 16443
 ```
 
+
+
+
+
+
+
 ## 初始化集群
 
-### kubeadm + ks
-
-### kubeadm
+### 1、kubeadm
 
 ```shell
 cat <<EOF > kube120.yaml
@@ -866,7 +885,7 @@ cat <<EOF > kube120.yaml
 EOF
 ```
 
-kubeadm命令初始化
+2、kubeadm命令初始化
 
 ```shell
 kubeadm init --kubernetes-version=v1.20.6 \
@@ -889,7 +908,7 @@ kubeadm reset -f ; ipvsadm --clear  ; rm -rf ~/.kube
 
 
 
-### calico安装
+### 2、calico安装
 
 仅在 `master1` 节点上执行以下操作：
 
@@ -923,7 +942,9 @@ kubectl apply -f calico.yaml
 
 `enp0s3`是我机器的网卡名
 
-### NFS SC (可选)
+## 可选内容
+
+### 1、NFS SC (可选)
 
 Storage Classes
 
@@ -943,7 +964,7 @@ NFS：https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/tree/ma
 helm install my-release nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=x.x.x.x --set nfs.path=/exported/path -n kube-system
 ```
 
-### GFS
+### 2、GFS（可选）
 
 https://www.kubesphere.io/zh/docs/v3.4/reference/storage-system-installation/glusterfs-server/
 
@@ -980,7 +1001,7 @@ volumeBindingMode: Immediate
 allowVolumeExpansion: true
 ```
 
-### KS
+### 3、KS（可选）
 
 建议参考官方文档部署（离线安装）：[部署文档](https://v3-1.docs.kubesphere.io/zh/docs/installing-on-kubernetes/on-prem-kubernetes/install-ks-on-linux-airgapped/)
 
@@ -1024,7 +1045,7 @@ kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=
 
 
 
-### KubeKey
+### 4、KubeKey（可选）
 
 ------
 
@@ -1032,7 +1053,7 @@ kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=
 
 版本对应：https://kubesphere.io/zh/docs/v3.4/installing-on-linux/introduction/kubekey/
 
-### 离线安装集群方式
+### 5、离线安装集群方式（可选）
 
 部署文件
 
@@ -1232,7 +1253,7 @@ spec:
         tolerations: []
 ```
 
-### 开始安装
+### 6、可选开始安装
 
 确定完成上面所有步骤后，您可以执行以下命令。
 
