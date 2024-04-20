@@ -6,8 +6,15 @@
     <description>Recent content in Kubernetes on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 Apr 2024 10:46:46 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 19 Apr 2024 14:12:12 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0.认识Kubernetes</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/0-%E8%AE%A4%E8%AF%86kubernetes/</link>
+      <pubDate>Fri, 19 Apr 2024 14:12:12 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/0-%E8%AE%A4%E8%AF%86kubernetes/</guid>
+      <description>Docker 可以使用 docker run 运行简单的应用程序的单个实例，用户数量请求增大时，需要去启动更多的实例。&#xA;需要密切关注应用程序 负载和性能 不仅仅是这些，还有：&#xA;容器故障恢复 主机崩溃等 容器编排是一种解决方案，帮助在生产环节中托管容器</description>
+    </item>
     <item>
       <title>Nginx Ingress重定向</title>
       <link>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</link>
@@ -16,18 +23,11 @@
       <description>官网参考：https://kubernetes.github.io/ingress-nginx/examples/rewrite/&#xA;metadata: annotations: nginx.ingress.kubernetes.io/app-root: /pumer/project/** 测试访问：&#xA;[root@k8sworker1 ~]# curl portal.**.com &amp;lt;html&amp;gt; &amp;lt;head&amp;gt;&amp;lt;title&amp;gt;302 Found&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt; &amp;lt;body bgcolor=&amp;#34;white&amp;#34;&amp;gt; &amp;lt;center&amp;gt;&amp;lt;h1&amp;gt;302 Found&amp;lt;/h1&amp;gt;&amp;lt;/center&amp;gt; &amp;lt;hr&amp;gt;&amp;lt;center&amp;gt;nginx/1.13.9&amp;lt;/center&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; </description>
     </item>
     <item>
-      <title>重定向配置</title>
-      <link>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</link>
-      <pubDate>Mon, 08 Apr 2024 10:45:06 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Kubeadm Install Kubernetes</title>
-      <link>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</link>
+      <title>Kubeadm部署k8s集群</title>
+      <link>http://localhost:1313/docsgo/kubernetes/kubeadm%E5%AE%89%E8%A3%85%E9%9B%86%E7%BE%A4/</link>
       <pubDate>Mon, 01 Apr 2024 11:18:20 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</guid>
-      <description>Kubernetes + KubeSphere 准备工作 Harbor 部署 harbor-offline-installer-v2.1.2.tgz&#xA;https://github.com/goharbor/harbor/releases/tag/v2.1.2&#xA;可参考安装文档：官方：https://goharbor.io/docs/2.1.0/install-config/quick-install-script/&#xA;上传harbor包，与 docker-compose-Linux-x86_64&#xA;mv /tmp/docker-compose-Linux-x86_64 /usr/local/bin/docker-compose chmod +x /usr/local/bin/docker-compose ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose 编辑配置文件&#xA;tar -zxvf /tmp/harbor-offline-installer-v2.1.2.tgz -C /root 进入解压的 harbor 目录&#xA;⚠️：拷贝harbor.yml的备份文件为 harbor.yml&#xA;编辑文件 /root/harbor/harbor.yml 注释掉https的相关配置 默认端口：8080 主机地址：hostname: 修改为主机 IP 存储目录: data_volume: /data/harbor 运行脚本：&#xA;bash install.sh 创建Harbor 库 bash create_project_harbor.sh&#xA;⚠️：按需添加需要的库名称，运行该脚本&#xA;#!/usr/bin/env bash url=&amp;#34;https://dockerhub.kubekey.local&amp;#34; user=&amp;#34;admin&amp;#34; passwd=&amp;#34;Harbor12345&amp;#34; harbor_projects=(library kubesphere calico ) for project in &amp;#34;${harbor_projects[@]}&amp;#34;; do echo &amp;#34;creating $project&amp;#34; curl -u &amp;#34;${user}:${passwd}&amp;#34; -X POST -H &amp;#34;Content-Type: application/json&amp;#34; &amp;#34;${url}/api/v2.</description>
+      <guid>http://localhost:1313/docsgo/kubernetes/kubeadm%E5%AE%89%E8%A3%85%E9%9B%86%E7%BE%A4/</guid>
+      <description>Kubernetes 注：部署环境为离线环境，镜像包需要推送到自建 Harbor 仓库。&#xA;在线环境部署 与 该文章最大区别就是无需手动准备镜像，仅此而已。&#xA;准备工作 1、Harbor 部署 harbor-offline-installer-v2.1.2.tgz&#xA;https://github.com/goharbor/harbor/releases/tag/v2.1.2&#xA;可参考安装文档：官方：https://goharbor.io/docs/2.1.0/install-config/quick-install-script/&#xA;上传harbor包，与 docker-compose-Linux-x86_64&#xA;mv /tmp/docker-compose-Linux-x86_64 /usr/local/bin/docker-compose chmod +x /usr/local/bin/docker-compose ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose 编辑配置文件&#xA;tar -zxvf /tmp/harbor-offline-installer-v2.1.2.tgz -C /root 进入解压的 harbor 目录&#xA;⚠️：拷贝harbor.yml的备份文件为 harbor.yml&#xA;编辑文件 /root/harbor/harbor.yml 注释掉https的相关配置 默认端口：8080 主机地址：hostname: 修改为主机 IP 存储目录: data_volume: /data/harbor 运行脚本：&#xA;bash install.sh 创建Harbor 库 bash create_project_harbor.sh&#xA;⚠️：按需添加需要的库名称，运行该脚本&#xA;#!/usr/bin/env bash url=&amp;#34;https://dockerhub.kubekey.local&amp;#34; user=&amp;#34;admin&amp;#34; passwd=&amp;#34;Harbor12345&amp;#34; harbor_projects=(library kubesphere calico ) for project in &amp;#34;${harbor_projects[@]}&amp;#34;; do echo &amp;#34;creating $project&amp;#34; curl -u &amp;#34;${user}:${passwd}&amp;#34; -X POST -H &amp;#34;Content-Type: application/json&amp;#34; &amp;#34;${url}/api/v2.</description>
     </item>
   </channel>
 </rss>

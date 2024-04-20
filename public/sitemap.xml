@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/cicd/gitlab/01-%E4%BB%8B%E7%BB%8D/</loc>
+    <lastmod>2024-04-20T21:03:14+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/3-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F/</loc>
+    <lastmod>2024-04-19T23:31:03+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/2-devsecops%E7%AE%80%E4%BB%8B/</loc>
+    <lastmod>2024-04-19T17:32:38+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/1-%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9/</loc>
+    <lastmod>2024-04-19T16:23:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/0-%E8%AE%A4%E8%AF%86kubernetes/</loc>
+    <lastmod>2024-04-19T14:12:12+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/</loc>
+    <lastmod>2024-04-19T14:12:12+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/ansible/study/ansible-%E5%88%86%E5%AD%90%E6%B5%8B%E8%AF%95/</loc>
     <lastmod>2024-04-17T22:03:44+08:00</lastmod>
   </url><url>
@@ -29,14 +47,8 @@
     <loc>http://localhost:1313/docsgo/ansible/study/1-ansible%E7%AE%80%E4%BB%8B/</loc>
     <lastmod>2024-04-08T15:56:38+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/kubernetes/</loc>
-    <lastmod>2024-04-08T10:46:46+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/docsgo/kubernetes/ingress/nginx-ingress%E9%87%8D%E5%AE%9A%E5%90%91/</loc>
     <lastmod>2024-04-08T10:46:46+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/docsgo/kubernetes/ingress/%E9%87%8D%E5%AE%9A%E5%90%91%E9%85%8D%E7%BD%AE/</loc>
-    <lastmod>2024-04-08T10:45:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/ansible/study/0-%E5%85%A5%E9%97%A8/</loc>
     <lastmod>2024-04-07T21:14:26+08:00</lastmod>
@@ -77,7 +89,7 @@
     <loc>http://localhost:1313/docsgo/shell/root-ssh-login-sh/</loc>
     <lastmod>2024-04-01T15:58:40+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/kubernetes/kubeadm-install-kubernetes/</loc>
+    <loc>http://localhost:1313/docsgo/kubernetes/kubeadm%E5%AE%89%E8%A3%85%E9%9B%86%E7%BE%A4/</loc>
     <lastmod>2024-04-01T11:18:20+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/other/jumpserver/</loc>
@@ -138,6 +150,9 @@
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/ansible/</loc>
+    <lastmod>2024-03-24T13:09:35+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/cicd/</loc>
     <lastmod>2024-03-24T13:09:35+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/devsecops/</loc>
