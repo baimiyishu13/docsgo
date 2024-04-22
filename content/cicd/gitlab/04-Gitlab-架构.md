@@ -93,8 +93,39 @@ docker 的扩展
 
 
 
-## Docker 执行器
+### Docker 执行器
 
 gitlab.com 默认使用 Preparing the "docker+machine" executor
 
 同样注意：每个作业实际上可能在一个完全不同的容器中执行，所以并不意味着所有作业都在同一台机器行执行。
+
+
+
+![image-20240422221707819](/images/image-20240422221707819.png "Title")
+
+
+
+### 覆盖Docker 执行器
+
+默认使用：
+
++ docker+machine
++ image：ruby
+
+优势：可以使用安装工具后的镜像（比如 npm node java ），需要什么就使用内涵什么的镜像
+
+```yml
+---
+image: node:21-alpine
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: never
+    - when: always
+
+stages:
+  - test
+  - build
+  - deploy
+```
+
