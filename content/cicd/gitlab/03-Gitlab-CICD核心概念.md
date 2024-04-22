@@ -196,3 +196,158 @@ build_image:
 等
 
  ![image-20240422114005373](/images//image-20240422114005373.png "Title")
+
+分支只有一个阶段被执行
+
+
+
+### workflow
+
+定义工作流的规则。这些规则可以用来控制整个 pipeline 的行为
+
+例如，你可以使用 workflow: 关键字来定义当 pipeline 应该运行，或者当某个 job 失败时是否应该继续执行其他的 jobs
+
+只有main 执行
+
+CI_PIPELINE_SOURCE 和 CI_COMMIT_BRANCH 是 GitLab CI/CD 中的预定义环境变量。
+
++ CI_PIPELINE_SOURCE：这个变量描述了触发当前 pipeline 的事件类型。可能的值包括 "push"、"web"、"trigger"、"schedule"、"api"、"external" 等。例如，如果当前 pipeline 是由定时任务触发的，那么 CI_PIPELINE_SOURCE 的值就会是 "schedule"。  
++ CI_COMMIT_BRANCH：这个变量表示当前提交所在的分支名称。例如，如果你在 "main" 分支上进行了一次提交，并触发了 CI/CD pipeline，那么 CI_COMMIT_BRANCH 的值就会是 "main"。
+
+```yml
+---
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+```
+
+when: always 表示这个 pipeline 将始终运
+
+查看变量：https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+
+
+
+具体的分支测试
+
+1. 一旦开发测试完分支，合并，再次进行测试确保没有问题
+2. 对于合并请求：只执行 test
+
+ ![image-20240422130212466](/images/image-20240422130212466.png  "Title")
+
+```yaml
+---
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: never
+    - when: always
+
+stages:
+  - test
+  - build
+  - deploy
+
+run_unit_tests:
+  stage: test
+  before_script:
+    - bash prepare-tests.sh
+  script:
+    - echo "Running unit tests"
+  after_script:
+    - echo "Cleaning up unit test environment"
+
+run_line_test:
+  stage: test
+  before_script:
+    - echo "Setting up test environment"
+  script:
+    - echo "Running unit tests"
+  after_script:
+    - echo "Cleaning up line test environment"
+
+build_image:
+  only:
+    - main
+  stage: build
+  script:
+    - echo "Building image"
+
+push_image:
+  only:
+    - main
+  stage: build
+  needs:
+    - build_image
+  script:
+    - echo "Pushing image"
+
+deploy_image:
+  only:
+    - main
+  stage: deploy
+  script:
+    - echo "Deploying image "
+
+```
+
+
+
+### 变量
+
+除了Gitlab 提供的变量外，实际上还可以定义自己的变量
+
++ 多个微服务运行管道，传递微服务名称作为参数
++ 假设都有个环境，该服务应该部署到哪个环节
+
+![image-20240422145028484](/images/image-20240422145028484.png "Title") 
+
+![image-20240422145709289](/images/image-20240422145709289.png "Title")
+
+引用变量：
+
+```sh
+deploy_image:
+  only:
+    - main
+  stage: deploy
+  script:
+    - echo "Deploying docker image to $DEPLOYMENT_ENVIRONMENT"
+```
+
+ ![image-20240422150525141](/images/image-20240422150525141.png "Title")
+
+
+
+变量文件
+
+我们经常需要一些 外部配置文件或某种属性，为构建应用程序和运行测试。
+
++ 可能是包含数据库配置的文件等等
++ 其他服务的配置等
+
+内容可以是 yml json
+
+ ![image-20240422154359732](/images/image-20240422154359732.png "Title")
+
+
+
+**variables**
+
+```yml
+variables:
+  image_repository: docker.io/my-docker-id/myapp
+  image_tag: v1.0
+  
+build_image:
+  only:
+    - main
+  stage: build
+  script:
+    - echo "Building image"
+    - echo "docker image $image_repository:$image_tag"
+```
+
+
+
