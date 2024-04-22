@@ -1,0 +1,211 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>03 Gitlab CICD核心概念</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-21T17:46:46&#43;08:00">April 21, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#jobs">Jobs</a>
+      <ul>
+        <li><a href="#stage--stages">stage &amp; stages</a></li>
+        <li><a href="#needs">needs</a></li>
+        <li><a href="#查看依赖">查看依赖</a></li>
+        <li><a href="#执行脚本">执行脚本</a></li>
+        <li><a href="#only">only</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>gitlab-ci.yml</p>
+<h2 id="jobs">Jobs</h2>
+<p>Job: 管道中的一个步骤或执行某个操作的工作流</p>
+<pre tabindex="0"><code>script: 执行如何命令、Linux 命令
+before_scrip: 安装依赖项、设置环境变量等
+after_script: 通常用于清理作业环境，例如删除临时文件、停止服务等
+</code></pre><p>pipeine</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_tests</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">apk add yamllint</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running tests&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">yamllint gitlab-ci.yml</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Building image&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t node_exporter .</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Pushing image&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push node_exporter</span>
+</span></span></code></pre></div><p>实验项目：https://gitlab.com/baimiyishu13/mynodeapp-cicd-project</p>
+<p>创建：.gitlab-ci.yml 会自动识别为管道文件</p>
+<h3 id="stage--stages">stage &amp; stages</h3>
+<p>如果不想入上并行，则使用 stage</p>
+<ul>
+<li>如果一个 stage 失败，则不会执行下一个</li>
+</ul>
+<p><img
+    src="http://localhost:1313/docsgo/images//image-20240422111721437.png" alt="image-20240422111721437"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p><img
+    src="http://localhost:1313/docsgo/images//image-20240421220113191.png" alt="image-20240421220113191"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_tests</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running unit tests&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up unit test environment&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_line_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running unit tests&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up line test environment&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Building image&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Pushing image&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_image</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">echo &#34;Deploying image&#34;</span>
+</span></span></code></pre></div><h3 id="needs">needs</h3>
+<p>实现：build_image 完成后才执行push_image</p>
+<ul>
+<li>needs: 需要</li>
+</ul>
+<pre tabindex="0"><code>build_image:
+  stage: build
+  script:
+    - echo &#34;Building image
+    - docker build -t my-image .
+
+push_image:
+  stage: build
+  needs:
+    - build_image
+  script:
+    - echo &#34;Pushing image&#34;
+</code></pre><h3 id="查看依赖">查看依赖</h3>
+<p><img
+    src="http://localhost:1313/docsgo/images//image-20240421221339496.png" alt="image-20240421221339496"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p><img
+    src="http://localhost:1313/docsgo/images//image-20240421223042109.png" alt="image-20240421223042109"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h3 id="执行脚本">执行脚本</h3>
+<p>如果使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">pwd</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ls -la</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">mkdir -p /tmp/test</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ls -la</span>
+</span></span></code></pre></div><p>如果有更复杂的逻辑，就不适合这样去做，会降低可读性</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>run_unit_tests:
+</span></span><span style="display:flex;"><span>  stage: test
+</span></span><span style="display:flex;"><span>  before_script:
+</span></span><span style="display:flex;"><span>    - bash /prepare-tests.sh
+</span></span></code></pre></div><p>注意： 每次cicd 都是在干净的环境中执行，甚至不必清理创建的测试文件</p>
+<h3 id="only">only</h3>
+<p>only 关键字用于定义一组规则，这些规则决定了特定的 job 在何种情况下才会被执行。例如，你可以指定 job 只在特定的分支、标签或者当有特定的文件更改时才执行。</p>
+<p>分支触发</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git checkout -b feature/test-cicd-pipeline
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images//image-20240422112622863.png" alt="image-20240422112622863"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>这意味着  .gitlab-ci.yml 适用于每个分支</p>
+<p>但是，并不想提交任何分支时就执行管道：</p>
+<ul>
+<li>test：分支在合并到main 之前执行test</li>
+<li>合并到主分支时，进行构建部署</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">only</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Building image&#34;</span>
+</span></span></code></pre></div><p>等</p>
+<p><img
+    src="http://localhost:1313/docsgo/images//image-20240422114005373.png" alt="image-20240422114005373"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+
+        </div>
+    </div>
+</div>
