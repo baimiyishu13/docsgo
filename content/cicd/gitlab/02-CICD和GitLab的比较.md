@@ -1,5 +1,5 @@
 +++
-title = '02-CI/CD和GitLab的比较'
+title = '第2章：CI/CD和GitLab比较'
 date = 2024-04-21T17:15:34+08:00
 draft = true
 +++

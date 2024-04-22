@@ -1,5 +1,5 @@
 +++
-title = '03 Gitlab CICD核心概念'
+title = '第3章：Gitlab CICD核心概念 作业、阶段、变量...'
 date = 2024-04-21T17:46:46+08:00
 draft = true
 +++
