@@ -129,7 +129,7 @@ stages:
   - deploy
 ```
 
-![image-20240422222909731](/image-20240422222909731.png "Title")
+
 
   也可以为每个任务添加image
 
@@ -189,3 +189,120 @@ gitlab-runner register  --url https://gitlab.com  --token glrt-WXbwYof8_63zzZmtx
 ```
 
 ![image-20240423013027728](/images/image-20240423013027728.png "Title")
+
+
+
+即使创建了 runner 运行管道还是会实验 gitlab 共享的 runner
+
+默认：使用共享 runner
+
+
+
+配置特定的 runner 在特定的 Job
+
+```yaml
+run_unit_tests:
+  tags:
+    - ec2
+    - aws
+    - remote
+  stage: test
+  before_script:
+    - chmod +x prepare-tests.sh
+    - ./prepare-tests.sh
+    - npm --version
+  script:
+    - echo "Running unit tests for micro server $MICRO_SERVER_NAME"
+  after_script:
+    - echo "Cleaning up unit test environment"
+```
+
+如果出现浅克隆问题，可设置 禁用
+
+```yaml
+variables:
+  GIT_DEPTH: 0
+```
+
+ ![image-20240423121539687](/images/image-20240423121539687.png "Title")
+
+
+
+## Docker Runner
+
+安装：https://docs.gitlab.com/runner/install/docker.html
+
+同一台主机上添加多个 Runner
+
+ ![image-20240423141618017](/images/image-20240423141618017.png "Title")
+
+
+
+## kubernetes Runner
+
+安装：https://docs.gitlab.com/runner/install/kubernetes.html#installing-gitlab-runner-using-the-helm-chart
+
+helm 安装
+
+```sh
+helm repo add gitlab https://charts.gitlab.io
+helm show values gitlab/gitlab-runner --version 0.64.0  > values.yaml
+helm install --namespace gitlab-runner gitlab-runner -f ./values.yaml gitlab/gitlab-runner 
+```
+
+![image-20240423124236135](/images/image-20240423124236135.png "Title")
+
+
+
+使用标签，可以灵活的去选择 Runner 执行特定的 Job
+
+假设我们有几十个 Runner，希望配置不同的 runner 执行不同的 Job。
+
++ 多个具有相同标签的 runner 将形成高可用性
++ 如果项目单一，拥有20个linux 和docker 标签的 runner 也是正常的，基本是只是具有分配负载的功能
+
+
+
+## Runners 组
+
+已经创建三个 runner ，当前专用于测试项目。
+
+![image-20240423143636737](/images/image-20240423143636737.png "Title")
+
+实际上可以通过：锁定到当前项目（当Runner被锁定时，不能将其分配给其他项目）
+
+一个项目多个微服务，每个微服务一个仓库。
+
+假设有 20个，每个都有自己的管道
+
+
+
+Groups：对项目进行分组 【多个项目，多个团队】
+
++ 好处1，管理组的权限，不用管理每个项目的权限
+
+
+
+创建群组 Runner
+
+![image-20240423151943003](/images/image-20240423151943003.png "Title")
+
+---
+
+
+
+## 管理 Gilab 实例
+
+
+
+到目前为止：
+
+1. gitlab.com 作为 gitlab server，托管存储库，直接构建CICD
+2. 可以使用 gitlab 托管的 runner 共享执行器
+3. 配置添加特定的组，拥有自己的 gitlab runner
+
+除此之外，还需要自己运行配置 Gitlab Server
+
++ 高安全性
++ 项目/用户隔离
++ 绝对的控制
