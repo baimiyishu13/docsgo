@@ -129,3 +129,63 @@ stages:
   - deploy
 ```
 
+![image-20240422222909731](/image-20240422222909731.png "Title")
+
+  也可以为每个任务添加image
+
+```yaml
+run_unit_tests:
+  image: node:21-alpine
+  stage: test
+  before_script:
+    - chmod +x prepare-tests.sh
+    - ./prepare-tests.sh
+
+run_line_test:
+  image: node:21-alpine
+  stage: test
+  before_script:
+    - echo "Setting up test environment"
+```
+
+不指定全局image，则默认使用ruby
+
+
+
+## 特定的 Runner
+
+假设团队希望使用单独的Runner用于项目，但是不希望弄乱其他项目的管道。
+
+一家公司，多个项目团队。
+
+一个团队可能不想与其他团队共享 Runner，而是在自己的隔离环境中运行项目作业。
+
+特定的 Runner
+
++ 可以将其连接到特定的项目，仅用于特定的项目。其他项目无法使用 
+
+github.com 上共享 runners 由gaitab 本身管理。
+
+特定的 runners 由自我管理 
+
++ 意味着必须管理、创建它们。【服务器 - 安装 gitlab runner】  -  连接到 gitlab server
+
+
+
+## runners 配置
+
+可以在本地 MAC、windows上安装 runners
+
+实验选择在 ECS2 公有云服务器安装：
+
+安装：https://docs.gitlab.com/runner/install/
+
+![image-20240423010913131](/images/image-20240423010913131.png  "Title")
+
+参考提示创建：
+
+```sh
+gitlab-runner register  --url https://gitlab.com  --token glrt-WXbwYof8_63zzZmtxiTz
+```
+
+![image-20240423013027728](/images/image-20240423013027728.png "Title")
