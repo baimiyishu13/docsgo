@@ -1,0 +1,273 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第4章：GitLab架构: Runners, 执行器</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-22T16:47:48&#43;08:00">April 22, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#gitlab">GItLab</a>
+      <ul>
+        <li><a href="#架构">架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#执行器">执行器</a>
+      <ul>
+        <li><a href="#shell-执行器">Shell 执行器</a></li>
+        <li><a href="#docker-执行器">Docker 执行器</a></li>
+        <li><a href="#vm-执行器">VM 执行器</a></li>
+        <li><a href="#kubernetes-执行器">Kubernetes 执行器</a></li>
+        <li><a href="#docker-machine-执行器">Docker Machine 执行器</a></li>
+        <li><a href="#docker-执行器-1">Docker 执行器</a></li>
+        <li><a href="#覆盖docker-执行器">覆盖Docker 执行器</a></li>
+      </ul>
+    </li>
+    <li><a href="#特定的-runner">特定的 Runner</a></li>
+    <li><a href="#runners-配置">runners 配置</a></li>
+    <li><a href="#docker-runner">Docker Runner</a></li>
+    <li><a href="#kubernetes-runner">kubernetes Runner</a></li>
+    <li><a href="#runners-组">Runners 组</a></li>
+    <li><a href="#管理-gilab-实例">管理 Gilab 实例</a></li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h2 id="gitlab">GItLab</h2>
+<h3 id="架构">架构</h3>
+<p>触发的管道</p>
+<p>问题：gitlab 在哪里执行这些操作，就想执行的echo、ls、创建文件等等，实际上发生在哪里。</p>
+<p>必须在某个服务器或者环境中运行</p>
+<ol>
+<li>gitlab.com 本身托管的gitlab 实例</li>
+<li>gitlab runner：安装在单独服务器，而不是运行在gitlab 服务器上，连接到gitlab服务器就可以执行gitlab服务器发给它的job。所谓的运行器【可供所有用户使用】</li>
+</ol>
+<h2 id="执行器">执行器</h2>
+<p>选择那种类型的执行器：</p>
+<p>每个都有自己的用例</p>
+<ul>
+<li>一般使用linux 构建标准的 ci cd 管道 docker 执行器</li>
+<li>kubernetes 集群中执行</li>
+</ul>
+<p>定义和配置 gitlab runner 执行器</p>
+<p>可以在一台服务器运行多个执行器</p>
+<h3 id="shell-执行器">Shell 执行器</h3>
+<p>gitlab runner 实际上就是一个中介，它将从 gitlab 获取到的作业命令移交给它正在运行的服务器的 shell，实际上是在 gitlab runner 运行的服务器。</p>
+<p>执行作业的服务器，通常也称为：shell 执行器</p>
+<p>意味着需要使用命令：</p>
+<ul>
+<li>docker</li>
+<li>go</li>
+<li>npm</li>
+<li>maven</li>
+</ul>
+<p>等等，都需要安装这些工具，升级版本等等。意味着需要管理员大量的操作</p>
+<h3 id="docker-执行器">Docker 执行器</h3>
+<p>可以随意安装服务、工具，不必在服务端配置其他。</p>
+<p>每个job 都会在干净环境中启动</p>
+<h3 id="vm-执行器">VM 执行器</h3>
+<p>每个作业都需要加载一个 vm 整个操作系统，意味着会非常慢</p>
+<h3 id="kubernetes-执行器">Kubernetes 执行器</h3>
+<p>意味着现在有一个集群，将创建一个新的Kubernetes Pod 作为运行环境</p>
+<h3 id="docker-machine-执行器">Docker Machine 执行器</h3>
+<p>docker 的扩展</p>
+<p>创建docker主机，在一台机器上管理多个Docker 实例</p>
+<p>总结：</p>
+<p>三部分：gitlab server、gitlab runner、execute 执行器</p>
+<p>1、 gitlab runner 拉取gitlab server 的job</p>
+<p>2、一旦有了job，执行器将去编译job 发送到执行器</p>
+<p>3、gitlab 执行器之间从git 仓库拉取代码执行</p>
+<h3 id="docker-执行器-1">Docker 执行器</h3>
+<p>gitlab.com 默认使用 Preparing the &ldquo;docker+machine&rdquo; executor</p>
+<p>同样注意：每个作业实际上可能在一个完全不同的容器中执行，所以并不意味着所有作业都在同一台机器行执行。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240422221707819.png" alt="image-20240422221707819"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h3 id="覆盖docker-执行器">覆盖Docker 执行器</h3>
+<p>默认使用：</p>
+<ul>
+<li>docker+machine</li>
+<li>image：ruby</li>
+</ul>
+<p>优势：可以使用安装工具后的镜像（比如 npm node java ），需要什么就使用内涵什么的镜像</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH != &#34;main&#34; &amp;&amp; $CI_PIPELINE_SOURCE != &#34;merge_request_event&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy</span>
+</span></span></code></pre></div><p>也可以为每个任务添加image</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">run_unit_tests</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod +x prepare-tests.sh</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./prepare-tests.sh</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_line_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span></code></pre></div><p>不指定全局image，则默认使用ruby</p>
+<h2 id="特定的-runner">特定的 Runner</h2>
+<p>假设团队希望使用单独的Runner用于项目，但是不希望弄乱其他项目的管道。</p>
+<p>一家公司，多个项目团队。</p>
+<p>一个团队可能不想与其他团队共享 Runner，而是在自己的隔离环境中运行项目作业。</p>
+<p>特定的 Runner</p>
+<ul>
+<li>可以将其连接到特定的项目，仅用于特定的项目。其他项目无法使用</li>
+</ul>
+<p>github.com 上共享 runners 由gaitab 本身管理。</p>
+<p>特定的 runners 由自我管理</p>
+<ul>
+<li>意味着必须管理、创建它们。【服务器 - 安装 gitlab runner】  -  连接到 gitlab server</li>
+</ul>
+<h2 id="runners-配置">runners 配置</h2>
+<p>可以在本地 MAC、windows上安装 runners</p>
+<p>实验选择在 ECS2 公有云服务器安装：</p>
+<p>安装：https://docs.gitlab.com/runner/install/</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240423010913131.png" alt="image-20240423010913131"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>参考提示创建：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>gitlab-runner register  --url https://gitlab.com  --token glrt-WXbwYof8_63zzZmtxiTz
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240423013027728.png" alt="image-20240423013027728"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>即使创建了 runner 运行管道还是会实验 gitlab 共享的 runner</p>
+<p>默认：使用共享 runner</p>
+<p>配置特定的 runner 在特定的 Job</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">run_unit_tests</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">remote</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod +x prepare-tests.sh</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./prepare-tests.sh</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm --version</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running unit tests for micro server $MICRO_SERVER_NAME&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up unit test environment&#34;</span>
+</span></span></code></pre></div><p>如果出现浅克隆问题，可设置 禁用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240423121539687.png" alt="image-20240423121539687"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h2 id="docker-runner">Docker Runner</h2>
+<p>安装：https://docs.gitlab.com/runner/install/docker.html</p>
+<p>同一台主机上添加多个 Runner</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240423141618017.png" alt="image-20240423141618017"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h2 id="kubernetes-runner">kubernetes Runner</h2>
+<p>安装：https://docs.gitlab.com/runner/install/kubernetes.html#installing-gitlab-runner-using-the-helm-chart</p>
+<p>helm 安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>helm repo add gitlab https://charts.gitlab.io
+</span></span><span style="display:flex;"><span>helm show values gitlab/gitlab-runner --version 0.64.0  &gt; values.yaml
+</span></span><span style="display:flex;"><span>helm install --namespace gitlab-runner gitlab-runner -f ./values.yaml gitlab/gitlab-runner 
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240423124236135.png" alt="image-20240423124236135"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>使用标签，可以灵活的去选择 Runner 执行特定的 Job</p>
+<p>假设我们有几十个 Runner，希望配置不同的 runner 执行不同的 Job。</p>
+<ul>
+<li>多个具有相同标签的 runner 将形成高可用性</li>
+<li>如果项目单一，拥有20个linux 和docker 标签的 runner 也是正常的，基本是只是具有分配负载的功能</li>
+</ul>
+<h2 id="runners-组">Runners 组</h2>
+<p>已经创建三个 runner ，当前专用于测试项目。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240423143636737.png" alt="image-20240423143636737"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>实际上可以通过：锁定到当前项目（当Runner被锁定时，不能将其分配给其他项目）</p>
+<p>一个项目多个微服务，每个微服务一个仓库。</p>
+<p>假设有 20个，每个都有自己的管道</p>
+<p>Groups：对项目进行分组 【多个项目，多个团队】</p>
+<ul>
+<li>好处1，管理组的权限，不用管理每个项目的权限</li>
+</ul>
+<p>创建群组 Runner</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240423151943003.png" alt="image-20240423151943003"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<hr>
+<h2 id="管理-gilab-实例">管理 Gilab 实例</h2>
+<p>到目前为止：</p>
+<ol>
+<li>gitlab.com 作为 gitlab server，托管存储库，直接构建CICD</li>
+<li>可以使用 gitlab 托管的 runner 共享执行器</li>
+<li>配置添加特定的组，拥有自己的 gitlab runner</li>
+</ol>
+<p>除此之外，还需要自己运行配置 Gitlab Server</p>
+<ul>
+<li>高安全性</li>
+<li>项目/用户隔离</li>
+<li>绝对的控制</li>
+</ul>
+
+        </div>
+    </div>
+</div>

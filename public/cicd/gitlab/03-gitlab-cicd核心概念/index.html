@@ -23,7 +23,7 @@
 </div>
 <div id="article" style="padding-left: 20px; padding-right: 20px;">
     <div class="article-title">
-        <h1>03 Gitlab CICD核心概念</h1>
+        <h1>第3章：Gitlab CICD核心概念 作业、阶段、变量...</h1>
     </div>
     
     
@@ -40,6 +40,8 @@
         <li><a href="#查看依赖">查看依赖</a></li>
         <li><a href="#执行脚本">执行脚本</a></li>
         <li><a href="#only">only</a></li>
+        <li><a href="#workflow">workflow</a></li>
+        <li><a href="#变量">变量</a></li>
       </ul>
     </li>
   </ul>
@@ -205,7 +207,144 @@ push_image:
      style="width: 70%; max-width: Title;"
     />
 </p>
-
+<p>分支只有一个阶段被执行</p>
+<h3 id="workflow">workflow</h3>
+<p>定义工作流的规则。这些规则可以用来控制整个 pipeline 的行为</p>
+<p>例如，你可以使用 workflow: 关键字来定义当 pipeline 应该运行，或者当某个 job 失败时是否应该继续执行其他的 jobs</p>
+<p>只有main 执行</p>
+<p>CI_PIPELINE_SOURCE 和 CI_COMMIT_BRANCH 是 GitLab CI/CD 中的预定义环境变量。</p>
+<ul>
+<li>CI_PIPELINE_SOURCE：这个变量描述了触发当前 pipeline 的事件类型。可能的值包括 &ldquo;push&rdquo;、&ldquo;web&rdquo;、&ldquo;trigger&rdquo;、&ldquo;schedule&rdquo;、&ldquo;api&rdquo;、&ldquo;external&rdquo; 等。例如，如果当前 pipeline 是由定时任务触发的，那么 CI_PIPELINE_SOURCE 的值就会是 &ldquo;schedule&rdquo;。</li>
+<li>CI_COMMIT_BRANCH：这个变量表示当前提交所在的分支名称。例如，如果你在 &ldquo;main&rdquo; 分支上进行了一次提交，并触发了 CI/CD pipeline，那么 CI_COMMIT_BRANCH 的值就会是 &ldquo;main&rdquo;。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH == &#34;main&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span></code></pre></div><p>when: always 表示这个 pipeline 将始终运</p>
+<p>查看变量：https://docs.gitlab.com/ee/ci/variables/predefined_variables.html</p>
+<p>具体的分支测试</p>
+<ol>
+<li>一旦开发测试完分支，合并，再次进行测试确保没有问题</li>
+<li>对于合并请求：只执行 test</li>
+</ol>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240422130212466.png" alt="image-20240422130212466"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH != &#34;main&#34; &amp;&amp; $CI_PIPELINE_SOURCE != &#34;merge_request_event&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_tests</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">bash prepare-tests.sh</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running unit tests&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up unit test environment&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_line_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Setting up test environment&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running unit tests&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">after_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Cleaning up line test environment&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">only</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Building image&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">only</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Pushing image&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">only</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Deploying image &#34;</span>
+</span></span></code></pre></div><h3 id="变量">变量</h3>
+<p>除了Gitlab 提供的变量外，实际上还可以定义自己的变量</p>
+<ul>
+<li>多个微服务运行管道，传递微服务名称作为参数</li>
+<li>假设都有个环境，该服务应该部署到哪个环节</li>
+</ul>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240422145028484.png" alt="image-20240422145028484"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240422145709289.png" alt="image-20240422145709289"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>引用变量：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>deploy_image:
+</span></span><span style="display:flex;"><span>  only:
+</span></span><span style="display:flex;"><span>    - main
+</span></span><span style="display:flex;"><span>  stage: deploy
+</span></span><span style="display:flex;"><span>  script:
+</span></span><span style="display:flex;"><span>    - echo <span style="color:#e6db74">&#34;Deploying docker image to </span>$DEPLOYMENT_ENVIRONMENT<span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240422150525141.png" alt="image-20240422150525141"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>变量文件</p>
+<p>我们经常需要一些 外部配置文件或某种属性，为构建应用程序和运行测试。</p>
+<ul>
+<li>可能是包含数据库配置的文件等等</li>
+<li>其他服务的配置等</li>
+</ul>
+<p>内容可以是 yml json</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240422154359732.png" alt="image-20240422154359732"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p><strong>variables</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image_repository</span>: <span style="color:#ae81ff">docker.io/my-docker-id/myapp</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image_tag</span>: <span style="color:#ae81ff">v1.0</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">only</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Building image&#34;</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;docker image $image_repository:$image_tag&#34;</span>
+</span></span></code></pre></div>
         </div>
     </div>
 </div>

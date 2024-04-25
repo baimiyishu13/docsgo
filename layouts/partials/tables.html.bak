@@ -1,0 +1,355 @@
+<div class="container mx-auto mb-8 mt-8 mb-8 lg:flex">
+    <div class="w-full bg-white shadow-md rounded pb-8 antialiased">
+        <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+            <a class="font-medium" href="monitor/监控可观测性/">
+                最新文章: &nbsp; victoriaMetrics 通过使用各种工具和技术来实现对应用程序和基础设施的监控告警、故障排除等功能的一套完整的解决方案。
+            </a>
+        </div>
+        <div class="flex flex-wrap mb-4 ">
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> GitLab CI/CD  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/cicd">
+                            <img src="/gitlabcicd.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                GitLab CI/CD
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">GitLab CI/CD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Ansible  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/ansible">
+                            <img src="/ansble1.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Ansible
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Ansible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> DevopsSec  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/devsecops">
+                            <img src="/what-is-devsecops-and-its-business-benefits.jpg" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                DevopsSec
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">CICD</span>
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">安全</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Terraform  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/terraform">
+                            <img src="/terraform.svg" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Terraform
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Terraform</span>
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Iac</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Monitor  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/monitor">
+                            <img src="/monitoring.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                创建一个高效且可扩展的监控解决方案
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">victoriaMetrics</span>
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Grafana</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Kubernetes  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/kubernetes">
+                            <img src="/kubernetes.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                生产级容器编排
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Kubernetes</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> DevOps  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/devops">
+                            <img src="/devops.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                DevOps
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">DevOps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Golang  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/go">
+                            <img src="/golang.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Golang
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Golang</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Istio  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/istio">
+                            <img src="/istio.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Istio 服务网格
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">istio</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Shell Script  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/shell">
+                            <img src="/shell.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Jenkins
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Bash</span>
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Script</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/4 px-4 py-1 mb-4 ">
+                <div class="shadow-xl border lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="panel-body bg-default font-semibold">
+                        <div class="row row-table row-flush">
+                            <div class="col-xs-12">
+                                <h4 class="m0"> Other  </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/other">
+                            <img src="/other.png" alt="monitor image" class="img-responsive exercise-img h-36">
+                        </a>
+                    </div>
+                    <div class="panel-body bg-info mt-2 mb-2">
+                        <div class="row row-table row-flush  ">
+                            <p class="font-mono text-sm">
+                                Golang
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 mb-2 pt-2 pb-2 bg-stone-100 ">
+                        <p class="font-mono text-sm">标签:</p>
+                        <div class="text-gray-800 text-base font-mono ml-2 mr-2">
+                            <span class="bg-gray-200 px-2 py-1 m-1 rounded text-xs">Golang</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

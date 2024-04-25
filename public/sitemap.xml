@@ -2,6 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/cicd/gitlab/07-%E9%83%A8%E7%BD%B2%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/</loc>
+    <lastmod>2024-04-25T10:35:41+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/cicd/gitlab/06-%E9%AB%98%E7%BA%A7%E7%AE%A1%E9%81%93/</loc>
+    <lastmod>2024-04-24T14:30:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/cicd/gitlab/05-%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%9A%84%E7%AE%A1%E9%81%93/</loc>
+    <lastmod>2024-04-23T15:42:55+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/cicd/gitlab/04-gitlab-%E6%9E%B6%E6%9E%84/</loc>
+    <lastmod>2024-04-22T16:47:48+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/cicd/gitlab/03-gitlab-cicd%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/</loc>
     <lastmod>2024-04-21T17:46:46+08:00</lastmod>
   </url><url>

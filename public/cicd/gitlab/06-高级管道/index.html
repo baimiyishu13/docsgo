@@ -1,0 +1,884 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第6章：高级管道：版本控制、缓存、多阶段……</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-24T14:30:19&#43;08:00">April 24, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#版本控制">版本控制</a>
+      <ul>
+        <li><a href="#设置递增版本过程">设置递增版本过程</a></li>
+        <li><a href="#使用阶段的产物作为变量文件">使用阶段的产物作为变量文件</a></li>
+        <li><a href="#将变量导出为环境变量">将变量导出为环境变量</a></li>
+      </ul>
+    </li>
+    <li><a href="#缓存">缓存</a>
+      <ul>
+        <li><a href="#管道中优化">管道中优化</a></li>
+        <li><a href="#artifacts-vs-cache">Artifacts vs cache</a></li>
+      </ul>
+    </li>
+    <li><a href="#testing-sast-job">Testing SAST Job</a></li>
+    <li><a href="#多阶段">多阶段</a>
+      <ul>
+        <li><a href="#配置清理代码重复">配置清理代码重复</a></li>
+        <li><a href="#配置手动审批">配置手动审批</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h2 id="版本控制">版本控制</h2>
+<p>当前我们构建的文件中，镜像版本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_NAME</span>: <span style="color:#ae81ff">$CI_REGISTRY_IMAGE</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_TAG</span>: <span style="color:#e6db74">&#34;1.2&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">APP_PORT</span>: <span style="color:#ae81ff">3001</span>
+</span></span></code></pre></div><p>如果不增加修改，将会一直是1.2，这样做不现实因为会产生覆盖。</p>
+<p>生产环境中，每次管道构建都会产生一个新的版本</p>
+<ul>
+<li>随着程序改进，我们依然希望保留跟踪版本直接的变化</li>
+</ul>
+<h3 id="设置递增版本过程">设置递增版本过程</h3>
+<p>版本 1.1.1</p>
+<ul>
+<li>第一个数字： 程序重大改动，重构，替换编码框架</li>
+<li>第二个数字：次要更改，新功能，大的bug修复</li>
+<li>第三个数字：补丁版本，小的修改，例如较小的bug修复</li>
+</ul>
+<p>在 CI 文件中读取程序的 版本</p>
+<ul>
+<li>服务器安装 jq 命令</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@monitor ~<span style="color:#f92672">]</span><span style="color:#75715e"># cat p.json   | jq -r &#39;.version&#39;</span>
+</span></span><span style="display:flex;"><span>1.0.0
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export APP_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$APP_VERSION .</span>
+</span></span></code></pre></div><p>即使这样，还需每次修改应用程序中的 version</p>
+<p>在构建镜像是 为 Image 添加 TAG 【预定义变量】</p>
+<p>==CI_PIPELINE_IID==: 当前管道的项目级 IID</p>
+<ul>
+<li>将用作 TAG 版本的一部分</li>
+</ul>
+<p>版本：<code>1.0.0-2378</code> 版本号-内部版本</p>
+<p>或者将 构建 ID 作为第三个数：<code>1.0.buildID</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span></code></pre></div><p>此时的环境变量只能用于 build_image</p>
+<p>不希望在每个任务中设置，避免冗余</p>
+<ul>
+<li>artifacts：artifacts 关键字用于指定在作业运行后应保存的文件和目录。</li>
+</ul>
+<p>生成一个变量文件，供其他任务使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $VERSION &gt; version-file.txt</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">version-file.txt</span>
+</span></span></code></pre></div><h3 id="使用阶段的产物作为变量文件">使用阶段的产物作为变量文件</h3>
+<p><strong>说明：</strong></p>
+<p>阶段的产物下一阶段可以直接使用，但是在同一阶段中的任务</p>
+<p>在 GitLab CI/CD 中，你可以使用 <code>dependencies</code> 关键字来指定一个作业依赖于哪些其他作业。这样，这个作业就可以使用那些作业的构建工件（artifacts）。默认情况下，一个作业会依赖于同一阶段中所有其他作业以及所有先前阶段中的作业。</p>
+<p>然而，你可以使用 <code>dependencies</code> 关键字来更改这个行为。例如，你可以让一个作业只依赖于特定的作业，或者让一个作业不依赖于任何其他作业。</p>
+<p>这是一个例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">job1</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>: <span style="color:#ae81ff">echo &#34;This is job1&#34; &gt; file1.txt</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">file1.txt</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">job2</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>: <span style="color:#ae81ff">cat file1.txt</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">job1</span>
+</span></span></code></pre></div><p>在这个例子中，<code>job2</code> 依赖于 <code>job1</code>，所以它可以使用 <code>job1</code> 的构建工件 <code>file1.txt</code>。</p>
+<p>需要注意的是，<code>dependencies</code> 只能指定在当前作业之前的作业。你不能让一个作业依赖于同一阶段中的后续作业或者后续阶段中的任何作业。如果你需要在作业之间共享数据，你可能需要重新组织你的阶段和作业，或者使用其他方法（如使用外部存储）来共享数据。</p>
+<p>push_image</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$(cat version-file.txt)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$VERSION</span>
+</span></span></code></pre></div><p>如果有 needs 便不需要 dependencies，存在重叠功能</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$(cat version-file.txt)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$VERSION</span>
+</span></span></code></pre></div><p>如果在后面的阶段不需要 前面阶段的产物</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">test-dev</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>: [] <span style="color:#75715e"># 不要下载先前阶段任何东西</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;testing&#34;</span>
+</span></span></code></pre></div><p>当前完整文件【实现了版本递增】</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH != &#34;main&#34; &amp;&amp; $CI_PIPELINE_SOURCE != &#34;merge_request_event&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">lint</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_NAME</span>: <span style="color:#ae81ff">$CI_REGISTRY_IMAGE</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">APP_PORT</span>: <span style="color:#ae81ff">3001</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_ENDPOINT</span>: <span style="color:#ae81ff">http://$DEV_SERVER_HOST:3001</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">lint_code_yaml</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">python:3.10</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">lint</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">pip install yamllint</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">yamllint .</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">cd app</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">junit</span>: <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $VERSION &gt; version-file.txt</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">version-file.txt</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$(cat version-file.txt)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$VERSION</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_dev</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod 600 $SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export IMAGE_TAG=$(cat version-file.txt)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $DC_IMAGE_NAME:$DC_IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml root@$DEV_SERVER_HOST:/root</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$DEV_SERVER_HOST &#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_NAME=$IMAGE_NAME &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_TAG=$IMAGE_TAG &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose down &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose up -d&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">development</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">$DEV_ENDPOINT</span>
+</span></span></code></pre></div><h3 id="将变量导出为环境变量">将变量导出为环境变量</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#ae81ff">echo &#34;MY_ENV=value&#34; &gt;&gt; build.env</span>
+</span></span></code></pre></div><p>将 MY_ENV=value 保存到build.env文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $VERSION &gt; version-file.txt</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;VERSION=$VERSION&#34; &gt;&gt; build.env</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">dotenv</span>: <span style="color:#ae81ff">build.env</span>
+</span></span></code></pre></div><p>意味着在接下来的阶段不需要使用 <code>export VERSION=$(cat version-file.txt)</code></p>
+<p>也不需要有下载产物</p>
+<p>如果我们有多个环境变量，需要传递给多个的 Job，那么使用 .env 会非常方便，因为很难从文件中读取多个变量</p>
+<h2 id="缓存">缓存</h2>
+<h3 id="管道中优化">管道中优化</h3>
+<ul>
+<li>使 Job 更快、更高效 【这是配置CICD始终需要的东西 &ndash;缓存】</li>
+</ul>
+<p>每个作业运行在独立环境</p>
+<p>某些情况下，不同Job 需要共享一些文件。</p>
+<p>例如，在单元测试时，npm install 安装依赖项</p>
+<p>编译打包时也需要 npm install 安装，虽然是相同的依赖，但是不能重用。</p>
+<p>如果，程序很复杂，并且package.json 中有很多依赖，如果是数百个，那么将会非常慢，花费大量时间。</p>
+<ul>
+<li>每个需要这些依赖的 Job 都会去占用宽带下载 【导致管道变慢】</li>
+</ul>
+<ol>
+<li>某种作业或多个作业来安装依赖，共享文件夹，【不必经历相同的过程】</li>
+<li>下一次管道运行，希望重用上一次管道运行的阶段模块</li>
+</ol>
+<p>生产的产物将被上传到 gitlab server，然后会再下载以用于下一个 job。对于一两个文件没问题，但对于这些依赖项一堆文件，上传到gitlab server上不是一个很大的优化。仍然需要大量时间和宽带。</p>
+<p>还需考虑，一旦拥有应用程序的第一个版本，不会经常去改依赖项，很长时间保持不变。</p>
+<ul>
+<li>团队每隔几分钟推送一次，产生大量的管道，使得运行不必要的依赖项下载，这将大大的加快管道执行速度</li>
+</ul>
+<h3 id="artifacts-vs-cache">Artifacts vs cache</h3>
+<p>Artifacts 将 产物上传到 gitlab server ，下一个job 可以下载使用</p>
+<p>cache：存储项目所需的所有依赖项，在如何管道和Job之间传递，不像 产物上传到 gitlab server，</p>
+<ul>
+<li>存储在gitlab runner</li>
+</ul>
+<p>当有多个 runner 时，如果有 100个 runner，Job 随机选择 runner，那么缓存的效率可能不高，因为需要在每个机器上建立缓存</p>
+<ul>
+<li>3s：还可以使用 对象存储，桶来存储，无论在哪个runner上执行，都一样</li>
+<li>意味着需要再次重 互联网下载</li>
+</ul>
+<p>缓存实际上非常简单。</p>
+<p>命名缓存常见：多个分支，并且分支可以运行管道作为缓存。</p>
+<ul>
+<li>cache_main</li>
+<li>cache_dev</li>
+</ul>
+<p>CI_COMMIT_BRANCH ： 提交的分支名</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span></code></pre></div><p>以便节点任何 Job 都可以使用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">run_unit_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">cd app</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">junit</span>: <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_lint_checks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">policy</span>: <span style="color:#ae81ff">pull						# 只允许 pull ，不能更新上传，默认pull-push</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">cd app</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running lint checks&#34; </span>
+</span></span></code></pre></div><p>缓存可以最前面建立缓存</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">build_cache</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">policy</span>: <span style="color:#ae81ff">push</span>
+</span></span></code></pre></div><p>因为是在docker 创建缓存，所以</p>
+<p><a href="https://docs.gitlab.com/runner/configuration/advanced-configuration.html">https://docs.gitlab.com/runner/configuration/advanced-configuration.html</a></p>
+<p>配置：</p>
+<p><code>/etc/gitlab-runner/config.toml </code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>executor <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;docker&#34;</span>
+</span></span><span style="display:flex;"><span>cache_dir <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/cache&#34;</span>
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240424192635275.png" alt="image-20240424192635275"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240424193327984.png" alt="image-20240424193327984"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>就缓存不会被删除，不会在新管道中使用，但是数据仍然在 gitlab runner 服务端</p>
+<p>真删除：到runner 找到实际的缓存手动删除</p>
+<p>缓存的实际物理位置：</p>
+<p>docker volume</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># docker volume inspect runner-qz4ygpw8m-project-57100451-concurrent-1-cache-c33bcaa1fd2c77edfc3893b41966cea8</span>
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240424194434799.png" alt="image-20240424194434799"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h2 id="testing-sast-job">Testing SAST Job</h2>
+<p>足够的自动化测试，避免大量手动测试。</p>
+<p>开发和测试：编写一个用于测试的应用程序不同方便面的大量自动化单元测试只是其中之一，最简单的测试</p>
+<p>功能测试、集成测试，创建测试场景并且编写测试，等等程序偶寄功能测试。</p>
+<p>安全性测试：安全问题、漏洞等等。</p>
+<ul>
+<li>SAST：其中之一，静态程序安全测试，程序漏洞，如sql注入等等</li>
+</ul>
+<p>当然，需不要会写测试，会用就行。</p>
+<p><a href="https://gitlab.com/gitlab-org/gitlab-foss/-/blob/master/lib/gitlab/ci/templates">https://gitlab.com/gitlab-org/gitlab-foss/-/blob/master/lib/gitlab/ci/templates</a></p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240424211208444.png" alt="image-20240424211208444"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>复制文件Jobs/SAST.gitlab-ci.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">sast</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">include</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">template</span>: <span style="color:#ae81ff">Jobs/SAST.gitlab-ci.yml</span>
+</span></span></code></pre></div><p>在的 <code>.gitlab-ci.yml</code> 文件中，<code>sast: stage: test</code> 定义了一个名为 <code>sast</code> 的任务，并将其阶段设置为 <code>test</code>。这意味着在 CI/CD 流程中，<code>sast</code> 任务将在 <code>test</code> 阶段执行。</p>
+<p>然而，这个 <code>sast</code> 任务没有定义任何 <code>script</code> 或 <code>image</code>，所以它本身不会执行任何操作。但是在文件的末尾，您使用了 <code>include</code> 关键字来包含 <code>Jobs/SAST.gitlab-ci.yml</code> 模板。这个模板可能定义了 <code>sast</code> 任务的具体行为。</p>
+<p><code>SAST</code> 是静态应用程序安全测试的缩写，它是一种安全测试方法，用于在不运行程序的情况下，通过分析源代码、字节码或二进制代码来发现安全漏洞。在 GitLab 中，<code>SAST</code> 通常通过包含 <code>SAST.gitlab-ci.yml</code> 模板来实现，这个模板定义了一系列的 <code>sast</code> 任务，用于对各种语言的代码进行静态安全测试。</p>
+<p>因此，<code>sast: stage: test</code> 与 <code>include: - template: Jobs/SAST.gitlab-ci.yml</code> 结合使用，会在 <code>test</code> 阶段执行静态应用程序安全测试。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240424214112636.png" alt="image-20240424214112636"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<p>下载产物，导入可视化软件；</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240424214905506.png" alt="image-20240424214905506"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<h2 id="多阶段">多阶段</h2>
+<p>确保这些阶段没有安全问题，需要分阶段发布应用程序</p>
+<p>阶段1:部署到 dev环境这个阶段，可以运行：集成和功能测试后程序仍然正常运行。</p>
+<ol>
+<li>Function test</li>
+<li>integration test</li>
+</ol>
+<p>阶段2:：预生产环境 【性能测试】确保正常运行</p>
+<ol>
+<li>Performance test</li>
+<li>DAST test 【安全】</li>
+</ol>
+<p>阶段3:生产环境</p>
+<ul>
+<li>实时终端环境</li>
+</ul>
+<p>cicd ： 自动化管道完成所有</p>
+<p>有条件：将会创建两个额外的 EC2 作为实验</p>
+<p>无条件：应用程序使用不同端口，模拟多环境</p>
+<p>为 docker-compose.yaml 中 port端口 - 变量</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240425013533857.png" alt="image-20240425013533857"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;3.3&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">app</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">${DC_IMAGE_NAME}:${DC_IMAGE_TAG}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;${DC_APP_PORT}:3000&#34;</span>
+</span></span></code></pre></div><ul>
+<li></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH != &#34;main&#34; &amp;&amp; $CI_PIPELINE_SOURCE != &#34;merge_request_event&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy_staging</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_NAME</span>: <span style="color:#ae81ff">$CI_REGISTRY_IMAGE</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_ENDPOINT</span>: <span style="color:#ae81ff">http://$DEV_SERVER_HOST:3001</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">STAGING_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">STAGING_ENDPOINT</span>: <span style="color:#ae81ff">http://$STAGING_SERVER_HOST:3002</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">cd app</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">junit</span>: <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">sast</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $VERSION &gt; version-file.txt</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;VERSION=$VERSION&#34; &gt;&gt; build.env</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">dotenv</span>: <span style="color:#ae81ff">build.env</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$VERSION</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_dev</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod 600 $SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $DC_IMAGE_NAME:$DC_IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml root@$DEV_SERVER_HOST:/root</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$DEV_SERVER_HOST &#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export COMPOSE_PROJECT_NAME=dev &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_NAME=$IMAGE_NAME &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_TAG=$VERSION &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_APP_PORT=3001 &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose down &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose up -d&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">development</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">$DEV_ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_functional_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">deploy_to_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running functional test&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_staging</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_staging</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod 600 $SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $DC_IMAGE_NAME:$DC_IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml root@$STAGING_SERVER_HOST:/root</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$STAGING_SERVER_HOST &#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export COMPOSE_PROJECT_NAME=staging &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_NAME=$IMAGE_NAME &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_TAG=$VERSION &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_APP_PORT=3002 &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose down &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose up -d&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">staging</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">$STAGING_ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">include</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">template</span>: <span style="color:#ae81ff">Jobs/SAST.gitlab-ci.yml</span>
+</span></span></code></pre></div><p>如果使用相同的部署代码，三个环境就需要重复三次！</p>
+<p>所以：</p>
+<h3 id="配置清理代码重复">配置清理代码重复</h3>
+<ol>
+<li>
+<p>创建一个通用的 JOB 【不让它执行】 使用 <code>.deploy</code></p>
+</li>
+<li>
+<p>extends 关键字用于从一个已定义的 job 中继承配置。这意味着你可以创建一个基础 job，然后在其他 job 中通过 extends 关键字来复用这个基础 job 的配置。</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">.deploy</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod 600 $SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_PRIVATE_KEY</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml root@$SERVER_HOST:/root</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$SERVER_HOST &#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export COMPOSE_PROJECT_NAME=$DEPLOY_ENV &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_NAME=$IMAGE_NAME &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_TAG=$VERSION &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_APP_PORT=$APP_PORT &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose down &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose up -d&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">$DEPLOY_ENV</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">$ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_dev</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">extends</span>: <span style="color:#ae81ff">.deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_PRIVATE_KEY</span>: <span style="color:#ae81ff">$SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#ae81ff">$DEV_SERVER_HOST</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#ae81ff">dev</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;3001&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#ae81ff">$DEV_ENDPOINT</span>
+</span></span></code></pre></div><p>完整代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">workflow</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">if</span>: <span style="color:#ae81ff">$CI_COMMIT_BRANCH != &#34;main&#34; &amp;&amp; $CI_PIPELINE_SOURCE != &#34;merge_request_event&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">never</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy_staging</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">deploy_prod</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_NAME</span>: <span style="color:#ae81ff">$CI_REGISTRY_IMAGE</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">DEV_ENDPOINT</span>: <span style="color:#ae81ff">http://$DEV_SERVER_HOST:3001</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">STAGING_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">STAGING_ENDPOINT</span>: <span style="color:#ae81ff">http://$STAGING_SERVER_HOST:3002</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">PROD_SERVER_HOST</span>: <span style="color:#e6db74">&#34;1.15.176.240&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">PROD_ENDPOINT</span>: <span style="color:#ae81ff">http://$PROD_SERVER_HOST:3003</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_unit_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:21-alpine</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;$CI_COMMIT_BRANCH&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/node_modules</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">cd app</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm install</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">npm test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">junit</span>: <span style="color:#ae81ff">app/junit.xml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">sast</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export PACKAGE_JSON_VERSION=$(cat app/package.json | jq -r &#39;.version&#39;)</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo $VERSION &gt; version-file.txt</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;VERSION=$VERSION&#34; &gt;&gt; build.env</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$VERSION .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">reports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">dotenv</span>: <span style="color:#ae81ff">build.env</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">push_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dependencies</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">build_image</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$VERSION</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">.deploy</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">chmod 600 $SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_KEY</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml root@$SERVER_HOST:/root</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$SERVER_HOST &#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export COMPOSE_PROJECT_NAME=$DEPLOY_ENV &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_NAME=$IMAGE_NAME &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_IMAGE_TAG=$VERSION &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">export DC_APP_PORT=$APP_PORT &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose down &amp;&amp;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">docker-compose up -d&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">$DEPLOY_ENV</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">$ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_dev</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">extends</span>: <span style="color:#ae81ff">.deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_PRIVATE_KEY</span>: <span style="color:#ae81ff">$SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#ae81ff">$DEV_SERVER_HOST</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#ae81ff">dev</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;3001&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#ae81ff">$DEV_ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_functional_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">deploy_to_dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running functional test&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_staging</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">extends</span>: <span style="color:#ae81ff">.deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_staging</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_KEY</span>: <span style="color:#ae81ff">$SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#ae81ff">$STAGING_SERVER_HOST</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#ae81ff">staging</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;3002&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#ae81ff">$STAGING_ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">run_performance_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_staging</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">needs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">deploy_to_staging</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">ec2</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">aws</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">shell</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">echo &#34;Running production test&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">deploy_to_prod</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">extends</span>: <span style="color:#ae81ff">.deploy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy_prod</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SSH_KEY</span>: <span style="color:#ae81ff">$SSH_PRIVATE_KEY</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SERVER_HOST</span>: <span style="color:#ae81ff">$PROD_SERVER_HOST</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">DEPLOY_ENV</span>: <span style="color:#ae81ff">production</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">APP_PORT</span>: <span style="color:#e6db74">&#34;3002&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ENDPOINT</span>: <span style="color:#ae81ff">$PROD_ENDPOINT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">include</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">template</span>: <span style="color:#ae81ff">Jobs/SAST.gitlab-ci.yml</span>
+</span></span></code></pre></div><h3 id="配置手动审批">配置手动审批</h3>
+<p>没有任何人工审查就之间部署到生产环境是不合理的。</p>
+<p>因此管道会一直存在暂存和运行测试，但不会自动部署到生产环境【会等待人工确认】</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>when: manual
+</span></span></code></pre></div><p>当一个 job 被设置为 when: manual，这个 job 不会在 pipeline 自动执行时被执行，而是需要手动触发。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240425102402381.png" alt="image-20240425102402381"
+    
+     style="width: 70%; max-width: Title;"
+    />
+</p>
+
+        </div>
+    </div>
+</div>
