@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Argocds on docsGo</title>
+    <link>http://localhost:1313/docsgo/argocd/</link>
+    <description>Recent content in Argocds on docsGo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 26 Apr 2024 14:32:59 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/docsgo/argocd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>01-Argocd基础</title>
+      <link>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Fri, 26 Apr 2024 14:32:59 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</guid>
+      <description>简介和概述 Argocd：在devops中 的 gitops 工具&#xA;argocd 常见用例 什么是 ArgoCD&#xA;不使用 ArgoCD 的 CD 工作流程&#xA;使用 ArgoCD 的 CD 工作流程&#xA;将 GitOps 与 ArgoCD 结合使用的好处&#xA;Git 作为单一事实来源&#xA;轻松回滚&#xA;集群灾难恢复&#xA;使用 Git 和 ArgoCD 进行 K8s 访问控制&#xA;ArgoCD 作为Kubernetes 扩展&#xA;如何配置 ArgoCD？&#xA;使用 ArgoCD 实现多个集群&#xA;替代其他 CI/CD 工具？&#xA;演示设置和概述</description>
+    </item>
+  </channel>
+</rss>
