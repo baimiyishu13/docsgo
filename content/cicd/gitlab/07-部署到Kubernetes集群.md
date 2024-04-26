@@ -1,5 +1,5 @@
 +++
-title = '第 8 章: 部署到Kubernetes集群'
+title = '第8章: 部署到Kubernetes集群'
 date = 2024-04-26T11:03:38+08:00
 draft = true
 
