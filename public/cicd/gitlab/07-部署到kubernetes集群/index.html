@@ -1,0 +1,70 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第8章: 部署到Kubernetes集群</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-26T11:03:38&#43;08:00">April 26, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>准备k8s集群</p>
+<p>部署到集群需要：kube-config</p>
+<ul>
+<li>shell runner 上安装 kubectl 命令 【https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/】</li>
+</ul>
+<p>不应该给 gitlab 直接访问集群的权限，如果 gitlab 被攻破，集群也会</p>
+<ul>
+<li>为gitlab创建一个单独的 sa，赋予特定权限</li>
+<li>gitlab-kubeconfig</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create namespace my-micro-service
+</span></span><span style="display:flex;"><span>kubectl create sa icd-sa -n my-micro-service
+</span></span><span style="display:flex;"><span>vi cicd-role.yml <span style="color:#75715e"># 配置role</span>
+</span></span><span style="display:flex;"><span>kubectl create rolebinding cicd-rb --role<span style="color:#f92672">=</span>cicd-role --serviceaccount<span style="color:#f92672">=</span>cicd-sa -n my-micro-service
+</span></span></code></pre></div><p>deploy-k8s.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">deploy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">deploy</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export IMAGE_NAME=$CI_REGISTRY_IMAGE/microservice/$MICRO_SERVICE</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export IMAGE_TAG=$SERVICE_VERSION</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export MICRO_SERVICE=$MICRO_SERVICE</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export SERVICE_PORT=$SERVICE_PORT</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export REPLICAS=$REPLICAS</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">export KUBECONFIG=$KUBE_CONFIG</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">kubectl create secret docker-registry my-registry-key --docker-server=$CI_REGISTRY --docker-username=$GITLAB_USER --docker-password=$GITLAB_PASSWORD -n my-micro-service --dry-run=client -o yaml | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">envsubst &lt; kubernetes/deployment.yaml | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">envsubst &lt; kubernetes/service.yaml | kubectl apply -f -</span>
+</span></span></code></pre></div>
+        </div>
+    </div>
+</div>
