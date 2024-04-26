@@ -13,7 +13,7 @@
       <link>http://localhost:1313/docsgo/cicd/gitlab/07-%E9%83%A8%E7%BD%B2%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/</link>
       <pubDate>Thu, 25 Apr 2024 10:35:41 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/cicd/gitlab/07-%E9%83%A8%E7%BD%B2%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/</guid>
-      <description>为微服务配置管道。&#xA;生产环境：很多 CICD 管道都是微服务相关 多微服务-单存储库：常见方法，使用文件夹&#xA;多微服务-多存储库 - group 组&#xA;共享的 runner、变量 每个存储库都有自己的 cicd 实验：&#xA;多微服务-单存储库 应用：3个服务【ui、shopping-cart 、products】&#xA;项目：https://gitlab.com/baimiyishu13/mymicroservice-cicd</description>
+      <description>为微服务配置管道。&#xA;生产环境：很多 CICD 管道都是微服务相关 多微服务-单存储库：常见方法，使用文件夹&#xA;多微服务-多存储库 - group 组&#xA;共享的 runner、变量 每个存储库都有自己的 cicd 实验：&#xA;多微服务-单存储库 应用：3个服务【ui、shopping-cart 、products】&#xA;项目：https://gitlab.com/baimiyishu13/mymicroservice-cicd&#xA;在CICD设置中启用 runner 【当Runner被锁定时，不能将其分配给其他项目 勾选为空时 可共享操作】\&#xA;关键配置：&#xA;build_frontend: extends: .build variables: MICRO_SERVICE: frontend SERVICE_VERSION: &amp;#34;1.3&amp;#34; only: changes: - &amp;#34;frontend/**/*&amp;#34; 解读：只有当frontend 目录下文件改变时，才会触发流水线&#xA;/**/* 会匹配 frontend 目录及其所有子目录下的所有文件。 如果仅修改了frontend 目录下的文件，即，只变更frontend 微服务&#xA;--- workflow: rules: - if: $CI_COMMIT_BRANCH != &amp;#34;main&amp;#34; &amp;amp;&amp;amp; $CI_PIPELINE_SOURCE != &amp;#34;merge_request_event&amp;#34; when: never - when: always variables: GIT_DEPTH: 0 DEPLOYMENT_SERVER_HOST: &amp;#34;1.15.176.240&amp;#34; APP_ENDPOINT: http://$DEPLOYMENT_SERVER_HOST:3001 stages: - build - deploy .</description>
     </item>
     <item>
       <title>第6章：高级管道：版本控制、缓存、多阶段……</title>

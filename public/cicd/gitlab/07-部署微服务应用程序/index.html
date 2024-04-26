@@ -56,14 +56,14 @@
 <p>应用：3个服务【ui、shopping-cart 、products】</p>
 <p>项目：https://gitlab.com/baimiyishu13/mymicroservice-cicd</p>
 <p><img
-    src="../../../static/images/image-20240425141336883.png" alt="image-20240425141336883"
+    src="http://localhost:1313/docsgo/images/image-20240425141336883.png" alt="image-20240425141336883"
     
      style="width: 70%; max-width: Title;"
     />
 </p>
 <p>在CICD设置中启用 runner 【当Runner被锁定时，不能将其分配给其他项目 勾选为空时 可共享操作】\</p>
 <p><img
-    src="../../../static/images/image-20240425165957049.png" alt="image-20240425165957049"
+    src="http://localhost:1313/docsgo/images/image-20240425165957049.png" alt="image-20240425165957049"
     
      style="width: 70%; max-width: Title;"
     />
@@ -83,7 +83,7 @@
 </ul>
 <p>如果仅修改了frontend 目录下的文件，即，只变更frontend 微服务</p>
 <p><img
-    src="../../../static/images/image-20240425165922139.png" alt="image-20240425165922139"
+    src="http://localhost:1313/docsgo/images/image-20240425165922139.png" alt="image-20240425165922139"
     
      style="width: 70%; max-width: Title;"
     />
@@ -215,7 +215,7 @@
 </span></span></code></pre></div><h2 id="多微服务-多存储库">多微服务-多存储库</h2>
 <p>创建项目组：</p>
 <p><img
-    src="../../../static/images/image-20240425170900052.png" alt="image-20240425170900052"
+    src="http://localhost:1313/docsgo/images/image-20240425170900052.png" alt="image-20240425170900052"
     
      style="width: 70%; max-width: Title;"
     />
@@ -228,24 +228,46 @@
 <li>变量</li>
 </ol>
 <p><img
-    src="../../../static/images/image-20240425172713609.png" alt="image-20240425172713609"
+    src="http://localhost:1313/docsgo/images/image-20240425172713609.png" alt="image-20240425172713609"
     
      style="width: 70%; max-width: Title;"
     />
 </p>
 <p><img
-    src="../../../static/images/image-20240425173458732.png" alt="image-20240425173458732"
+    src="http://localhost:1313/docsgo/images/image-20240425173458732.png" alt="image-20240425173458732"
     
      style="width: 70%; max-width: Title;"
     />
 </p>
-<p>了一个特殊的项目：ci-templates，包含三个文件</p>
+<p>三个微服务 .gitlab-ci.yml 几乎相同【缺点】</p>
+<p>拥有一个标准化的管道，而不是每个人拥有一个奇怪的管道</p>
+<p>两种类型</p>
+<ol>
+<li>pipline Template</li>
+<li>Job Template</li>
+</ol>
+<p>注意一点：配置可能会覆盖掉Template中的配置，比如 script 【有些情况下需要覆盖配置，添加自定义配置】</p>
+<p>可以在本仓库创建，比如创建 .build.yml .deploy-compose.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">include</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">local</span>: <span style="color:#e6db74">&#39;.build.yml&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">local</span>: <span style="color:#e6db74">&#39;.deploy-compose.yml&#39;</span>
+</span></span></code></pre></div><p>了一个特殊的项目：ci-templates，包含三个文件</p>
 <ol>
 <li>build.yml</li>
 <li>deploy-compose.yml</li>
 <li>deploy-k8s.yml</li>
 </ol>
 <p>在微服务的项目中：<code>.gitlab-ci.yml </code> - 使用deploy-compose.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">include</span>: 
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">project</span>: <span style="color:#ae81ff">mymicroservice-cicd9154417/ci-templates</span> <span style="color:#75715e"># 注意该地址</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ref</span>: <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">file</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">build.yml</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">deploy-compose.yml</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">remote</span>: <span style="color:#e6db74">&#34;https://gitlab.com/mymicroservice-cicd9154417/ci-templates/-/blob/81abac7091411e0c5ae45a9d3d8fa89bd7abe299/build.yml&#34;</span> <span style="color:#75715e"># 可以使用url</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">template</span>: <span style="color:#ae81ff">Jobs/SAST.gitlab-ci.yml</span>
+</span></span></code></pre></div><p>remote：因为有些templates 可能是在 S3 等等存储位置</p>
+<p>template: 引用gitlab 项目模版</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">include</span>: 
 </span></span><span style="display:flex;"><span>  - <span style="color:#f92672">project</span>: <span style="color:#ae81ff">mymicroservice-cicd9154417/ci-templates</span> <span style="color:#75715e"># 注意该地址</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">ref</span>: <span style="color:#ae81ff">main</span>
