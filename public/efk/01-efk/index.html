@@ -1,0 +1,73 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>01 Efk</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-28T11:08:02&#43;08:00">April 28, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#部署前须知概念">部署前须知概念</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>在集群内使用EFK堆栈</p>
+<p>HELM 安装</p>
+<p>实验：将创建2个 程序进行测试</p>
+<p>地址：https://gitlab.com/baimiyishu13/node-app</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  node-app git:<span style="color:#f92672">(</span>master<span style="color:#f92672">)</span> ls
+</span></span><span style="display:flex;"><span>Dockerfile        app               node_modules      package.json
+</span></span><span style="display:flex;"><span>Readme.md         deployment.yaml   package-lock.json
+</span></span></code></pre></div><p>构建测试镜像：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker build -t node-app .
+</span></span><span style="display:flex;"><span>docker tag node-app demo-app:node-1.0
+</span></span><span style="display:flex;"><span>➜  node-app git:<span style="color:#f92672">(</span>master<span style="color:#f92672">)</span> docker images | grep node-1.0
+</span></span><span style="display:flex;"><span>demo-app                       node-1.0   1e9ad3a8910c   <span style="color:#ae81ff">13</span> seconds ago   117MB
+</span></span></code></pre></div><p>第二个程序</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker build -t java-app .
+</span></span><span style="display:flex;"><span>docker tag java-app demo-app:java-1.0
+</span></span></code></pre></div><h3 id="部署前须知概念">部署前须知概念</h3>
+<p>ElasticSearch：</p>
+<ol>
+<li>将部署多副本的有状态ElasticSearch程序</li>
+</ol>
+<p>简述： 用于搜索和分析的数据存储，可以存储许多不同的形式，例如SQL数据库，仅以结构化形式存储数据 表/行/列。</p>
+<p>ElasticSearch 可以存储费结构化数据，着意味着无需任何域定义的形式</p>
+<p>主要优势：强大的搜索机制</p>
+
+        </div>
+    </div>
+</div>
