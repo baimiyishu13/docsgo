@@ -1,5 +1,5 @@
 +++
-title = '第4章: External_Services Ingress'
+title = '第4章: External_Services'
 date = 2024-04-30T10:41:13+08:00
 draft = true
 
