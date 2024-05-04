@@ -90,5 +90,5 @@ Helm 安装 Nginx ingress Controller
 
 1. AWS 创建 LB，端口绑定到 ingress-nginx-controller 的80/443 映射出来的端口
 
-![image-20240504205735435](/images/image-20240504205735435.png "Title")
+![image-20240504220840906](/images/image-20240504220840906.png "Title")
 
