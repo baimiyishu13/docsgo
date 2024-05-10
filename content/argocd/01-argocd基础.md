@@ -97,8 +97,35 @@ Argocd 如何解决之前的困难：【反转流程】不再使用jenkins 、gi
 
 
 
-轻松回滚
+轻松回滚，只需要 git 回退即可实现
+
+集群灾难恢复：这也变得非常容易，在另一个集群中直接使用 git存储库部署即可
 
 
 
-## 2-1 使用 Git 和 ArgoCD 进行 K8s 访问控制
+### 1-4 使用 Git 和 ArgoCD 进行 K8s 访问控制
+
+不希望每个团队都对集群访问更改，可以轻松配置访问规则
+
+每个人都可以发起提出对集群的更改，但是需要审批【审批】
+
+只需要：
+
++ 让工程师访问 git仓库即可
+
+
+
+### 1-5 ArgoCD 作为Kubernetes 扩展
+
+直接部署在集群，实际上是 kubernetes API 扩展。利用了 k8s 资源本身，并不是自己构建所有功能，使用现有的功能完成。
+
+好处：
+
+1. 集群中的可见性
+2. 更改时可实时看到 过程
+
+
+
+### 如何配置 ArgoCD？
+
+https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/
