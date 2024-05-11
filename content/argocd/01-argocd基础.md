@@ -126,6 +126,89 @@ Argocd 如何解决之前的困难：【反转流程】不再使用jenkins 、gi
 
 
 
-### 如何配置 ArgoCD？
+### 1-6 如何配置 ArgoCD？
 
-https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/
+https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/  
+
+只需要在中心集群或者合适的集群部署 一个Argocd，即可配置多个集群【不论集群位于哪里】
+
+多环境下：
+
+1. git 设置多个分支 【不是最好的】
+2. 使用覆盖并且自定义，每个环节有自己的配置
+
+CI，管道可以更新开发覆盖中的模版
+
+
+
+## 2-1 演示设置和概述
+
+安装：
+
+```sh
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+
+
+
+
+argocd
+
+```yml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://gitlab.com/baimiyishu13/argocd-ceshi.git
+    targetRevision: HEAD
+    path: dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: myapp
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+    # 同步集群中的手动更改
+      selfHeal: true
+    # 默认 false，删除 yaml 自动同步删除资源
+      prune: true
+```
+
+
+
+实验环境 k3s 单集群：
+
+加入argocd
+
+1. 获取密码【用户 admin】
+
+```sh
+kubectl get secrets -n argocd argocd-initial-admin-secret -o yaml
+echo "**==" | base64 -d
+```
+
+2. 登陆
+
+```sh
+argocd login [IP]:[port]
+```
+
+3. 添加
+
+```sh
+ argocd cluster add default --name k3s --kubeconfig k3s.yaml --insecure --in-cluster -y --upsert
+```
+
+
+
+
+
+### 本地的 Minikube 集群添加到 Argo CD 中
+
