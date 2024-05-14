@@ -1,0 +1,107 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>05 云安全AWS</h1>
+    </div>
+    
+    
+    <time datetime="2024-05-03T10:56:31&#43;08:00">May 3, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#aws-访问管理">AWS 访问管理</a>
+      <ul>
+        <li><a href="#iam-服务">IAM 服务</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>云安全 (AWS)</p>
+<ul>
+<li>AWS 访问管理（用户、组、角色、策略）</li>
+<li>AWS安全 IaC</li>
+<li>AWS日志记录和监控</li>
+</ul>
+<h2 id="aws-访问管理">AWS 访问管理</h2>
+<p>安全最佳实践：最低访问权限</p>
+<p>云平台也需要确保网络安全：AWS 账户安全</p>
+<ul>
+<li>谁可以获得什么服务 或者用户和权限</li>
+</ul>
+<p>如果有人错误的访问 AWS 资源，那就存在安全风险，管理不到位。</p>
+<p>可能会导致 窃取凭据和对账户的访问，以至于可以再环境中为所欲为。</p>
+<p>​		也许你的VPC网络超级安全，而且没人能从网上进入你的网络，但是如果允许对于许多员工有高权限，忘记撤销，比如前员工，或者只是管理管道中的代码凭证，然后有人窃取这些凭证直接访问资源。</p>
+<p>​		更本不需要费力去入侵网络，只需要登陆你的账户访问</p>
+<p>配置管理用户权限</p>
+<p>每个项目，每个存储库，都可以是一个单独的角色</p>
+<ul>
+<li>网络配置</li>
+<li>权限管理</li>
+<li>部署到AWS</li>
+<li>AWS ECR服</li>
+</ul>
+<p>AWS 访问管理本身非常重要！！【最低访问权限】</p>
+<ul>
+<li>用户、权限、策略、的创建和管理</li>
+</ul>
+<p>一旦不需要访问某个资源，或者项目结束，或者是换了团队。</p>
+<p>监视用户操作：</p>
+<ul>
+<li>也许是因为没有足够的知识</li>
+<li>也许是故意的</li>
+</ul>
+<p>用户、组、角色</p>
+<p>保护AWS账户：</p>
+<h3 id="iam-服务">IAM 服务</h3>
+<p>对AWS的所有访问都收到管理：  IAM 服务</p>
+<p>root 用户，管理aws 所有，可以做任何事情</p>
+<ol>
+<li>MFA 多因子认证</li>
+<li>不要轻易使用 生成root 的认证凭证</li>
+</ol>
+<p>如果我们需要为cicd 管道创建一个连接的凭证：</p>
+<p>我们不能给所有人 root 权限，尤其是管道和各种工具，事实上没人应该使用它。</p>
+<p>有些事情只能 root 去做：访问账单、支付信息、更新账户等等</p>
+<p>创建一个 admin user</p>
+<p>再通过 admin 创建其他用户，包括管道用户。</p>
+<p>假设团队中：开发、测试、运维、网络管理员</p>
+<ul>
+<li>访问方式：UI、凭证</li>
+</ul>
+<p>gitlab 不需要 Ui登陆AWS，所以只需要创建一个 专有凭证的用户</p>
+<p>授予：用户权限策略</p>
+<p>IAM Group</p>
+<p>不同的组、团队、有不同的访问权限，因为他们有不同的资源</p>
+<p>使用 cicd 时，例如可以创建 gitlab 用户，授权对 EC2服务器内的访问即可，而非是对EC2的访问</p>
+
+        </div>
+    </div>
+</div>

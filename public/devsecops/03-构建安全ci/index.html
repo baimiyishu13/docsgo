@@ -1,0 +1,296 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第5章：构建安全CI</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-28T15:42:54&#43;08:00">April 28, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#简述">简述</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#gitlab-ciyml-中的密钥">.gitlab-ci.yml 中的密钥</a></li>
+    <li><a href="#扫描代码本身-sast">扫描代码本身 SAST</a></li>
+    <li><a href="#semgrep-扫描多种语言代码">Semgrep 扫描多种语言代码</a></li>
+    <li><a href="#yml">yml</a></li>
+    <li><a href="#defectdojo">DefectDojo</a></li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h2 id="简述">简述</h2>
+<p>从一个项目开始：https://gitlab.com/baimiyishu13/juice-shop</p>
+<p>可以完美展示应用程序代码和配置中的安全问题。</p>
+<ul>
+<li>不需要理解 99% 代码，只是使用</li>
+</ul>
+<p>创建管道文件：gitlab-ci.yml</p>
+<p>docker 镜像：https://hub.docker.com/_/docker</p>
+<p>使用，无需使用 shell 去安装docker 构建</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker:26</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker:26-dind</span>
+</span></span></code></pre></div><p>先构建服务镜像：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>stages:
+</span></span><span style="display:flex;"><span>  - test
+</span></span><span style="display:flex;"><span>  - build
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>variables:
+</span></span><span style="display:flex;"><span>  GIT_DEPTH: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  IMAGE_NAME: $CI_REGISTRY_IMAGE/demo-app
+</span></span><span style="display:flex;"><span>  IMAGE_TAG: juice-shop-1.1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>yarn_test:
+</span></span><span style="display:flex;"><span>  image: node:18-alpine3.18
+</span></span><span style="display:flex;"><span>  script:
+</span></span><span style="display:flex;"><span>    - yarn install
+</span></span><span style="display:flex;"><span>    - yarn test
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>build_image:
+</span></span><span style="display:flex;"><span>  stage: build
+</span></span><span style="display:flex;"><span>  image: docker:26
+</span></span><span style="display:flex;"><span>  services:
+</span></span><span style="display:flex;"><span>    - docker:26-dind
+</span></span><span style="display:flex;"><span>  before_script:
+</span></span><span style="display:flex;"><span>    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+</span></span><span style="display:flex;"><span>  script:
+</span></span><span style="display:flex;"><span>    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+</span></span><span style="display:flex;"><span>    - docker push $IMAGE_NAME:$IMAGE_TAG
+</span></span></code></pre></div><p>使用的共享 runner ，差不多花费了 15min，来执行这两项任务。</p>
+<p>这两个作业都是长时间作业，安装一堆依赖</p>
+<ol>
+<li>yarn install</li>
+<li>dockerfile 构建安装一堆 【很多层】</li>
+</ol>
+<p>加快速度：</p>
+<ol>
+<li>首先配置缓存，并在下一次构建时使用</li>
+</ol>
+<p>构建镜像解读的几个问题</p>
+<ol>
+<li>应用程序安全？</li>
+<li>是否存在SQL注入？</li>
+<li>XSS请求伪造？</li>
+<li>编码安全？</li>
+</ol>
+<p>等等，如果不进行安全处理，盲目的发布服务，如果有安全团队在发布前检查，他们会阻止部署，直到修复，这意味这发布延迟。</p>
+<p>自己验证安全，所以与其等待安全小组检查，应用程序经过测试在投入生产之前 就将其做好。</p>
+<h1 id="gitleaks">GitLeaks</h1>
+<p>简述：</p>
+<p>​		GitLeaks 是一个开源工具，用于在 git 仓库中扫描潜在的敏感信息，如密码、API 密钥、令牌等。它可以在本地或者 CI/CD 管道中运行，帮助开发者在代码提交到远程仓库之前发现并移除敏感信息。GitLeaks 支持多种配置选项，可以定制扫描规则，以适应不同的项目需求。</p>
+<p>需要添加的步骤：</p>
+<ol>
+<li>开发或者自己，是否忘记删除密码、密钥等。可能是程序代码中，可能是测试期间尝试功能，或者代码更改。</li>
+<li>第三方库中的服务凭证，即使应用程序存储库通常是 gitlab 或者github， 【API key、账户、ssh 密钥、数据库密钥等】</li>
+</ol>
+<p>使用一些工具去检查，无需自己编写程序。</p>
+<p>本地测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> git clone https://gitlab.com/baimiyishu13/juice-shop.git
+</span></span><span style="display:flex;"><span> docker pull zricethezav/gitleaks:latest
+</span></span><span style="display:flex;"><span> export path_to_host_folder_to_scan<span style="color:#f92672">=</span>/root/juice-shop
+</span></span></code></pre></div><p>运行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker run -v <span style="color:#e6db74">${</span>path_to_host_folder_to_scan<span style="color:#e6db74">}</span>:/path zricethezav/gitleaks:latest detect --source<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path&#34;</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ○
+</span></span><span style="display:flex;"><span>    │╲
+</span></span><span style="display:flex;"><span>    │ ○
+</span></span><span style="display:flex;"><span>    ○ ░
+</span></span><span style="display:flex;"><span>    ░    gitleaks
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>3:43AM INF <span style="color:#ae81ff">106</span> commits scanned.
+</span></span><span style="display:flex;"><span>3:43AM INF scan completed in 4.06s
+</span></span><span style="display:flex;"><span>3:43AM WRN leaks found: <span style="color:#ae81ff">46</span>
+</span></span></code></pre></div><p>扫描到：【非常简短的总结】</p>
+<ol>
+<li>106 次提交</li>
+<li>4.06 秒内完成了扫描。</li>
+<li>发现了 46 个潜在的敏感信息泄露。</li>
+</ol>
+<p>-v 或 &ndash;verbose 选项可以让 GitLeaks 在扫描过程中提供更详细的输出信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker run -v <span style="color:#e6db74">${</span>path_to_host_folder_to_scan<span style="color:#e6db74">}</span>:/path zricethezav/gitleaks:latest detect --source<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path&#34;</span> --verbose
+</span></span></code></pre></div><p>devops 或者 devsecops 学会了一件事，必须不断的在工具之间进行比较，以便决定那种工具是兼容和适合的。</p>
+<p>另一点，即使在本次提交后没有任何密码泄露，但是在以前的commint 记录中依然存在【如果攻击者课访问到git，那么久可以查看以前的commint】</p>
+<p>当在CICD管道中使用大量工具，会阻塞构建</p>
+<ul>
+<li>注意：猪油当工具 是 100% 需要，报错都要处理的情况下，可以运行失败。</li>
+</ul>
+<p>allow_failure: true 是 GitLab CI/CD 配置文件中的一个选项。当这个选项被设置为 true 时，即使这个任务（在你的代码中是 gitleaks 任务）失败了，整个 CI/CD 流程也不会被标记为失败。这意味着，即使 gitleaks 任务失败，其他的任务（如 build_image）仍会继续执行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">gitleaks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">zricethezav/gitleaks:latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">entrypoint</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">gitleaks detect --verbose --source .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span></code></pre></div><h2 id="gitlab-ciyml-中的密钥">.gitlab-ci.yml 中的密钥</h2>
+<p>不会将密码、密钥等信息直接放在文件中，可以通过变量，但cicd不是完全的安全。</p>
+<p><a href="https://docs.gitlab.com/ee/ci/variables/index.html#cicd-variable-security">https://docs.gitlab.com/ee/ci/variables/index.html#cicd-variable-security</a></p>
+<p>使用 GitLab<a href="https://docs.gitlab.com/ee/ci/secrets/index.html">与 HashiCorp Vault 集成</a> 来存储和检索机密。</p>
+<p>在CI中使用 外部机密：https://docs.gitlab.com/ee/ci/secrets/index.html</p>
+<p><img
+    src="https://docs.gitlab.com/ee/ci/img/gitlab_vault_workflow_v13_4.png" alt="GitLab 和 HashiCorp 之间的流程"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<h2 id="扫描代码本身-sast">扫描代码本身 SAST</h2>
+<p>我们目标是减少安全漏洞数量，一步一步发现。</p>
+<p>SAST Rools 基于编程语言有不同的工具集合</p>
+<ul>
+<li>nodejs ：njsscan 【docker去运行】</li>
+</ul>
+<p><a href="https://hub.docker.com/r/opensecurity/njsscan">https://hub.docker.com/r/opensecurity/njsscan</a></p>
+<h2 id="semgrep-扫描多种语言代码">Semgrep 扫描多种语言代码</h2>
+<p><a href="https://hub.docker.com/r/returntocorp/semgrep-agent">https://hub.docker.com/r/returntocorp/semgrep-agent</a></p>
+<p><a href="https://semgrep.dev/docs/semgrep-ci/sample-ci-configs">https://semgrep.dev/docs/semgrep-ci/sample-ci-configs</a></p>
+<h2 id="yml">yml</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">stages</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">cache</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">GIT_DEPTH</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_NAME</span>: <span style="color:#ae81ff">$CI_REGISTRY_IMAGE/demo-app</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">IMAGE_TAG</span>: <span style="color:#ae81ff">juice-shop-1.1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">create_cache</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:18-alpine3.18</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">cache</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">files</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">yarn.lock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">node_modules/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">yarn.lock</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">.yarn</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">policy</span>: <span style="color:#ae81ff">pull-push</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">yarn install</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">yarn_test</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">node:18-alpine3.18</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">key</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">files</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">yarn.lock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">node_modules/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">yarn.lock</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">.yarn</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">policy</span>: <span style="color:#ae81ff">pull-push</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">yarn install</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">yarn test</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">gitleaks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">zricethezav/gitleaks:latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">entrypoint</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">gitleaks detect --verbose --source .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">njsscan</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">python</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">pip3 install --upgrade njsscan</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">njsscan --exit-warning .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">semgrep</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">returntocorp/semgrep:latest</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SEMGREP_CONFIG</span>: <span style="color:#ae81ff">p/javascript</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">semgrep ci</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build_image</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker:26</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker:26-dind</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker build -t $IMAGE_NAME:$IMAGE_TAG .</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">docker push $IMAGE_NAME:$IMAGE_TAG</span>
+</span></span></code></pre></div><h2 id="defectdojo">DefectDojo</h2>
+<p>DefectDoj: 可视化工具，用来可视化扫描结果。</p>
+<p><a href="https://hub.docker.com/r/defectdojo/defectdojo-django">https://hub.docker.com/r/defectdojo/defectdojo-django</a></p>
+<p>导出报告</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">njsscan</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">python</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">before_script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">pip3 install --upgrade njsscan</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">njsscan --exit-warning . --sarif -o njsscan.sarif</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">njsscan.sarif</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">semgrep</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">returntocorp/semgrep</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">variables</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SEMGREP_PULES</span>: <span style="color:#ae81ff">p/javascript</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">script</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">semgrep ci --json --output semgrep-report.json .</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">allow_failure</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">artifacts</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">when</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">semgrep-report.json</span>
+</span></span></code></pre></div><p><img
+    src="http://localhost:1313/docsgo/images/image-20240501193011836.png" alt="image-20240501193011836"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+
+        </div>
+    </div>
+</div>

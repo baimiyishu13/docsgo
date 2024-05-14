@@ -1,0 +1,117 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>Kubernetes DNS</h1>
+    </div>
+    
+    
+    <time datetime="2024-04-28T17:36:34&#43;08:00">April 28, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>CoreDNS 深入探讨</p>
+<p>好文：https://pracucci.com/kubernetes-dns-resolution-ndots-options-and-why-it-may-affect-application-performances.html</p>
+<p>CoreDNS 最著名的是云原生生态系统中 Kubernetes 的默认集群 DNS，它也是一个可扩展且灵活的 DNS 服务器，专注于服务发现。 CoreDNS 的可扩展性来自其独特的基于插件的架构，可以轻松添加新功能。</p>
+<p>在k8s这种Pod IP 会发生变化的集群中，使用IP访问是很糟糕的</p>
+<p>DNS：IP翻译成域名</p>
+<p>文件：</p>
+<ul>
+<li>/etc/hosts</li>
+<li>/etc/resolv.conf</li>
+</ul>
+<p>当集群中存在数百个服务，这将是大量的</p>
+<p>/etc/resolv.conf中</p>
+<p>nameserver 10.233.0.3 为 DNS服务器</p>
+<p>1.12版本前使用kube-dns，之后使用 CoreDNS</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl get pod -A --show-labels </span>
+</span></span><span style="display:flex;"><span>NAMESPACE     NAME                                      READY   STATUS    RESTARTS   AGE   LABELS
+</span></span><span style="display:flex;"><span>kube-system   coredns-6799fbcd5-c869r                   1/1     Running   <span style="color:#ae81ff">0</span>          47m   k8s-app<span style="color:#f92672">=</span>kube-dns,pod-template-hash<span style="color:#f92672">=</span>6799fbcd5
+</span></span></code></pre></div><p>Pod内：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl exec -ti nginx-7854ff8877-5dtzt  -- sh</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># cat /etc/hosts</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Kubernetes-managed hosts file.</span>
+</span></span><span style="display:flex;"><span>127.0.0.1	localhost
+</span></span><span style="display:flex;"><span>::1	localhost ip6-localhost ip6-loopback
+</span></span><span style="display:flex;"><span>fe00::0	ip6-localnet
+</span></span><span style="display:flex;"><span>fe00::0	ip6-mcastprefix
+</span></span><span style="display:flex;"><span>fe00::1	ip6-allnodes
+</span></span><span style="display:flex;"><span>fe00::2	ip6-allrouters
+</span></span><span style="display:flex;"><span>10.42.0.9	nginx-7854ff8877-5dtzt
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># cat /etc/resolv.conf</span>
+</span></span><span style="display:flex;"><span>search default.svc.cluster.local svc.cluster.local cluster.local
+</span></span><span style="display:flex;"><span>nameserver 10.43.0.10
+</span></span><span style="display:flex;"><span>options ndots:5
+</span></span></code></pre></div><p>不同命名空间访问</p>
+<p>创建测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create deployment nginx-n-test --image<span style="color:#f92672">=</span>nginx -n tes
+</span></span><span style="display:flex;"><span>kubectl expose deployment -n test nginx-n-test --port <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><p>从default 的Pod中访问</p>
+<ul>
+<li>【service-name.namespace-name.svc.cluster.local】</li>
+<li>也可以是：<code>【&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local.】</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl get svc -n test </span>
+</span></span><span style="display:flex;"><span>NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>   AGE
+</span></span><span style="display:flex;"><span>nginx-n-test   ClusterIP   10.43.162.130   &lt;none&gt;        80/TCP    3m45s
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl exec -ti nginx-7854ff8877-5dtzt  -- sh</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># curl nginx-n-test.test:80</span>
+</span></span><span style="display:flex;"><span>&lt;!DOCTYPE html&gt;
+</span></span></code></pre></div><p>详解 Pod 中的resolv.conf</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># cat /etc/resolv.conf</span>
+</span></span><span style="display:flex;"><span>search default.svc.cluster.local svc.cluster.local cluster.local
+</span></span><span style="display:flex;"><span>nameserver 10.43.0.10
+</span></span><span style="display:flex;"><span>options ndots:5
+</span></span></code></pre></div><p>共有三个指令：</p>
+<ol>
+<li>名称服务器 IP 是 Kubernetes 服务 IP<code>kube-dns</code></li>
+<li>指定了4 个本<code>search</code>地域</li>
+<li>有一个<code>ndots:5</code>选项</li>
+</ol>
+<p>此配置的有趣部分是本<code>search</code>地域和<code>ndots:5</code>设置如何协同工作。为了理解它，我们需要了解 DNS 解析如何处理非完全限定名称。</p>
+<p><strong>什么是完全限定名称？</strong></p>
+<p>完全限定名称是不会执行本地搜索的名称，并且在解析过程中该名称将被视为绝对名称。按照惯例，如果名称以句号 ( <code>.</code>) 结尾，则 DNS 软件会认为名称完全限定，否则视为非完全限定。 IE。<code>google.com.</code>是完全合格的，<code>google.com</code>不是。</p>
+<p><strong>如何执行非完全限定名称解析？</strong></p>
+<p>当应用程序连接到由名称指定的远程主机时，通常通过系统调用执行 DNS 解析，例如<code>getaddrinfo()</code>.如果名称不是完全限定的（不以 结尾<code>.</code>），系统调用会首先尝试将名称解析为绝对名称，还是会首先遍历本地搜索域？这取决于<code>ndots</code>选项。</p>
+<p>CorDNS创建了一个子域，</p>
+<ol>
+<li>service name</li>
+<li>Namespace</li>
+<li>Type ：svc</li>
+<li>Root：cluster.local 【根域】</li>
+</ol>
+<p>所以集群中如何服务名称都是：例如【nginx.default.svc.cluster.local】options ndots:5</p>
+<p>不需要指定：svc.cluster.local ，这是默认的</p>
+<ul>
+<li>因为：【search】子域列表</li>
+</ul>
+
+        </div>
+    </div>
+</div>

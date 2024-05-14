@@ -6,31 +6,52 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Apr 2024 23:31:03 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 03 May 2024 10:56:31 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/devsecops/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>3 应用程序漏洞扫描</title>
+      <title>05 云安全AWS</title>
+      <link>http://localhost:1313/docsgo/devsecops/05-%E4%BA%91%E5%AE%89%E5%85%A8aws/</link>
+      <pubDate>Fri, 03 May 2024 10:56:31 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/05-%E4%BA%91%E5%AE%89%E5%85%A8aws/</guid>
+      <description>云安全 (AWS)&#xA;AWS 访问管理（用户、组、角色、策略） AWS安全 IaC AWS日志记录和监控 AWS 访问管理 安全最佳实践：最低访问权限&#xA;云平台也需要确保网络安全：AWS 账户安全&#xA;谁可以获得什么服务 或者用户和权限 如果有人错误的访问 AWS 资源，那就存在安全风险，管理不到位。&#xA;可能会导致 窃取凭据和对账户的访问，以至于可以再环境中为所欲为。&#xA;​&#x9;也许你的VPC网络超级安全，而且没人能从网上进入你的网络，但是如果允许对于许多员工有高权限，忘记撤销，比如前员工，或者只是管理管道中的代码凭证，然后有人窃取这些凭证直接访问资源。&#xA;​&#x9;更本不需要费力去入侵网络，只需要登陆你的账户访问&#xA;配置管理用户权限&#xA;每个项目，每个存储库，都可以是一个单独的角色&#xA;网络配置 权限管理 部署到AWS AWS ECR服 AWS 访问管理本身非常重要！！【最低访问权限】&#xA;用户、权限、策略、的创建和管理 一旦不需要访问某个资源，或者项目结束，或者是换了团队。&#xA;监视用户操作：&#xA;也许是因为没有足够的知识 也许是故意的 用户、组、角色&#xA;保护AWS账户：&#xA;IAM 服务 对AWS的所有访问都收到管理： IAM 服务&#xA;root 用户，管理aws 所有，可以做任何事情&#xA;MFA 多因子认证 不要轻易使用 生成root 的认证凭证 如果我们需要为cicd 管道创建一个连接的凭证：&#xA;我们不能给所有人 root 权限，尤其是管道和各种工具，事实上没人应该使用它。&#xA;有些事情只能 root 去做：访问账单、支付信息、更新账户等等&#xA;创建一个 admin user&#xA;再通过 admin 创建其他用户，包括管道用户。&#xA;假设团队中：开发、测试、运维、网络管理员&#xA;访问方式：UI、凭证 gitlab 不需要 Ui登陆AWS，所以只需要创建一个 专有凭证的用户</description>
+    </item>
+    <item>
+      <title>第6章：构建安全镜像</title>
+      <link>http://localhost:1313/docsgo/devsecops/04-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Wed, 01 May 2024 18:57:11 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/04-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E9%95%9C%E5%83%8F/</guid>
+      <description>docker 镜像安全&#xA;容器镜像由层和软件包组成，容易受到漏洞的影响。这些漏洞可能会危及容器和应用程序的安全。&#xA;存在问题的 dockerfile&#xA;FROM node:18 as installer COPY . /juice-shop WORKDIR /juice-shop RUN npm i -g typescript ts-node RUN npm install --omit=dev --unsafe-perm RUN npm dedupe RUN rm -rf frontend/node_modules RUN rm -rf frontend/.angular RUN rm -rf frontend/src/assets RUN mkdir logs RUN chown -R 65532 logs RUN chgrp -R 0 ftp/ frontend/dist/ logs/ data/ i18n/ RUN chmod -R g=u ftp/ frontend/dist/ logs/ data/ i18n/ RUN rm data/chatbot/botDefaultTrainingData.json || true RUN rm ftp/legal.</description>
+    </item>
+    <item>
+      <title>第5章：构建安全CI</title>
+      <link>http://localhost:1313/docsgo/devsecops/03-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8ci/</link>
+      <pubDate>Sun, 28 Apr 2024 15:42:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/03-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8ci/</guid>
+      <description>简述 从一个项目开始：https://gitlab.com/baimiyishu13/juice-shop&#xA;可以完美展示应用程序代码和配置中的安全问题。&#xA;不需要理解 99% 代码，只是使用 创建管道文件：gitlab-ci.yml&#xA;docker 镜像：https://hub.docker.com/_/docker&#xA;使用，无需使用 shell 去安装docker 构建&#xA;image: docker:26 services: - docker:26-dind 先构建服务镜像：&#xA;--- stages: - test - build variables: GIT_DEPTH: 0 IMAGE_NAME: $CI_REGISTRY_IMAGE/demo-app IMAGE_TAG: juice-shop-1.1 yarn_test: image: node:18-alpine3.18 script: - yarn install - yarn test build_image: stage: build image: docker:26 services: - docker:26-dind before_script: - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY script: - docker build -t $IMAGE_NAME:$IMAGE_TAG . - docker push $IMAGE_NAME:$IMAGE_TAG 使用的共享 runner ，差不多花费了 15min，来执行这两项任务。</description>
+    </item>
+    <item>
+      <title>第4章：应用程序漏洞扫描</title>
       <link>http://localhost:1313/docsgo/devsecops/3-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F/</link>
       <pubDate>Fri, 19 Apr 2024 23:31:03 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/3-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F/</guid>
       <description></description>
     </item>
     <item>
-      <title>2 DevSecOps简介</title>
+      <title>第3章：DevSecOps简介</title>
       <link>http://localhost:1313/docsgo/devsecops/2-devsecops%E7%AE%80%E4%BB%8B/</link>
       <pubDate>Fri, 19 Apr 2024 17:32:38 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/2-devsecops%E7%AE%80%E4%BB%8B/</guid>
       <description>以前的Devops 安全 和 DevSecOps&#xA;以前：&#xA;开发 - 自动化测试 - build - deploy 测试环境 - deploy 生产环境 在部署到生产环境之前，安全人员必须做一些事情，如果开发使用了新的库存在漏洞，数据泄漏，镜像安全问题，kubernetes 配置文件出错。&#xA;安全测试小组会测试 并分析变化，可能会发现很多问题、漏洞反馈给开发去新版本修复。 安全审计时间过长又会导致发布新版本受阻，造成应用程序发布周期瓶颈 应用越多意味着更多的攻击面&#xA;加快devops 安全，安全向左&#xA;应用发布之前解决安全问题，从一开始就考虑安全问题 安全性也是开发人员的责任。安全工具将被整合到CICD管道中，识别安全问题，在特定分支中修复更有效。&#xA;反馈周期短，开发能够快速知道问题，并去解决 DevSecOps 是一个架构师，有助于应用程序团队将这些自助检查集成到管道中，确保完成必要的检查，当发现问题时采取行动。&#xA;但是，不是真正解决问题的人，比如不要去修复代码安全问题，做任何更改，这不是DevOpsSec的职责 安全工程师有更专业方向的安全知识</description>
     </item>
     <item>
-      <title>1 安全要点</title>
+      <title>第2章： 安全要点</title>
       <link>http://localhost:1313/docsgo/devsecops/1-%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9/</link>
       <pubDate>Fri, 19 Apr 2024 16:23:40 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/1-%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9/</guid>
       <description>安全性简介 安全是个很大的话题，每一种几乎都可以成为一个岗位/行业&#xA;应用程序安全 - 软件工程安全 基础设施安全 云 安全 kubernetes 安全 等，几乎都可以是一个单独的项目。&#xA;安全的重要性和安全漏洞的影响：&#xA;安全：线上安全、线下安全都是黑客的切入点。对公司造成伤害。&#xA;如何保护系统免受攻击：不同层次&#xA;安全攻击类型：&#xA;钓鱼攻击，切入点是欺骗，电子邮件链接、下载病毒文件等 应用程序漏洞，开发在编写代码时不够安全 </description>
     </item>
     <item>
-      <title>0. DevSecOps-入门</title>
+      <title>第1章： DevSecOps-入门</title>
       <link>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</link>
       <pubDate>Sun, 07 Apr 2024 21:03:20 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</guid>

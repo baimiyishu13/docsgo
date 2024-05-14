@@ -9,11 +9,11 @@
     <lastBuildDate>Fri, 26 Apr 2024 14:32:59 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/argocd/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>01-Argocd基础</title>
+      <title>第一章：Argocd-Kubernetes的GitOpsCD</title>
       <link>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</link>
       <pubDate>Fri, 26 Apr 2024 14:32:59 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</guid>
-      <description>简介和概述 Argocd：在devops中 的 gitops 工具&#xA;argocd 常见用例 什么是 ArgoCD&#xA;不使用 ArgoCD 的 CD 工作流程&#xA;使用 ArgoCD 的 CD 工作流程&#xA;将 GitOps 与 ArgoCD 结合使用的好处&#xA;Git 作为单一事实来源&#xA;轻松回滚&#xA;集群灾难恢复&#xA;使用 Git 和 ArgoCD 进行 K8s 访问控制&#xA;ArgoCD 作为Kubernetes 扩展&#xA;如何配置 ArgoCD？&#xA;使用 ArgoCD 实现多个集群&#xA;替代其他 CI/CD 工具？&#xA;演示设置和概述</description>
+      <description>1-简述 ArgoCD 是一种 GitOps 持续交付工具，在 DevOps 中越来越受欢迎。&#xA;官网：https://argo-cd.readthedocs.io/en/stable/&#xA;学习前必备知识：&#xA;docker 、kubernetes、HELM(可选)、CICD工具其一即可（gitlab、github、jenkins） Argo CD : 持续交付工具，将Argocd理解成CD工具或持续交付的工具，对比实验 Jenkins 或者 gitlab 中的持续交付。&#xA;所以，Argocd 并不存在取代 jenkins 或者 gitlab等等说法&#xA;设计实验仓库：&#xA;https://gitlab.com/mymicroservice-cicd9154417&#xA;1-1 不使用 ArgoCD 的 CD 工作流程 假设我们有一套服务运行在 k8s集群。&#xA;当我们新增功能或者代码发生改变时，使用 jenkins 或者 gitlab 构建的 ci 管道构建了新的镜像，并将其推送到仓库，此时这个镜像如何部署？&#xA;使用 yml 更新镜像tag，部署到集群，这些操作是 CI 管道的延续 因此 jenkins 或 gitlab 将更新应用程序的部署 yml，并使用 kubectl 去更新部署 这种方法存在的挑战：&#xA;需要设置安装kubectl 或者 helm等工具来访问集群 还需要为这些工具配置访问，连接凭据 【如果使用的是云集群，还需要配置 ak、sk等等】 引出的问题：配置工作量、安全问题【将集群凭证和 云凭证提供给了外部服务】&#xA;另一个问题：&#xA;使用管道部署后，无法进一步了解应用程序状态。管道并不知道执行 更新后负载的状态 【即使可以通过脚本去实现，但将会使管道冗余和加长管道执行时间】 1-2 使用 ArgoCD 的 CD 工作流程 Argo CD 结合 Gitlab 将更加高效，可以持续交付的 kubernetes。</description>
     </item>
   </channel>
 </rss>

@@ -6,8 +6,190 @@
     <description>Recent content in Home on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Apr 2024 11:08:02 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 May 2024 14:04:40 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>10 Environment</title>
+      <link>http://localhost:1313/docsgo/istio/10-environment/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/10-environment/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>11 Demo</title>
+      <link>http://localhost:1313/docsgo/istio/11-demo/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/11-demo/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>12 Envoy</title>
+      <link>http://localhost:1313/docsgo/istio/12-envoy/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/12-envoy/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>13 Telemetry</title>
+      <link>http://localhost:1313/docsgo/istio/13-telemetry/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/13-telemetry/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>14 Management</title>
+      <link>http://localhost:1313/docsgo/istio/14-management/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/14-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>15 Balancing</title>
+      <link>http://localhost:1313/docsgo/istio/15-balancing/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/15-balancing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>16 Gateways</title>
+      <link>http://localhost:1313/docsgo/istio/16-gateways/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/16-gateways/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>3 Injection</title>
+      <link>http://localhost:1313/docsgo/istio/3-injection/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/3-injection/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>4 Breaking</title>
+      <link>http://localhost:1313/docsgo/istio/4-breaking/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/4-breaking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>5 TLS</title>
+      <link>http://localhost:1313/docsgo/istio/5-tls/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/5-tls/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>6 Istioctl</title>
+      <link>http://localhost:1313/docsgo/istio/6-istioctl/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/6-istioctl/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>7 Istio</title>
+      <link>http://localhost:1313/docsgo/istio/7-istio/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/7-istio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>8 Goodbye</title>
+      <link>http://localhost:1313/docsgo/istio/8-goodbye/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/8-goodbye/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>9 Started</title>
+      <link>http://localhost:1313/docsgo/istio/9-started/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/9-started/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>第2章：Istio 入门</title>
+      <link>http://localhost:1313/docsgo/istio/2-releases/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/2-releases/</guid>
+      <description>直接进入尽快使用 Istio，但是此篇并不打算太过深入&#xA;环境：MAC、Arm64、minikube&#xA;Istio 实际上是一个不同工具的集合 - 框架，包装在一起，所以在 Istio 中有相当多的组件&#xA;woat is Istio？ Istio 被称为服务网格，在曾经很多面试官都喜欢问我 什么是 Istio ？？？&#xA;可以说 Istio 是一个服务网格 “Service Mesh”，那么意味着需要知道服务网格的概念是什么&#xA;当正在使用基于集群的微服务，会发现作为一个现有的框架，比如 kubernets，就其本身而言并不是相当完美，服务网格也不会取代 kubernetes，它实际上是一个额外的 软件层，和 Kubernetes 一起部署，服务网格不仅仅与 Kubernets 无关，任何一种分布式体系中这就是多个软件组件网格的地方。彼此直接，将从服务网格中受益。所以至今为止，Kubenrets 都被称为：编排框架。&#xA;🤔 一个标准的微服务体系结构在 Kubenrets 中运行&#xA;我们会有：&#xA;一大堆的 Pod，每个Pod包含 一个或多个 Container。但是它是相当标准的，只有一个 Container 使用了服务发现机制，在Kubernets 内部从任何容器进行网络调用。 k8s非常删除去管理Pod，如果需要删除一个Pod，向apiserver发生命令、kubectl、修改yaml等等。&#xA;但是，Kubernets 不擅长管理或在任何情况下管理Pod之间网络，很难推断出里面发生了什么，例如互联网络通信里面有一个错误，网络请求有一些是错误的。虽然可以对软件进行粗略的研究或者分析日志然后推断出出了什么事。&#xA;如果知道是哪个容器出了问题还好，但是如果有数千个微服务，这些网络协调的组合非常复杂。只是标准的 Kubenrets，没有任何互联的不可见性或控制权。 🎯 这就是 服务网格可以提供帮助的地方&#xA;形容词：Service Mesh 【服务网格】&#xA;Istio 如何实施，从概念上以某种方式将通过集群中运行的网络流量将通过本服务网格软件进行路由。&#xA;例子：Pod 至今建立访问，通过 SVC 直接访问&#xA;但是有了 Service Mesh，将设置使所有访问都通过 Service Mesh 进行定向。&#xA;容器实际上不会钓鱼目标容器，它的网络请求是到 Service Mesh，然后Service Mesh 将负责记录指向目标。</description>
+    </item>
+    <item>
+      <title>第1章：Istio 简介</title>
+      <link>http://localhost:1313/docsgo/istio/1-introduction/</link>
+      <pubDate>Tue, 14 May 2024 14:04:39 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/1-introduction/</guid>
+      <description>🚀 Istio将K8s提升到了一个新的高度，那是因为 Istio 提供了一套非常丰富的工具负责监测、管理和保障k8s集群。&#xA;目标：可理解、可使用在生产项目中&#xA;微服务架构非常复杂，Istio 会提供一个 UI视图到Pod级别，看到它们是如何连接在一起的，存在问题的地方，还有分布式追踪，还可以在不进入集群的情况下改变流量。&#xA;例如：将未经过测试的新软件投入到一个生产集群，可以对普通用户隐藏，只有运维工程师将能够访问它。可以做像金丝雀释放一样的事情，可以改进系统的弹性和安全性，增加熔断器。着一直是微服务架构最佳实践，但是传统中很难做，Istio使它变得简单。&#xA;安全 - 整个集群中设置加密&#xA;学习计划安排：&#xA;1 - Introduction 2 - Getting Started 3 - Optional Installing a Local Kubernetes Environment 4 - Hands on Demo 5 - Introducing Envoy 6 - Telemetry 7 - Traffic Management 8 - Load Balancing 9 - Gateways 10 - Dark Releases 11 - Fault Injection 12 - Circuit Breaking 13 - Mutual TLS 14 - Customizing and Installing Istio with Istioctl 15 - Upgrading Istio 16 - Goodbye </description>
+    </item>
+    <item>
+      <title>第19章 安全集群 通过网络策略控制流量</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</link>
+      <pubDate>Mon, 13 May 2024 10:01:52 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</guid>
+      <description>如果需要进行安全审计，查看存在哪些安全漏洞是可以解决的。&#xA;假设：安全团队发现他们可以入侵前段应用程序Pod，并且获得整个集群的访问权限 如果发生在现实中，这是一个很大的安全问题，但是可以很容易修复。&#xA;当它被攻击时，应用程序之间的所有通信都是被允许的&#xA;隐患：对于部件或服务可以相互通信没有限制 网络策略组件：定义了集群中谁可以访问谁&#xA;定义在本地 不是所有的 CNI插件都支持，常用的CNI插件&#xA;Calico Cilium 严格的集群间通信规则会使得集群更加安全。&#xA;参考：https://kubernetes.io/zh-cn/docs/concepts/services-networking/network-policies/&#xA;两个规则：&#xA;Ingress Egress NetworkPolicy 的示例：&#xA;apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: test-network-policy namespace: default spec: podSelector: matchLabels: role: db policyTypes: - Ingress - Egress ingress: - from: - ipBlock: cidr: 172.17.0.0/16 except: - 172.17.1.0/24 - namespaceSelector: matchLabels: project: myproject - podSelector: matchLabels: role: frontend ports: - protocol: TCP port: 6379 egress: - to: - ipBlock: cidr: 10.0.0.0/24 ports: - protocol: TCP port: 5978 </description>
+    </item>
+    <item>
+      <title>第18章: Kubernetes 中的证书管理</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC18%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E8%AF%81%E4%B9%A6%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Sat, 11 May 2024 15:56:21 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC18%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E8%AF%81%E4%B9%A6%E7%AE%A1%E7%90%86/</guid>
+      <description>集群证书续期 集群已经运行了半年多，一个成员突然提出&#xA;应该检查证书何时到期，并在需要的时候续订 检查1：&#xA;openssl 命令来读取证书的到期时间&#xA;openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -enddate openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout 检查2：&#xA;生成新的密钥 - 使用 kubeadm 将会非常简单 kubeadm certs --helm kubeadm certs check-expiration 证书默认1年&#xA;更新：&#xA;openssl 生成新的证书和私钥 或者 使用 kubeadm 更新证书注意：&#xA;更新集群，kubeadm 会自动续订证书 为 kubelet 配置证书轮换 https://kubernetes.io/zh-cn/docs/tasks/tls/certificate-rotation/&#xA;Kubelet 使用证书进行 Kubernetes API 的认证。 默认情况下，这些证书的签发期限为一年，所以不需要太频繁地进行更新。&#xA;Kubernetes v1.8 和更高版本的 kubelet 实现了对客户端证书与/或服务证书进行轮换这一特性。 请注意，服务证书轮换是一项 Beta 特性，需要 kubelet 上 RotateKubeletServerCertificate 特性的支持（默认启用）。</description>
+    </item>
+    <item>
+      <title>第7章:  Kubernetes中的高级调度</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC7%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E9%AB%98%E7%BA%A7%E8%B0%83%E5%BA%A6/</link>
+      <pubDate>Sun, 05 May 2024 23:25:04 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC7%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E9%AB%98%E7%BA%A7%E8%B0%83%E5%BA%A6/</guid>
+      <description>kubernetes 最大优势就是可以抽象出单独的服务器，不需要担心各个服务器细节。&#xA;内置调度器：决定将工作负载放在哪里，例如想调度一个Pod&#xA;先过滤掉不符合条件的节点，剩余的节点成为：可调度节点 运行一组函数对节点进行打分，然后会选最高分的节点来运行【如果是多个相同最高分节点，随机选】这个过程称为绑定 实际的生产环境中可能有不同的节点，高CPU、高内存、高性能存储、GPU、云上按需计费、包年&amp;hellip;,性能差异的节点等等&#xA;nodeName 直接将 Pod 固定在一个节点上&#xA;apiVersion: v1 kind: Pod metadata: name: nginx labels: env: test spec: containers: - name: nginx image: nginx imagePullPolicy: IfNotPresent nodeName: node1 Kubernetes Node Selector 将 nodeSelector 字段添加到 Pod 的规约中，Kubernetes 只会将 Pod 调度到拥有你所指定的每个标签的节点上。&#xA;缺点：不灵活&#xA;可以使用：亲和性和反亲和性扩展了你可以定义的约束类型 kubectl get node --show-labels 可以为特定节点上分配特定标签，也有一些默认的标签&#xA;[root@local ~]# kubectl get node --show-labels NAME STATUS ROLES AGE VERSION LABELS monitor Ready control-plane,master 11d v1.29.3+k3s1 beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=k3s,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=monitor,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=true,node-role.kubernetes.io/master=true,node.kubernetes.io/instance-type=k3s 添加标签：&#xA;kubectl label nodes &amp;lt;your-node-name&amp;gt; disktype=ssd Pod</description>
+    </item>
+    <item>
+      <title>第6章: 使用用户和权限控制访问</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC6%E7%AB%A0-%E4%BD%BF%E7%94%A8%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E8%AE%BF%E9%97%AE/</link>
+      <pubDate>Sat, 04 May 2024 22:10:20 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC6%E7%AB%A0-%E4%BD%BF%E7%94%A8%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E8%AE%BF%E9%97%AE/</guid>
+      <description>1 - 章节简介 权限：&#xA;谁可以访问？【并不是每个人都是管理员】 访问什么资源？做什么事情？ 授用户或应用程序的四种方法：&#xA;Node：节点鉴权是一种特殊用途的鉴权模式，专门对 kubelet 发出的 API 请求进行授权。 ABAC：基于属性的访问控制（Attribute-based access control，ABAC）定义了访问控制范例， ABAC 通过使用将属性组合在一起的策略来向用户授予访问权限。 RBAC：基于角色（Role）的访问控制（RBAC）是一种基于组织中用户的角色来调节控制对计算机或网络资源的访问的方法。 WebHook：具体来说，当在判断用户权限时，Webhook 模式会使 Kubernetes 查询外部的 REST 服务。 但是，我们实际上只需要了解RBAC&#xA;在 apiserver配置中，--authorization-mode=Node,RBAC&#xA;2-将用户和权限与 RBAC 角色解耦 当在CMD使用 kubectl 执行命令时，会发生：&#xA;kubectl 读取本地的 kubeconfig 配置 将访问kubenetes api server，并发现API 【着仅仅是检查API可用性】 kubectl 将执行客户端验证【检查 yml 中是否有错误】 将数据发送给 api server 请求，收到请求并不会直接存储在 etcd 中 首先，验证请求是否合法【对请求做身份验证 - 是否有权限创建这些资源】，有权限访问集群并不意味着有权限创建、读取、删除等等 【通常通过 RBAC来控制，精细的控制权限】 如果未授权，则返回401，否则进入下一步 3 - Kubernetes RBAC ==RBAC：意在根据个人角色授权对资源的访问==&#xA;从头开始设计授权系统&#xA;为权限定义一个通用的 role 将权限分配给role，而不是直接向用户分配权限 将 role 链接到 用户 RBAC：</description>
+    </item>
+    <item>
+      <title>第5章：Ingress</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC5%E7%AB%A0-ingress/</link>
+      <pubDate>Sat, 04 May 2024 15:40:14 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC5%E7%AB%A0-ingress/</guid>
+      <description>官方文档&#xA;简述 Ingress 提供从集群外部到集群内服务的 HTTP 和 HTTPS 路由。 流量路由由 Ingress 资源所定义的规则来控制。&#xA;使用LB存在的缺点：&#xA;如果需要包括多个服务，将会得到一组 LB，我们想让用户访问：通过域名，而非LB的域名或者IP。没有一个域名可以让我们访问所有LB服务 在服务器上将会使 NodePort 暴露多个端口。 Ingress：集群入口组件，接受请求并路由到服务&#xA;部署在集群内，将ingress svc 端口暴露出去。【所以我们将只需要一个LB】 Ingress 不会随意公开端口或协议。 将 HTTP 和 HTTPS 以外的服务开放到 Internet 时，通常使用 Service.Type=NodePort 或 Service.Type=LoadBalancer 类型的 Service。 Ingress语法：&#xA;apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: minimal-ingress annotations: nginx.ingress.kubernetes.io/rewrite-target: / spec: ingressClassName: nginx-example rules: - http: paths: - path: /testpath pathType: Prefix backend: service: name: test port: number: 80 https：&#xA;apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: tls-example-ingress spec: tls: - hosts: - https-example.</description>
+    </item>
+    <item>
+      <title>05 云安全AWS</title>
+      <link>http://localhost:1313/docsgo/devsecops/05-%E4%BA%91%E5%AE%89%E5%85%A8aws/</link>
+      <pubDate>Fri, 03 May 2024 10:56:31 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/05-%E4%BA%91%E5%AE%89%E5%85%A8aws/</guid>
+      <description>云安全 (AWS)&#xA;AWS 访问管理（用户、组、角色、策略） AWS安全 IaC AWS日志记录和监控 AWS 访问管理 安全最佳实践：最低访问权限&#xA;云平台也需要确保网络安全：AWS 账户安全&#xA;谁可以获得什么服务 或者用户和权限 如果有人错误的访问 AWS 资源，那就存在安全风险，管理不到位。&#xA;可能会导致 窃取凭据和对账户的访问，以至于可以再环境中为所欲为。&#xA;​&#x9;也许你的VPC网络超级安全，而且没人能从网上进入你的网络，但是如果允许对于许多员工有高权限，忘记撤销，比如前员工，或者只是管理管道中的代码凭证，然后有人窃取这些凭证直接访问资源。&#xA;​&#x9;更本不需要费力去入侵网络，只需要登陆你的账户访问&#xA;配置管理用户权限&#xA;每个项目，每个存储库，都可以是一个单独的角色&#xA;网络配置 权限管理 部署到AWS AWS ECR服 AWS 访问管理本身非常重要！！【最低访问权限】&#xA;用户、权限、策略、的创建和管理 一旦不需要访问某个资源，或者项目结束，或者是换了团队。&#xA;监视用户操作：&#xA;也许是因为没有足够的知识 也许是故意的 用户、组、角色&#xA;保护AWS账户：&#xA;IAM 服务 对AWS的所有访问都收到管理： IAM 服务&#xA;root 用户，管理aws 所有，可以做任何事情&#xA;MFA 多因子认证 不要轻易使用 生成root 的认证凭证 如果我们需要为cicd 管道创建一个连接的凭证：&#xA;我们不能给所有人 root 权限，尤其是管道和各种工具，事实上没人应该使用它。&#xA;有些事情只能 root 去做：访问账单、支付信息、更新账户等等&#xA;创建一个 admin user&#xA;再通过 admin 创建其他用户，包括管道用户。&#xA;假设团队中：开发、测试、运维、网络管理员&#xA;访问方式：UI、凭证 gitlab 不需要 Ui登陆AWS，所以只需要创建一个 专有凭证的用户</description>
+    </item>
+    <item>
+      <title>第6章：构建安全镜像</title>
+      <link>http://localhost:1313/docsgo/devsecops/04-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Wed, 01 May 2024 18:57:11 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/04-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E9%95%9C%E5%83%8F/</guid>
+      <description>docker 镜像安全&#xA;容器镜像由层和软件包组成，容易受到漏洞的影响。这些漏洞可能会危及容器和应用程序的安全。&#xA;存在问题的 dockerfile&#xA;FROM node:18 as installer COPY . /juice-shop WORKDIR /juice-shop RUN npm i -g typescript ts-node RUN npm install --omit=dev --unsafe-perm RUN npm dedupe RUN rm -rf frontend/node_modules RUN rm -rf frontend/.angular RUN rm -rf frontend/src/assets RUN mkdir logs RUN chown -R 65532 logs RUN chgrp -R 0 ftp/ frontend/dist/ logs/ data/ i18n/ RUN chmod -R g=u ftp/ frontend/dist/ logs/ data/ i18n/ RUN rm data/chatbot/botDefaultTrainingData.json || true RUN rm ftp/legal.</description>
+    </item>
+    <item>
+      <title>第4章: External_Services</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC4%E7%AB%A0-external_services-ingress/</link>
+      <pubDate>Tue, 30 Apr 2024 10:41:13 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC4%E7%AB%A0-external_services-ingress/</guid>
+      <description>详细官方文档：【https://kubernetes.io/zh-cn/docs/concepts/services-networking/service/#publishing-services-service-types】&#xA;SVC 服务的IP从何来？&#xA;SVC的IP和PodIP在完全不同的范围&#xA;如果更新了 svc的 CIDR，旧的分配的IP将会保留&#xA;默认service 类型： ClusterIP&#xA;创建：&#xA;[root@local ~]# kubectl create service clusterip test-new-cidr --tcp=80:80 --dry-run=client -o yaml apiVersion: v1 kind: Service metadata: creationTimestamp: null labels: app: test-new-cidr name: test-new-cidr spec: ports: - name: 80-80 port: 80 protocol: TCP targetPort: 80 selector: app: test-new-cidr type: ClusterIP deployment 同样：&#xA;[root@local ~]# kubectl create deployment my-nginx -n default --image=nginx --dry-run=client -o yaml Service Service API 是 Kubernetes 的组成部分，它是一种抽象，帮助你将 Pod 集合在网络上公开出去。 每个 Service 对象定义端点的一个逻辑集合（通常这些端点就是 Pod）以及如何访问到这些 Pod 的策略。</description>
+    </item>
+    <item>
+      <title>Kubernetes DNS</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/kubernetes-dns/</link>
+      <pubDate>Sun, 28 Apr 2024 17:36:34 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/kubernetes-dns/</guid>
+      <description>CoreDNS 深入探讨&#xA;好文：https://pracucci.com/kubernetes-dns-resolution-ndots-options-and-why-it-may-affect-application-performances.html&#xA;CoreDNS 最著名的是云原生生态系统中 Kubernetes 的默认集群 DNS，它也是一个可扩展且灵活的 DNS 服务器，专注于服务发现。 CoreDNS 的可扩展性来自其独特的基于插件的架构，可以轻松添加新功能。&#xA;在k8s这种Pod IP 会发生变化的集群中，使用IP访问是很糟糕的&#xA;DNS：IP翻译成域名&#xA;文件：&#xA;/etc/hosts /etc/resolv.conf 当集群中存在数百个服务，这将是大量的&#xA;/etc/resolv.conf中&#xA;nameserver 10.233.0.3 为 DNS服务器&#xA;1.12版本前使用kube-dns，之后使用 CoreDNS&#xA;[root@local ~]# kubectl get pod -A --show-labels NAMESPACE NAME READY STATUS RESTARTS AGE LABELS kube-system coredns-6799fbcd5-c869r 1/1 Running 0 47m k8s-app=kube-dns,pod-template-hash=6799fbcd5 Pod内：&#xA;[root@local ~]# kubectl exec -ti nginx-7854ff8877-5dtzt -- sh # cat /etc/hosts # Kubernetes-managed hosts file. 127.0.0.1&#x9;localhost ::1&#x9;localhost ip6-localhost ip6-loopback fe00::0&#x9;ip6-localnet fe00::0&#x9;ip6-mcastprefix fe00::1&#x9;ip6-allnodes fe00::2&#x9;ip6-allrouters 10.</description>
+    </item>
+    <item>
+      <title>第5章：构建安全CI</title>
+      <link>http://localhost:1313/docsgo/devsecops/03-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8ci/</link>
+      <pubDate>Sun, 28 Apr 2024 15:42:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/devsecops/03-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8ci/</guid>
+      <description>简述 从一个项目开始：https://gitlab.com/baimiyishu13/juice-shop&#xA;可以完美展示应用程序代码和配置中的安全问题。&#xA;不需要理解 99% 代码，只是使用 创建管道文件：gitlab-ci.yml&#xA;docker 镜像：https://hub.docker.com/_/docker&#xA;使用，无需使用 shell 去安装docker 构建&#xA;image: docker:26 services: - docker:26-dind 先构建服务镜像：&#xA;--- stages: - test - build variables: GIT_DEPTH: 0 IMAGE_NAME: $CI_REGISTRY_IMAGE/demo-app IMAGE_TAG: juice-shop-1.1 yarn_test: image: node:18-alpine3.18 script: - yarn install - yarn test build_image: stage: build image: docker:26 services: - docker:26-dind before_script: - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY script: - docker build -t $IMAGE_NAME:$IMAGE_TAG . - docker push $IMAGE_NAME:$IMAGE_TAG 使用的共享 runner ，差不多花费了 15min，来执行这两项任务。</description>
+    </item>
     <item>
       <title>01 Efk</title>
       <link>http://localhost:1313/docsgo/efk/01-efk/</link>
@@ -23,11 +205,11 @@
       <description>重新学习Kubernetes ，弥补遗漏知识。&#xA;常用组件：Pod、service、ingress、configmap、secret、volume、deployment、statefulset、daemonset&#xA;容器编排 容器编排工具的任务？&#xA;从时间顺序上该问题：&#xA;微服务的兴起导致了容器技术使用的增加，容器技术提供了一个完美的主机 在都个主机环境使用脚本或者自制的工具管理会非常麻烦，这种情况下出现了对容器编排的需求。 所以kubernetes 所做的就是&#xA;高可用性：高可用意味着：程序没有停机时间，总是可以让用户访问 扩展性：快速扩展程序 【动态调整负载】 灾难恢复，基础设施出现问题、数据丢失、服务器崩溃等，应用程序不会丢失任何数据。 核心组件 每个节点&#xA;container runtime kubelet kube-proxy：service本身就是LB，捕捉请求指向应用程序 master：&#xA;api server Pod Pod：抽象概念，Pod的作用基本是就是创建容器运行的环境。或在容器上面的一个层。&#xA;Pod之间通信：&#xA;k8s 的CNI 提供了 虚拟网络，每个Pod都会有一个IP。 这个IP是会变化的。【容器奔溃重启等等原因】会分配一个新的IP。 Service service：一个静态的IP或永久的地址，可以连接到每个通过标签匹配到的Pod。&#xA;好处：service 和 Pod的生命周期不相互连接。【即使Pod死亡，Service 和 它的IP也会保持不变】&#xA;显然接下来希望应用程序通过外部访问&#xA;Ingress 代替 NodePort&#xA;Volume 外部配置：configmap&#xA;加密配置：secret，使用base64，实际上并不能加密，所以会使用第三方工具。&#xA;如果希望数据或日志数据可靠的存储下来，可以做啊都这件事的组件：Volume&#xA;存储：可以是节点磁盘，也可以是远程存储 。&#xA;工作负载 deployment&#xA;statefulset：部署数据库、有状态服务&#xA;使用有状态部署数据库在k8s集群，会有性能等问题，所以使用集群外托管数据库是一种常见的做法。 demonset：每个节点部署一个Pod，负责代理、日志收集、守护进程等。</description>
     </item>
     <item>
-      <title>01-Argocd基础</title>
+      <title>第一章：Argocd-Kubernetes的GitOpsCD</title>
       <link>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</link>
       <pubDate>Fri, 26 Apr 2024 14:32:59 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</guid>
-      <description>简介和概述 Argocd：在devops中 的 gitops 工具&#xA;argocd 常见用例 什么是 ArgoCD&#xA;不使用 ArgoCD 的 CD 工作流程&#xA;使用 ArgoCD 的 CD 工作流程&#xA;将 GitOps 与 ArgoCD 结合使用的好处&#xA;Git 作为单一事实来源&#xA;轻松回滚&#xA;集群灾难恢复&#xA;使用 Git 和 ArgoCD 进行 K8s 访问控制&#xA;ArgoCD 作为Kubernetes 扩展&#xA;如何配置 ArgoCD？&#xA;使用 ArgoCD 实现多个集群&#xA;替代其他 CI/CD 工具？&#xA;演示设置和概述</description>
+      <description>1-简述 ArgoCD 是一种 GitOps 持续交付工具，在 DevOps 中越来越受欢迎。&#xA;官网：https://argo-cd.readthedocs.io/en/stable/&#xA;学习前必备知识：&#xA;docker 、kubernetes、HELM(可选)、CICD工具其一即可（gitlab、github、jenkins） Argo CD : 持续交付工具，将Argocd理解成CD工具或持续交付的工具，对比实验 Jenkins 或者 gitlab 中的持续交付。&#xA;所以，Argocd 并不存在取代 jenkins 或者 gitlab等等说法&#xA;设计实验仓库：&#xA;https://gitlab.com/mymicroservice-cicd9154417&#xA;1-1 不使用 ArgoCD 的 CD 工作流程 假设我们有一套服务运行在 k8s集群。&#xA;当我们新增功能或者代码发生改变时，使用 jenkins 或者 gitlab 构建的 ci 管道构建了新的镜像，并将其推送到仓库，此时这个镜像如何部署？&#xA;使用 yml 更新镜像tag，部署到集群，这些操作是 CI 管道的延续 因此 jenkins 或 gitlab 将更新应用程序的部署 yml，并使用 kubectl 去更新部署 这种方法存在的挑战：&#xA;需要设置安装kubectl 或者 helm等工具来访问集群 还需要为这些工具配置访问，连接凭据 【如果使用的是云集群，还需要配置 ak、sk等等】 引出的问题：配置工作量、安全问题【将集群凭证和 云凭证提供给了外部服务】&#xA;另一个问题：&#xA;使用管道部署后，无法进一步了解应用程序状态。管道并不知道执行 更新后负载的状态 【即使可以通过脚本去实现，但将会使管道冗余和加长管道执行时间】 1-2 使用 ArgoCD 的 CD 工作流程 Argo CD 结合 Gitlab 将更加高效，可以持续交付的 kubernetes。</description>
     </item>
     <item>
       <title>第8章: 部署到Kubernetes集群</title>
@@ -86,21 +268,21 @@
       <description>构建持续集成管道&#xA;使用实际的最佳的方式 做正确的事情&#xA;GitLab CI/CD 就是一个cicd平台&#xA;CI/CD 定义：【what is cicd】 CI/CD 平台可以做什么 Devops：&#xA;公司有一个应用程序，需要对其 编码、测试，有测试程序，构建打包，最后部署到服务器&#xA;每次改进程序、代码等，都可以让用户快速体验改改进。&#xA;每次更新：版本控制 这样就有了一个持续交付的变更&#xA;一个无休止的循环 cicd 这是 devops 过程的核心，是一个自动化方式频繁向客户交付应用程序更改的方法&#xA;CI、CD的实际含义：&#xA;CD：应用程序构建后部署到环境，但为了避免更改导致程序奔溃，即使是小的代码改动，所以发布前需要：&#xA;开发部署的第一阶段：Dev环境，与生产环境相似。 测试：【运行自动化测试（如单元测试、功能测试）】、分析代码测试 预生产环境：验证所有功能、性能测试 生产环境：最终部署阶段 整个阶段：会有人为干预，比如手动测试、审批等&#xA;CI：当开发人员将代码提交触发管道</description>
     </item>
     <item>
-      <title>3 应用程序漏洞扫描</title>
+      <title>第4章：应用程序漏洞扫描</title>
       <link>http://localhost:1313/docsgo/devsecops/3-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F/</link>
       <pubDate>Fri, 19 Apr 2024 23:31:03 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/3-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F/</guid>
       <description></description>
     </item>
     <item>
-      <title>2 DevSecOps简介</title>
+      <title>第3章：DevSecOps简介</title>
       <link>http://localhost:1313/docsgo/devsecops/2-devsecops%E7%AE%80%E4%BB%8B/</link>
       <pubDate>Fri, 19 Apr 2024 17:32:38 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/2-devsecops%E7%AE%80%E4%BB%8B/</guid>
       <description>以前的Devops 安全 和 DevSecOps&#xA;以前：&#xA;开发 - 自动化测试 - build - deploy 测试环境 - deploy 生产环境 在部署到生产环境之前，安全人员必须做一些事情，如果开发使用了新的库存在漏洞，数据泄漏，镜像安全问题，kubernetes 配置文件出错。&#xA;安全测试小组会测试 并分析变化，可能会发现很多问题、漏洞反馈给开发去新版本修复。 安全审计时间过长又会导致发布新版本受阻，造成应用程序发布周期瓶颈 应用越多意味着更多的攻击面&#xA;加快devops 安全，安全向左&#xA;应用发布之前解决安全问题，从一开始就考虑安全问题 安全性也是开发人员的责任。安全工具将被整合到CICD管道中，识别安全问题，在特定分支中修复更有效。&#xA;反馈周期短，开发能够快速知道问题，并去解决 DevSecOps 是一个架构师，有助于应用程序团队将这些自助检查集成到管道中，确保完成必要的检查，当发现问题时采取行动。&#xA;但是，不是真正解决问题的人，比如不要去修复代码安全问题，做任何更改，这不是DevOpsSec的职责 安全工程师有更专业方向的安全知识</description>
     </item>
     <item>
-      <title>1 安全要点</title>
+      <title>第2章： 安全要点</title>
       <link>http://localhost:1313/docsgo/devsecops/1-%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9/</link>
       <pubDate>Fri, 19 Apr 2024 16:23:40 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/1-%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9/</guid>
@@ -191,25 +373,11 @@
       <description>ansible 和 Terraform 是最受欢迎的基础设施代码之一&#xA;从表面上看，Ansible 可以完成与 Terraform 相同类型的基础设施配置。然而，它们在架构上有根本的不同——Ansible 是一个命令式脚本执行引擎，它将按照代码中列出的顺序运行任务，而 Terraform 是一个声明式执行引擎，它将并行化彼此不直接依赖的任务。因此，除了非常小的代码库之外，Terraform 的执行速度比 Ansible 快得多。&#xA;（顺便说一句，大规模执行速度慢是 Ansible 的主要弱点。）&#xA;Terraform 基于图形的性质还使得可以使用与创建基础设施完全相同的代码来销毁基础设施，而 Ansible 需要单独的剧本来创建和销毁。对于定期创建和销毁的环境（例如，开发/测试/登台），Terraform 的方法既可以大幅提高生产力，又可以减少人为错误的机会。&#xA;最后，虽然这不一定是 Ansible 的技术缺陷，但在基础设施配置方面，Terraform 迄今为止拥有最多的社区和开发理念。与任何其他基础设施配置工具相比，您更有可能找到 Terraform 的支持资源，并且您希望以编程方式配置的新产品可能会首先在 Terraform 中获得支持。&#xA;Ansible：开源的配置管理、软件配置和应用部署工具集。&#xA;软件定义基础设施 Modules：Ansible成功的一个主要因素是因为有大量的模块可供公开使用。&#xA;🚀 Ansble 实验环境 环境：Docker - MAC（Docker Desktop） Docker compose 建立环境 Ansible 是无代理的架构，SSH 配置主机之间无密码连接 🧪实验&#xA;访问：http://localhost:1000&#xA;密码：root/ansible、password&#xA;连接到其他主机不希望使用密码：&#xA;SSH 私有和公钥 控制端 私钥将与被控端的公钥进行验证&#xA;ansible@ubuntu-c:~$ ssh-keygen ... +---[RSA 3072]----+ |*...==B=oo. | |oo .o++oo. o | |. . o o= + .</description>
     </item>
     <item>
-      <title>0. DevSecOps-入门</title>
+      <title>第1章： DevSecOps-入门</title>
       <link>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</link>
       <pubDate>Sun, 07 Apr 2024 21:03:20 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</guid>
       <description>先决条件：&#xA;当 Devops 解决了应用程序的自动发布，需要将安全引入 Devops&#xA;CI/CI 工具 【这些是先绝条件-必须的】&#xA;Jenkins Gitlab CI/CD Github Actions 还有：Linux、Docker、Ansible、Terrafrom、Py、Go、云等&#xA;安全是一个非常广泛的话题。&#xA;学习保护之前，学习安全的核心概念。与其仅仅学习如何执行安全扫描工具来实现自动化，复制粘贴。&#xA;并非只是要学习工具使用，还需背后的概念和目的。 安全三大类：&#xA;应用安全 基础设施&amp;amp;云安全 Kubernetes安全 </description>
-    </item>
-    <item>
-      <title>IstioCon2023</title>
-      <link>http://localhost:1313/docsgo/istio/istiocon2023/</link>
-      <pubDate>Sun, 07 Apr 2024 20:32:01 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istiocon2023/</guid>
-      <description>流量管理的安全性和可观察性&#xA;未来：&#xA;将sidecar替换为节点组件，该组件处理 MTLS加密吗L4策略，并参与网格的可观察性工作负载，流量仅通过该组件进行重定向&#xA;新性的CNI 功能与Istio存在重叠，比如服务解析</description>
-    </item>
-    <item>
-      <title>Istio的数据包的生命周期</title>
-      <link>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
-      <pubDate>Sun, 07 Apr 2024 17:10:33 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
-      <description>网络、容器 Kubernetes pod 真实的情况和工作原理</description>
     </item>
     <item>
       <title>基础设施即代码</title>
@@ -217,13 +385,6 @@
       <pubDate>Sat, 06 Apr 2024 21:44:54 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</guid>
       <description></description>
-    </item>
-    <item>
-      <title>Istio入门</title>
-      <link>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</link>
-      <pubDate>Thu, 04 Apr 2024 14:52:05 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</guid>
-      <description>实验环境：minikube&#xA;➜ ~ kubectl get node NAME STATUS ROLES AGE VERSION minikube Ready control-plane 11m v1.27.4 简述：架构、安装、实验 （了解总体再逐个细化）&#xA;Istio：开源服务网格，用来保护微服务&#xA;构建在 Envoy 之上：一个处理微服务之间所有流量的高效代理&#xA;IStio 工作原理：在环境中每个微服务旁注入一个 sidecar 容器，sidecar 容器拦截进出的微服务的所有流量，处理流量路由，负载均衡，服务发现和其他重要的网络任务。&#xA;Istio还提供：&#xA;高级流量管理功能：金丝雀，A/B测试 故障注入 首先，Istio 为现代微服务架构提供了多项优势，通过抽象服务发现、负载均衡、流量路由的复杂性来简化网络管理。&#xA;其次，Istio 提供了高级安全功能，列入双向的TLS 身份验证、基于角色的访问控制和流量加密。&#xA;最后，Istio 提供了可观察性功能，例如分布式跟踪、指标收集和日志记录。&#xA;安装：大多数使用 Helm 安装&#xA;参考：https://istio.io/latest/zh/docs/setup/install/helm/&#xA;➜ ~ helm search repo istio/base NAME CHART VERSION&#x9;APP VERSION&#x9;DESCRIPTION istio/base&#x9;1.21.0 1.21.0 Helm chart for deploying Istio cluster resource... 查看默认值：&#xA;helm show values istio/base 使用 treeaform创建</description>
     </item>
     <item>
       <title>YugabyteDB</title>

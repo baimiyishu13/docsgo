@@ -1,0 +1,308 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第6章: 使用用户和权限控制访问</h1>
+    </div>
+    
+    
+    <time datetime="2024-05-04T22:10:20&#43;08:00">May 4, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1---章节简介">1 - 章节简介</a></li>
+    <li><a href="#2-将用户和权限与-rbac-角色解耦">2-将用户和权限与 RBAC 角色解耦</a></li>
+    <li><a href="#3---kubernetes-rbac">3 - Kubernetes RBAC</a></li>
+    <li><a href="#4---kubernetes-身份用户应用程序和组">4 - Kubernetes 身份：用户、应用程序和组</a></li>
+    <li><a href="#5---向用户授予权限">5 - 向用户授予权限</a></li>
+    <li><a href="#6---实践">6 - 实践</a>
+      <ul>
+        <li><a href="#场景-1同一命名空间中的角色和-rolebinding">场景 1：同一命名空间中的角色和 RoleBinding</a></li>
+        <li><a href="#场景-2将-clusterrole-与-rolebinding-结合使用">场景 2：将 ClusterRole 与 RoleBinding 结合使用</a></li>
+        <li><a href="#场景-3使用-clusterrole-和-clusterrolebinding-授予集群范围的访问权限">场景 3：使用 ClusterRole 和 ClusterRoleBinding 授予集群范围的访问权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#7---使-rbac-策略更加简洁">7 - 使 RBAC 策略更加简洁</a></li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <h2 id="1---章节简介">1 - 章节简介</h2>
+<p>权限：</p>
+<ol>
+<li>谁可以访问？【并不是每个人都是管理员】</li>
+<li>访问什么资源？做什么事情？</li>
+</ol>
+<p>授用户或应用程序的四种方法：</p>
+<ol>
+<li>Node：节点鉴权是一种特殊用途的鉴权模式，专门对 kubelet 发出的 API 请求进行授权。</li>
+<li>ABAC：基于属性的访问控制（Attribute-based access control，ABAC）定义了访问控制范例， ABAC 通过使用将属性组合在一起的策略来向用户授予访问权限。</li>
+<li>RBAC：基于角色（Role）的访问控制（RBAC）是一种基于组织中用户的角色来调节控制对计算机或网络资源的访问的方法。</li>
+<li>WebHook：具体来说，当在判断用户权限时，<code>Webhook</code> 模式会使 Kubernetes 查询外部的 REST 服务。</li>
+</ol>
+<p>但是，我们实际上只需要了解RBAC</p>
+<p>在 apiserver配置中，<code>--authorization-mode=Node,RBAC</code></p>
+<h2 id="2-将用户和权限与-rbac-角色解耦">2-将用户和权限与 RBAC 角色解耦</h2>
+<p>当在CMD使用 kubectl 执行命令时，会发生：</p>
+<ol>
+<li>kubectl 读取本地的 kubeconfig 配置</li>
+<li>将访问kubenetes api server，并发现API 【着仅仅是检查API可用性】</li>
+<li>kubectl 将执行客户端验证【检查 yml 中是否有错误】</li>
+<li>将数据发送给 api server 请求，收到请求并不会直接存储在 etcd 中</li>
+<li>首先，验证请求是否合法【对请求做身份验证 - 是否有权限创建这些资源】，有权限访问集群并不意味着有权限创建、读取、删除等等 【通常通过 RBAC来控制，精细的控制权限】</li>
+<li>如果未授权，则返回401，否则进入下一步</li>
+</ol>
+<h2 id="3---kubernetes-rbac">3 - Kubernetes RBAC</h2>
+<p>==RBAC：意在根据个人角色授权对资源的访问==</p>
+<p>从头开始设计授权系统</p>
+<ol>
+<li>为权限定义一个通用的 role</li>
+<li>将权限分配给role，而不是直接向用户分配权限</li>
+<li>将 role 链接到 用户</li>
+</ol>
+<p>RBAC：</p>
+<ul>
+<li>identity：SA，首先需要一个SA账户</li>
+<li>Role：访问资源的权限</li>
+<li>RoleBinding：角色绑定</li>
+</ul>
+<h2 id="4---kubernetes-身份用户应用程序和组">4 - Kubernetes 身份：用户、应用程序和组</h2>
+<p>例如：有人想登陆k8s 的默认仪表盘，那么需要</p>
+<p>一个用户账户 【集群中创建sA】</p>
+<p>还可以定义一组用户或 SA账户，如果想定义一个 NS的SA账户也可以</p>
+<p>限制对资源访问最佳方法是控制如何请求这些 API接口</p>
+<ol>
+<li>资源本身的API</li>
+<li>授权访问【只读、读写等等】
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+<li>get</li>
+<li>list</li>
+<li>create</li>
+<li>patch</li>
+<li>delete等等</li>
+</ul>
+</li>
+</ol>
+<p>下面是一个位于 &ldquo;default&rdquo; 名字空间的 Role 的示例，可用来授予对 <a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/">Pod</a> 的读访问权限：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>] <span style="color:#75715e"># &#34;&#34; 标明 core API 组</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>]
+</span></span></code></pre></div><h2 id="5---向用户授予权限">5 - 向用户授予权限</h2>
+<p>RoleBinding 将 &ldquo;pod-reader&rdquo; Role 授予在 &ldquo;default&rdquo; 名字空间中的用户 &ldquo;jane&rdquo;。 这样，用户 &ldquo;jane&rdquo; 就具有了读取 &ldquo;default&rdquo; 名字空间中所有 Pod 的权限。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 此角色绑定允许 &#34;jane&#34; 读取 &#34;default&#34; 名字空间中的 Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 你需要在该名字空间中有一个名为 “pod-reader” 的 Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-pods</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 你可以指定不止一个“subject（主体）”</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">jane</span> <span style="color:#75715e"># &#34;name&#34; 是区分大小写的</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># &#34;roleRef&#34; 指定与某 Role 或 ClusterRole 的绑定关系</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role       </span> <span style="color:#75715e"># 此字段必须是 Role 或 ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader </span> <span style="color:#75715e"># 此字段必须与你要绑定的 Role 或 ClusterRole 的名称匹配</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span></code></pre></div><p>role 只能授权给 namespace</p>
+<p>需要给集群授权使用，clusterrole</p>
+<p>【配置区别】Kind: Clusterrole 无 namespace</p>
+<p>集群默认有一些role,clusterrole</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl get role -n kube-system </span>
+</span></span></code></pre></div><p>k8s中的sa和group</p>
+<p>​		在 Kubernetes 中，ServiceAccount（简称 sa）和 Group 是两种重要的安全概念，它们都是 Kubernetes 的认证机制的一部分。</p>
+<p>​		ServiceAccount 是 Kubernetes 中的一种内置对象，用于为 pod 提供身份。每个 ServiceAccount 都会自动关联两个 Secret 对象，一个用于 API server 的访问令牌，另一个用于 Kubernetes 的 .kubeconfig 配置。这些 Secret 对象可以被 pod 使用，以便 pod 可以以该 ServiceAccount 的身份与 Kubernetes API server 进行交互。</p>
+<p>​		Group 是 Kubernetes 的另一个认证概念，它表示一组具有相同权限的用户。在 Kubernetes 中，用户可以属于一个或多个 Group。Group 的主要作用是方便 RBAC（Role-Based Access Control）的管理，可以将一组具有相同权限的用户归为一个 Group，然后对 Group 进行角色的绑定，这样就可以统一管理这个 Group 中所有用户的权限。</p>
+<p>​		总的来说，ServiceAccount 和 Group 都是 Kubernetes 中用于管理权限和访问控制的重要工具</p>
+<p>注意：</p>
+<p>​		在 Kubernetes 中，Group 是一个逻辑概念，表示一组具有相同权限的用户。它并不是一个可以直接创建的对象，而是在创建 RoleBinding 或 ClusterRoleBinding 时，将用户添加到 subjects 字段中，并指定 kind 为 Group。</p>
+<p>参考：https://kubernetes.io/zh-cn/docs/reference/access-authn-authz/rbac/#role-binding-examples</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-pods</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Group</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-group</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span></code></pre></div><h2 id="6---实践">6 - 实践</h2>
+<h3 id="场景-1同一命名空间中的角色和-rolebinding">场景 1：同一命名空间中的角色和 RoleBinding</h3>
+<p>使用 Role 和 RoleBinding 来定义和绑定命名空间级别的权限。以下是一个示例，我们创建一个 Role 和一个 RoleBinding 在同一命名空间中。</p>
+<ol>
+<li>创建 sa</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-sa</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">secrets</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-secret</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-secret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">Opaque</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">token</span>: <span style="color:#ae81ff">dG9rZW4=</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>]
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-pods</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-sa</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span>  
+</span></span></code></pre></div><p>获取 ServiceAccount 的令牌</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>TOKENNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl get serviceaccount my-sa -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.secrets[0].name}&#39;</span> -n default<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>TOKEN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl get secret $TOKENNAME -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.token}&#39;</span> -n default | base64 --decode<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>检查 ServiceAccount 的权限</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local k8s<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl auth can-i get pods -n default --as=system:serviceaccount:default:my-sa</span>
+</span></span><span style="display:flex;"><span>yes
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local k8s<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl auth can-i get pods -n kube-system --as=system:serviceaccount:default:my-sa</span>
+</span></span><span style="display:flex;"><span>no
+</span></span></code></pre></div><p>访问其他命名空间就无权限</p>
+<h3 id="场景-2将-clusterrole-与-rolebinding-结合使用">场景 2：将 ClusterRole 与 RoleBinding 结合使用</h3>
+<pre><code>	my-sa 这个 ServiceAccount 只能在 default 命名空间中获取、列出和观察 pods，而不能在集群的所有命名空间中进行这些操作。
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-sa</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">secrets</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-secret</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-secret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">Opaque</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">token</span>: <span style="color:#ae81ff">dG9rZW4=</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-reader</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>]
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-pods</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">my-sa</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-reader</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span></code></pre></div><h3 id="场景-3使用-clusterrole-和-clusterrolebinding-授予集群范围的访问权限">场景 3：使用 ClusterRole 和 ClusterRoleBinding 授予集群范围的访问权限</h3>
+<p>​		它们都用于将 Role 或 ClusterRole 绑定到用户、组或 ServiceAccount。然而，它们的作用范围和使用场景有所不同：</p>
+<p>​		RoleBinding：RoleBinding 可以将 Role 或 ClusterRole 绑定到用户、组或 ServiceAccount，但这种绑定只在 RoleBinding 所在的命名空间中有效。也就是说，==被绑定的 Role 或 ClusterRole 的权限只能在 RoleBinding 所在的命名空间中使用==。</p>
+<p>​		ClusterRoleBinding：ClusterRoleBinding 可以将 ClusterRole 绑定到用户、组或 ServiceAccount，并且这种绑定在整个 Kubernetes 集群中都有效。也就是说，==被绑定的 ClusterRole 的权限可以在集群的任何命名空间中使用==。</p>
+<p>注意：</p>
+<ol>
+<li>role 和 RoleBinding 只作用在 namespace</li>
+<li>可能绑定不同 namespace 的 sa</li>
+<li>RoleBinding 和一链接到 clusterrole，但是仅授权 namespace</li>
+<li>clusterRoleBinding 授权整个集群和clusterrole 绑定</li>
+<li>clusterRoleBinding 不能绑定 role</li>
+</ol>
+<h2 id="7---使-rbac-策略更加简洁">7 - 使 RBAC 策略更加简洁</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 在 HTTP 层面，用来访问 Pod 资源的名称为 &#34;pods&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>]
+</span></span></code></pre></div><p>比这样更简洁</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 在 HTTP 层面，用来访问 Pod 资源的名称为 &#34;pods&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">get</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">watch</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">list</span>
+</span></span></code></pre></div>
+        </div>
+    </div>
+</div>

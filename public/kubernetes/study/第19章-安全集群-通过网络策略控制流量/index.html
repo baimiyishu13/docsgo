@@ -1,0 +1,102 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第19章 安全集群 通过网络策略控制流量</h1>
+    </div>
+    
+    
+    <time datetime="2024-05-13T10:01:52&#43;08:00">May 13, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents"></nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>如果需要进行安全审计，查看存在哪些安全漏洞是可以解决的。</p>
+<ul>
+<li>假设：安全团队发现他们可以入侵前段应用程序Pod，并且获得整个集群的访问权限</li>
+</ul>
+<p>如果发生在现实中，这是一个很大的安全问题，但是可以很容易修复。</p>
+<p>当它被攻击时，应用程序之间的所有通信都是被允许的</p>
+<ul>
+<li>隐患：对于部件或服务可以相互通信没有限制</li>
+</ul>
+<p>网络策略组件：定义了集群中谁可以访问谁</p>
+<ul>
+<li>定义在本地</li>
+</ul>
+<p>不是所有的 CNI插件都支持，常用的CNI插件</p>
+<ol>
+<li>Calico</li>
+<li>Cilium</li>
+</ol>
+<p>严格的集群间通信规则会使得集群更加安全。</p>
+<p>参考：https://kubernetes.io/zh-cn/docs/concepts/services-networking/network-policies/</p>
+<p>两个规则：</p>
+<ol>
+<li>Ingress</li>
+<li>Egress</li>
+</ol>
+<p>NetworkPolicy 的示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">NetworkPolicy</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-network-policy</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">podSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">role</span>: <span style="color:#ae81ff">db</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">policyTypes</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">Ingress</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">Egress</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ingress</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">from</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">ipBlock</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cidr</span>: <span style="color:#ae81ff">172.17.0.0</span><span style="color:#ae81ff">/16</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">except</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">172.17.1.0</span><span style="color:#ae81ff">/24</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">namespaceSelector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">project</span>: <span style="color:#ae81ff">myproject</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">podSelector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">role</span>: <span style="color:#ae81ff">frontend</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6379</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">egress</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">to</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">ipBlock</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cidr</span>: <span style="color:#ae81ff">10.0.0.0</span><span style="color:#ae81ff">/24</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">5978</span>
+</span></span></code></pre></div>
+        </div>
+    </div>
+</div>

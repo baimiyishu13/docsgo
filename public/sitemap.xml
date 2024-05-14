@@ -2,22 +2,103 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docsgo/istio/10-environment/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/11-demo/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/12-envoy/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/13-telemetry/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/14-management/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/15-balancing/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/16-gateways/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/3-injection/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/4-breaking/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/5-tls/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/6-istioctl/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/7-istio/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/8-goodbye/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/9-started/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/2-releases/</loc>
+    <lastmod>2024-05-14T14:04:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/istio/1-introduction/</loc>
+    <lastmod>2024-05-14T14:04:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/</loc>
+    <lastmod>2024-05-13T10:01:52+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</loc>
+    <lastmod>2024-05-13T10:01:52+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC18%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E8%AF%81%E4%B9%A6%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2024-05-11T15:56:21+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC7%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E9%AB%98%E7%BA%A7%E8%B0%83%E5%BA%A6/</loc>
+    <lastmod>2024-05-05T23:25:04+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC6%E7%AB%A0-%E4%BD%BF%E7%94%A8%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E8%AE%BF%E9%97%AE/</loc>
+    <lastmod>2024-05-04T22:10:20+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC5%E7%AB%A0-ingress/</loc>
+    <lastmod>2024-05-04T15:40:14+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/05-%E4%BA%91%E5%AE%89%E5%85%A8aws/</loc>
+    <lastmod>2024-05-03T10:56:31+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/04-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E9%95%9C%E5%83%8F/</loc>
+    <lastmod>2024-05-01T18:57:11+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC4%E7%AB%A0-external_services-ingress/</loc>
+    <lastmod>2024-04-30T10:41:13+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/kubernetes/study/kubernetes-dns/</loc>
+    <lastmod>2024-04-28T17:36:34+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docsgo/devsecops/03-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8ci/</loc>
+    <lastmod>2024-04-28T15:42:54+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docsgo/efk/01-efk/</loc>
     <lastmod>2024-04-28T11:08:02+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/efk/</loc>
     <lastmod>2024-04-28T11:08:02+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/kubernetes/</loc>
-    <lastmod>2024-04-26T22:44:23+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC1%E7%AB%A0-kubernetes%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/</loc>
     <lastmod>2024-04-26T22:44:23+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</loc>
+    <loc>http://localhost:1313/docsgo/argocd/</loc>
     <lastmod>2024-04-26T14:32:59+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/argocd/</loc>
+    <loc>http://localhost:1313/docsgo/argocd/01-argocd%E5%9F%BA%E7%A1%80/</loc>
     <lastmod>2024-04-26T14:32:59+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/cicd/gitlab/07-%E9%83%A8%E7%BD%B2%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4/</loc>
@@ -92,23 +173,11 @@
     <loc>http://localhost:1313/docsgo/devsecops/0-%E5%85%A5%E9%97%A8/</loc>
     <lastmod>2024-04-07T21:03:20+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/docsgo/istio/istiocon2023/</loc>
-    <lastmod>2024-04-07T20:32:01+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/docsgo/istio/</loc>
-    <lastmod>2024-04-07T20:32:01+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</loc>
-    <lastmod>2024-04-07T17:10:33+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/docsgo/terraform/</loc>
     <lastmod>2024-04-06T21:44:54+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/terraform/%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E5%8D%B3%E4%BB%A3%E7%A0%81/</loc>
     <lastmod>2024-04-06T21:44:54+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</loc>
-    <lastmod>2024-04-04T14:52:05+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docsgo/monitor/yugabytedb/</loc>
     <lastmod>2024-04-03T15:30:58+08:00</lastmod>

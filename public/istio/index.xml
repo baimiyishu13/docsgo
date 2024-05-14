@@ -6,28 +6,119 @@
     <description>Recent content in Istios on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 07 Apr 2024 20:32:01 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 May 2024 14:04:40 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/istio/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>IstioCon2023</title>
-      <link>http://localhost:1313/docsgo/istio/istiocon2023/</link>
-      <pubDate>Sun, 07 Apr 2024 20:32:01 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istiocon2023/</guid>
-      <description>流量管理的安全性和可观察性&#xA;未来：&#xA;将sidecar替换为节点组件，该组件处理 MTLS加密吗L4策略，并参与网格的可观察性工作负载，流量仅通过该组件进行重定向&#xA;新性的CNI 功能与Istio存在重叠，比如服务解析</description>
+      <title>10 Environment</title>
+      <link>http://localhost:1313/docsgo/istio/10-environment/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/10-environment/</guid>
+      <description></description>
     </item>
     <item>
-      <title>Istio的数据包的生命周期</title>
-      <link>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
-      <pubDate>Sun, 07 Apr 2024 17:10:33 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istio%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
-      <description>网络、容器 Kubernetes pod 真实的情况和工作原理</description>
+      <title>11 Demo</title>
+      <link>http://localhost:1313/docsgo/istio/11-demo/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/11-demo/</guid>
+      <description></description>
     </item>
     <item>
-      <title>Istio入门</title>
-      <link>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</link>
-      <pubDate>Thu, 04 Apr 2024 14:52:05 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/istio%E5%85%A5%E9%97%A8/</guid>
-      <description>实验环境：minikube&#xA;➜ ~ kubectl get node NAME STATUS ROLES AGE VERSION minikube Ready control-plane 11m v1.27.4 简述：架构、安装、实验 （了解总体再逐个细化）&#xA;Istio：开源服务网格，用来保护微服务&#xA;构建在 Envoy 之上：一个处理微服务之间所有流量的高效代理&#xA;IStio 工作原理：在环境中每个微服务旁注入一个 sidecar 容器，sidecar 容器拦截进出的微服务的所有流量，处理流量路由，负载均衡，服务发现和其他重要的网络任务。&#xA;Istio还提供：&#xA;高级流量管理功能：金丝雀，A/B测试 故障注入 首先，Istio 为现代微服务架构提供了多项优势，通过抽象服务发现、负载均衡、流量路由的复杂性来简化网络管理。&#xA;其次，Istio 提供了高级安全功能，列入双向的TLS 身份验证、基于角色的访问控制和流量加密。&#xA;最后，Istio 提供了可观察性功能，例如分布式跟踪、指标收集和日志记录。&#xA;安装：大多数使用 Helm 安装&#xA;参考：https://istio.io/latest/zh/docs/setup/install/helm/&#xA;➜ ~ helm search repo istio/base NAME CHART VERSION&#x9;APP VERSION&#x9;DESCRIPTION istio/base&#x9;1.21.0 1.21.0 Helm chart for deploying Istio cluster resource... 查看默认值：&#xA;helm show values istio/base 使用 treeaform创建</description>
+      <title>12 Envoy</title>
+      <link>http://localhost:1313/docsgo/istio/12-envoy/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/12-envoy/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>13 Telemetry</title>
+      <link>http://localhost:1313/docsgo/istio/13-telemetry/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/13-telemetry/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>14 Management</title>
+      <link>http://localhost:1313/docsgo/istio/14-management/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/14-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>15 Balancing</title>
+      <link>http://localhost:1313/docsgo/istio/15-balancing/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/15-balancing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>16 Gateways</title>
+      <link>http://localhost:1313/docsgo/istio/16-gateways/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/16-gateways/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>3 Injection</title>
+      <link>http://localhost:1313/docsgo/istio/3-injection/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/3-injection/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>4 Breaking</title>
+      <link>http://localhost:1313/docsgo/istio/4-breaking/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/4-breaking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>5 TLS</title>
+      <link>http://localhost:1313/docsgo/istio/5-tls/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/5-tls/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>6 Istioctl</title>
+      <link>http://localhost:1313/docsgo/istio/6-istioctl/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/6-istioctl/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>7 Istio</title>
+      <link>http://localhost:1313/docsgo/istio/7-istio/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/7-istio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>8 Goodbye</title>
+      <link>http://localhost:1313/docsgo/istio/8-goodbye/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/8-goodbye/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>9 Started</title>
+      <link>http://localhost:1313/docsgo/istio/9-started/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/9-started/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>第2章：Istio 入门</title>
+      <link>http://localhost:1313/docsgo/istio/2-releases/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/2-releases/</guid>
+      <description>直接进入尽快使用 Istio，但是此篇并不打算太过深入&#xA;环境：MAC、Arm64、minikube&#xA;Istio 实际上是一个不同工具的集合 - 框架，包装在一起，所以在 Istio 中有相当多的组件&#xA;woat is Istio？ Istio 被称为服务网格，在曾经很多面试官都喜欢问我 什么是 Istio ？？？&#xA;可以说 Istio 是一个服务网格 “Service Mesh”，那么意味着需要知道服务网格的概念是什么&#xA;当正在使用基于集群的微服务，会发现作为一个现有的框架，比如 kubernets，就其本身而言并不是相当完美，服务网格也不会取代 kubernetes，它实际上是一个额外的 软件层，和 Kubernetes 一起部署，服务网格不仅仅与 Kubernets 无关，任何一种分布式体系中这就是多个软件组件网格的地方。彼此直接，将从服务网格中受益。所以至今为止，Kubenrets 都被称为：编排框架。&#xA;🤔 一个标准的微服务体系结构在 Kubenrets 中运行&#xA;我们会有：&#xA;一大堆的 Pod，每个Pod包含 一个或多个 Container。但是它是相当标准的，只有一个 Container 使用了服务发现机制，在Kubernets 内部从任何容器进行网络调用。 k8s非常删除去管理Pod，如果需要删除一个Pod，向apiserver发生命令、kubectl、修改yaml等等。&#xA;但是，Kubernets 不擅长管理或在任何情况下管理Pod之间网络，很难推断出里面发生了什么，例如互联网络通信里面有一个错误，网络请求有一些是错误的。虽然可以对软件进行粗略的研究或者分析日志然后推断出出了什么事。&#xA;如果知道是哪个容器出了问题还好，但是如果有数千个微服务，这些网络协调的组合非常复杂。只是标准的 Kubenrets，没有任何互联的不可见性或控制权。 🎯 这就是 服务网格可以提供帮助的地方&#xA;形容词：Service Mesh 【服务网格】&#xA;Istio 如何实施，从概念上以某种方式将通过集群中运行的网络流量将通过本服务网格软件进行路由。&#xA;例子：Pod 至今建立访问，通过 SVC 直接访问&#xA;但是有了 Service Mesh，将设置使所有访问都通过 Service Mesh 进行定向。&#xA;容器实际上不会钓鱼目标容器，它的网络请求是到 Service Mesh，然后Service Mesh 将负责记录指向目标。</description>
+    </item>
+    <item>
+      <title>第1章：Istio 简介</title>
+      <link>http://localhost:1313/docsgo/istio/1-introduction/</link>
+      <pubDate>Tue, 14 May 2024 14:04:39 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/1-introduction/</guid>
+      <description>🚀 Istio将K8s提升到了一个新的高度，那是因为 Istio 提供了一套非常丰富的工具负责监测、管理和保障k8s集群。&#xA;目标：可理解、可使用在生产项目中&#xA;微服务架构非常复杂，Istio 会提供一个 UI视图到Pod级别，看到它们是如何连接在一起的，存在问题的地方，还有分布式追踪，还可以在不进入集群的情况下改变流量。&#xA;例如：将未经过测试的新软件投入到一个生产集群，可以对普通用户隐藏，只有运维工程师将能够访问它。可以做像金丝雀释放一样的事情，可以改进系统的弹性和安全性，增加熔断器。着一直是微服务架构最佳实践，但是传统中很难做，Istio使它变得简单。&#xA;安全 - 整个集群中设置加密&#xA;学习计划安排：&#xA;1 - Introduction 2 - Getting Started 3 - Optional Installing a Local Kubernetes Environment 4 - Hands on Demo 5 - Introducing Envoy 6 - Telemetry 7 - Traffic Management 8 - Load Balancing 9 - Gateways 10 - Dark Releases 11 - Fault Injection 12 - Circuit Breaking 13 - Mutual TLS 14 - Customizing and Installing Istio with Istioctl 15 - Upgrading Istio 16 - Goodbye </description>
     </item>
   </channel>
 </rss>

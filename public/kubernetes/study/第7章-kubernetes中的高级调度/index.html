@@ -1,0 +1,144 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>第7章:  Kubernetes中的高级调度</h1>
+    </div>
+    
+    
+    <time datetime="2024-05-05T23:25:04&#43;08:00">May 5, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#nodename">nodeName</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubernetes-node-selector">Kubernetes Node Selector</a></li>
+    <li><a href="#kubernetes-节点亲和性">Kubernetes 节点亲和性</a></li>
+    <li><a href="#kubernetes-pod-反亲和性">Kubernetes Pod 反亲和性</a></li>
+    <li><a href="#kubernetes-pod-亲和性">Kubernetes Pod 亲和性</a></li>
+    <li><a href="#kubernetes污点和容忍">Kubernetes污点和容忍</a></li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>kubernetes 最大优势就是可以抽象出单独的服务器，不需要担心各个服务器细节。</p>
+<p>内置调度器：决定将工作负载放在哪里，例如想调度一个Pod</p>
+<ol>
+<li>先过滤掉不符合条件的节点，剩余的节点成为：可调度节点</li>
+<li>运行一组函数对节点进行打分，然后会选最高分的节点来运行【如果是多个相同最高分节点，随机选】这个过程称为绑定</li>
+</ol>
+<p>实际的生产环境中可能有不同的节点，高CPU、高内存、高性能存储、GPU、云上按需计费、包年&hellip;,性能差异的节点等等</p>
+<h3 id="nodename">nodeName</h3>
+<p>直接将 Pod 固定在一个节点上</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nodeName</span>: <span style="color:#ae81ff">node1</span>
+</span></span></code></pre></div><h2 id="kubernetes-node-selector">Kubernetes Node Selector</h2>
+<p>将 <code>nodeSelector</code> 字段添加到 Pod 的规约中，Kubernetes 只会将 Pod 调度到拥有你所指定的每个标签的节点上。</p>
+<p>缺点：不灵活</p>
+<ul>
+<li>可以使用：亲和性和反亲和性扩展了你可以定义的约束类型</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl get node --show-labels
+</span></span></code></pre></div><p>可以为特定节点上分配特定标签，也有一些默认的标签</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@local ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl get node --show-labels </span>
+</span></span><span style="display:flex;"><span>NAME      STATUS   ROLES                  AGE   VERSION        LABELS
+</span></span><span style="display:flex;"><span>monitor   Ready    control-plane,master   11d   v1.29.3+k3s1   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/instance-type<span style="color:#f92672">=</span>k3s,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>monitor,kubernetes.io/os<span style="color:#f92672">=</span>linux,node-role.kubernetes.io/control-plane<span style="color:#f92672">=</span>true,node-role.kubernetes.io/master<span style="color:#f92672">=</span>true,node.kubernetes.io/instance-type<span style="color:#f92672">=</span>k3s
+</span></span></code></pre></div><p>添加标签：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl label nodes &lt;your-node-name&gt; disktype<span style="color:#f92672">=</span>ssd
+</span></span></code></pre></div><p>Pod</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>: <span style="color:#ae81ff">test</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nodeSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">disktype</span>: <span style="color:#ae81ff">ssd</span>
+</span></span></code></pre></div><p>亲和性功能由两种类型的亲和性组成：</p>
+<ul>
+<li><strong>节点亲和性</strong>功能类似于 <code>nodeSelector</code> 字段，但它的表达能力更强，并且允许你指定软规则。</li>
+<li>Pod 间亲和性/反亲和性允许你根据其他 Pod 的标签来约束 Pod。</li>
+</ul>
+<h2 id="kubernetes-节点亲和性">Kubernetes 节点亲和性</h2>
+<p>两种：</p>
+<ol>
+<li>软亲和：调度器会尝试寻找满足对应规则的节点。如果找不到匹配的节点，调度器仍然会调度该 Pod。</li>
+<li>硬亲和：调度器只有在规则被满足的时候才能执行调度</li>
+</ol>
+<p>配置示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">with-node-affinity</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">affinity</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">nodeAffinity</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">nodeSelectorTerms</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">matchExpressions</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">topology.kubernetes.io/zone</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">operator</span>: <span style="color:#ae81ff">In</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">values</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">antarctica-east1</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">antarctica-west1</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">preferredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">weight</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">preference</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">matchExpressions</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">another-node-label-key</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">operator</span>: <span style="color:#ae81ff">In</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">values</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">another-node-label-value</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">with-node-affinity</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">registry.k8s.io/pause:2.0</span>
+</span></span></code></pre></div><h2 id="kubernetes-pod-反亲和性">Kubernetes Pod 反亲和性</h2>
+<h2 id="kubernetes-pod-亲和性">Kubernetes Pod 亲和性</h2>
+<h2 id="kubernetes污点和容忍">Kubernetes污点和容忍</h2>
+
+        </div>
+    </div>
+</div>

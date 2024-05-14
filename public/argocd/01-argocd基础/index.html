@@ -23,7 +23,7 @@
 </div>
 <div id="article" style="padding-left: 20px; padding-right: 20px;">
     <div class="article-title">
-        <h1>01-Argocd基础</h1>
+        <h1>第一章：Argocd-Kubernetes的GitOpsCD</h1>
     </div>
     
     
@@ -33,32 +33,166 @@
         <p> 目录: </p>
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#简介和概述">简介和概述</a></li>
+    <li><a href="#1-简述">1-简述</a>
+      <ul>
+        <li><a href="#1-1-不使用-argocd-的-cd-工作流程">1-1 不使用 ArgoCD 的 CD 工作流程</a></li>
+        <li><a href="#1-2-使用-argocd-的-cd-工作流程">1-2 使用 ArgoCD 的 CD 工作流程</a></li>
+        <li><a href="#1-3-将-gitops-与-argocd-结合使用的好处">1-3 将 GitOps 与 ArgoCD 结合使用的好处</a></li>
+        <li><a href="#1-4-使用-git-和-argocd-进行-k8s-访问控制">1-4 使用 Git 和 ArgoCD 进行 K8s 访问控制</a></li>
+        <li><a href="#1-5-argocd-作为kubernetes-扩展">1-5 ArgoCD 作为Kubernetes 扩展</a></li>
+        <li><a href="#1-6-如何配置-argocd">1-6 如何配置 ArgoCD？</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-1-演示设置和概述">2-1 演示设置和概述</a>
+      <ul>
+        <li><a href="#本地的-minikube-集群添加到-argo-cd-中">本地的 Minikube 集群添加到 Argo CD 中</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </aside>
     <hr>
     <div class="post">
         <div id="content-font">
-            <h2 id="简介和概述">简介和概述</h2>
-<p>Argocd：在devops中 的 gitops 工具</p>
+            <h2 id="1-简述">1-简述</h2>
+<p>ArgoCD 是一种 GitOps 持续交付工具，在 DevOps 中越来越受欢迎。</p>
+<!-- raw HTML omitted -->
+<p>官网：https://argo-cd.readthedocs.io/en/stable/</p>
+<p>学习前必备知识：</p>
+<ul>
+<li>docker 、kubernetes、HELM(可选)、CICD工具其一即可（gitlab、github、jenkins）</li>
+</ul>
+<p>Argo CD : 持续交付工具，将Argocd理解成CD工具或持续交付的工具，对比实验 Jenkins 或者 gitlab 中的持续交付。</p>
+<p>所以，Argocd 并不存在取代 jenkins 或者 gitlab等等说法</p>
+<p>设计实验仓库：</p>
+<p><a href="https://gitlab.com/mymicroservice-cicd9154417">https://gitlab.com/mymicroservice-cicd9154417</a></p>
+<h3 id="1-1-不使用-argocd-的-cd-工作流程">1-1 不使用 ArgoCD 的 CD 工作流程</h3>
+<p>假设我们有一套服务运行在 k8s集群。</p>
+<p>当我们新增功能或者代码发生改变时，使用 jenkins 或者 gitlab 构建的 ci 管道构建了新的镜像，并将其推送到仓库，此时这个镜像如何部署？</p>
 <ol>
-<li>argocd 常见用例</li>
-<li></li>
+<li>使用 yml 更新镜像tag，部署到集群，这些操作是 CI 管道的延续</li>
+<li>因此 jenkins 或 gitlab 将更新应用程序的部署 yml，并使用 kubectl 去更新部署</li>
 </ol>
-<p>什么是 ArgoCD</p>
-<p>不使用 ArgoCD 的 CD 工作流程</p>
-<p>使用 ArgoCD 的 CD 工作流程</p>
-<p>将 GitOps 与 ArgoCD 结合使用的好处</p>
-<p>Git 作为单一事实来源</p>
-<p>轻松回滚</p>
-<p>集群灾难恢复</p>
-<p>使用 Git 和 ArgoCD 进行 K8s 访问控制</p>
-<p>ArgoCD 作为Kubernetes 扩展</p>
-<p>如何配置 ArgoCD？</p>
-<p>使用 ArgoCD 实现多个集群</p>
-<p>替代其他 CI/CD 工具？</p>
-<p>演示设置和概述</p>
+<p>这种方法存在的挑战：</p>
+<ol>
+<li>需要设置安装kubectl 或者 helm等工具来访问集群</li>
+<li>还需要为这些工具配置访问，连接凭据 【如果使用的是云集群，还需要配置 ak、sk等等】</li>
+</ol>
+<p>引出的问题：配置工作量、安全问题【将集群凭证和 云凭证提供给了外部服务】</p>
+<p>另一个问题：</p>
+<ol>
+<li>使用管道部署后，无法进一步了解应用程序状态。管道并不知道执行 更新后负载的状态 【即使可以通过脚本去实现，但将会使管道冗余和加长管道执行时间】</li>
+</ol>
+<h3 id="1-2-使用-argocd-的-cd-工作流程">1-2 使用 ArgoCD 的 CD 工作流程</h3>
+<p>Argo CD 结合 Gitlab 将更加高效，可以持续交付的 kubernetes。</p>
+<p>Argocd 如何解决之前的困难：【反转流程】不再使用jenkins 、gitlab的管道直接使用kubectl 去更新</p>
+<ol>
+<li>Argocd 本身可以是 kubernetes 集群一部分</li>
+<li>Argocd 通过 pull 拉取 git仓库，并将更改应用。</li>
+</ol>
+<p>替换管道中kubectl后流程：</p>
+<ol>
+<li>CI管道：TEST、BUILD、PUSH镜像仓库、Update yml</li>
+<li>提交后 Argo cd pull git仓库发现需要更改。【配置了持续监视】</li>
+</ol>
+<p>【git 一个最佳实践】：开发代码与 部署yml 独立</p>
+<p>当仅仅是应用程序 部署的yml需要改变时，仅仅更新部署 git yml 仓库即可</p>
+<ul>
+<li>无需 运行整个 CI管道</li>
+<li>无需 登入集群内 修改</li>
+</ul>
+<p>也不希望在构建管道时有非常仓复的逻辑</p>
+<p>部署存储库可以是：</p>
+<ol>
+<li>纯 yml</li>
+<li>helm 等等，最终生成的都是存 yml 文件</li>
+</ol>
+<p>最终：将拥有 单独的 CI、CD管道。</p>
+<ul>
+<li>CI 管道，由开发拥有</li>
+<li>CD 管道：运维 或 Devops 镜像配置使用</li>
+</ul>
+<h3 id="1-3-将-gitops-与-argocd-结合使用的好处">1-3 将 GitOps 与 ArgoCD 结合使用的好处</h3>
+<p>好处</p>
+<ol>
+<li>将k8s配置定义为 git 存储库中代码，意味着 版本/权限 控制</li>
+<li>某人在集群中使用kubectl 操作，要比 使用 git 更改提交慢很多</li>
+<li>监视 git仓库更改、监视集群内的更改。不匹配时【可选1、同步git仓库。2、不允许更改】
+<ul>
+<li>覆盖手动更改的 【非常有用】</li>
+<li>也可以不覆盖，而是发生告警，说明集群中的更改</li>
+</ul>
+</li>
+<li>版本控制，提供历史更改记录，以及谁更改了集群</li>
+</ol>
+<p>轻松回滚，只需要 git 回退即可实现</p>
+<p>集群灾难恢复：这也变得非常容易，在另一个集群中直接使用 git存储库部署即可</p>
+<h3 id="1-4-使用-git-和-argocd-进行-k8s-访问控制">1-4 使用 Git 和 ArgoCD 进行 K8s 访问控制</h3>
+<p>不希望每个团队都对集群访问更改，可以轻松配置访问规则</p>
+<p>每个人都可以发起提出对集群的更改，但是需要审批【审批】</p>
+<p>只需要：</p>
+<ul>
+<li>让工程师访问 git仓库即可</li>
+</ul>
+<h3 id="1-5-argocd-作为kubernetes-扩展">1-5 ArgoCD 作为Kubernetes 扩展</h3>
+<p>直接部署在集群，实际上是 kubernetes API 扩展。利用了 k8s 资源本身，并不是自己构建所有功能，使用现有的功能完成。</p>
+<p>好处：</p>
+<ol>
+<li>集群中的可见性</li>
+<li>更改时可实时看到 过程</li>
+</ol>
+<h3 id="1-6-如何配置-argocd">1-6 如何配置 ArgoCD？</h3>
+<p><a href="https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/">https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/</a></p>
+<p>只需要在中心集群或者合适的集群部署 一个Argocd，即可配置多个集群【不论集群位于哪里】</p>
+<p>多环境下：</p>
+<ol>
+<li>git 设置多个分支 【不是最好的】</li>
+<li>使用覆盖并且自定义，每个环节有自己的配置</li>
+</ol>
+<p>CI，管道可以更新开发覆盖中的模版</p>
+<h2 id="2-1-演示设置和概述">2-1 演示设置和概述</h2>
+<p>安装：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create namespace argocd
+</span></span><span style="display:flex;"><span>kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+</span></span></code></pre></div><p>argocd</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Application</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">myapp</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">argocd</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://gitlab.com/baimiyishu13/argocd-ceshi.git</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">dev</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">server</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">myapp</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">syncPolicy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">syncOptions</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">CreateNamespace=true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">automated</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 同步集群中的手动更改</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">selfHeal</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 默认 false，删除 yaml 自动同步删除资源</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">prune</span>: <span style="color:#66d9ef">true</span>
+</span></span></code></pre></div><p>实验环境 k3s 单集群：</p>
+<p>加入argocd</p>
+<ol>
+<li>获取密码【用户 admin】</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl get secrets -n argocd argocd-initial-admin-secret -o yaml
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;**==&#34;</span> | base64 -d
+</span></span></code></pre></div><ol start="2">
+<li>登陆</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>argocd login <span style="color:#f92672">[</span>IP<span style="color:#f92672">]</span>:<span style="color:#f92672">[</span>port<span style="color:#f92672">]</span>
+</span></span></code></pre></div><ol start="3">
+<li>添加</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> argocd cluster add default --name k3s --kubeconfig k3s.yaml --insecure --in-cluster -y --upsert
+</span></span></code></pre></div><h3 id="本地的-minikube-集群添加到-argo-cd-中">本地的 Minikube 集群添加到 Argo CD 中</h3>
 
         </div>
     </div>

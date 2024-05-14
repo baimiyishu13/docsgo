@@ -6,8 +6,57 @@
     <description>Recent content in Kubernetes on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 26 Apr 2024 22:44:23 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 13 May 2024 10:01:52 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>第19章 安全集群 通过网络策略控制流量</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</link>
+      <pubDate>Mon, 13 May 2024 10:01:52 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</guid>
+      <description>如果需要进行安全审计，查看存在哪些安全漏洞是可以解决的。&#xA;假设：安全团队发现他们可以入侵前段应用程序Pod，并且获得整个集群的访问权限 如果发生在现实中，这是一个很大的安全问题，但是可以很容易修复。&#xA;当它被攻击时，应用程序之间的所有通信都是被允许的&#xA;隐患：对于部件或服务可以相互通信没有限制 网络策略组件：定义了集群中谁可以访问谁&#xA;定义在本地 不是所有的 CNI插件都支持，常用的CNI插件&#xA;Calico Cilium 严格的集群间通信规则会使得集群更加安全。&#xA;参考：https://kubernetes.io/zh-cn/docs/concepts/services-networking/network-policies/&#xA;两个规则：&#xA;Ingress Egress NetworkPolicy 的示例：&#xA;apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: test-network-policy namespace: default spec: podSelector: matchLabels: role: db policyTypes: - Ingress - Egress ingress: - from: - ipBlock: cidr: 172.17.0.0/16 except: - 172.17.1.0/24 - namespaceSelector: matchLabels: project: myproject - podSelector: matchLabels: role: frontend ports: - protocol: TCP port: 6379 egress: - to: - ipBlock: cidr: 10.0.0.0/24 ports: - protocol: TCP port: 5978 </description>
+    </item>
+    <item>
+      <title>第18章: Kubernetes 中的证书管理</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC18%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E8%AF%81%E4%B9%A6%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Sat, 11 May 2024 15:56:21 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC18%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E8%AF%81%E4%B9%A6%E7%AE%A1%E7%90%86/</guid>
+      <description>集群证书续期 集群已经运行了半年多，一个成员突然提出&#xA;应该检查证书何时到期，并在需要的时候续订 检查1：&#xA;openssl 命令来读取证书的到期时间&#xA;openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -enddate openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout 检查2：&#xA;生成新的密钥 - 使用 kubeadm 将会非常简单 kubeadm certs --helm kubeadm certs check-expiration 证书默认1年&#xA;更新：&#xA;openssl 生成新的证书和私钥 或者 使用 kubeadm 更新证书注意：&#xA;更新集群，kubeadm 会自动续订证书 为 kubelet 配置证书轮换 https://kubernetes.io/zh-cn/docs/tasks/tls/certificate-rotation/&#xA;Kubelet 使用证书进行 Kubernetes API 的认证。 默认情况下，这些证书的签发期限为一年，所以不需要太频繁地进行更新。&#xA;Kubernetes v1.8 和更高版本的 kubelet 实现了对客户端证书与/或服务证书进行轮换这一特性。 请注意，服务证书轮换是一项 Beta 特性，需要 kubelet 上 RotateKubeletServerCertificate 特性的支持（默认启用）。</description>
+    </item>
+    <item>
+      <title>第7章:  Kubernetes中的高级调度</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC7%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E9%AB%98%E7%BA%A7%E8%B0%83%E5%BA%A6/</link>
+      <pubDate>Sun, 05 May 2024 23:25:04 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC7%E7%AB%A0-kubernetes%E4%B8%AD%E7%9A%84%E9%AB%98%E7%BA%A7%E8%B0%83%E5%BA%A6/</guid>
+      <description>kubernetes 最大优势就是可以抽象出单独的服务器，不需要担心各个服务器细节。&#xA;内置调度器：决定将工作负载放在哪里，例如想调度一个Pod&#xA;先过滤掉不符合条件的节点，剩余的节点成为：可调度节点 运行一组函数对节点进行打分，然后会选最高分的节点来运行【如果是多个相同最高分节点，随机选】这个过程称为绑定 实际的生产环境中可能有不同的节点，高CPU、高内存、高性能存储、GPU、云上按需计费、包年&amp;hellip;,性能差异的节点等等&#xA;nodeName 直接将 Pod 固定在一个节点上&#xA;apiVersion: v1 kind: Pod metadata: name: nginx labels: env: test spec: containers: - name: nginx image: nginx imagePullPolicy: IfNotPresent nodeName: node1 Kubernetes Node Selector 将 nodeSelector 字段添加到 Pod 的规约中，Kubernetes 只会将 Pod 调度到拥有你所指定的每个标签的节点上。&#xA;缺点：不灵活&#xA;可以使用：亲和性和反亲和性扩展了你可以定义的约束类型 kubectl get node --show-labels 可以为特定节点上分配特定标签，也有一些默认的标签&#xA;[root@local ~]# kubectl get node --show-labels NAME STATUS ROLES AGE VERSION LABELS monitor Ready control-plane,master 11d v1.29.3+k3s1 beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=k3s,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=monitor,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=true,node-role.kubernetes.io/master=true,node.kubernetes.io/instance-type=k3s 添加标签：&#xA;kubectl label nodes &amp;lt;your-node-name&amp;gt; disktype=ssd Pod</description>
+    </item>
+    <item>
+      <title>第6章: 使用用户和权限控制访问</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC6%E7%AB%A0-%E4%BD%BF%E7%94%A8%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E8%AE%BF%E9%97%AE/</link>
+      <pubDate>Sat, 04 May 2024 22:10:20 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC6%E7%AB%A0-%E4%BD%BF%E7%94%A8%E7%94%A8%E6%88%B7%E5%92%8C%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E8%AE%BF%E9%97%AE/</guid>
+      <description>1 - 章节简介 权限：&#xA;谁可以访问？【并不是每个人都是管理员】 访问什么资源？做什么事情？ 授用户或应用程序的四种方法：&#xA;Node：节点鉴权是一种特殊用途的鉴权模式，专门对 kubelet 发出的 API 请求进行授权。 ABAC：基于属性的访问控制（Attribute-based access control，ABAC）定义了访问控制范例， ABAC 通过使用将属性组合在一起的策略来向用户授予访问权限。 RBAC：基于角色（Role）的访问控制（RBAC）是一种基于组织中用户的角色来调节控制对计算机或网络资源的访问的方法。 WebHook：具体来说，当在判断用户权限时，Webhook 模式会使 Kubernetes 查询外部的 REST 服务。 但是，我们实际上只需要了解RBAC&#xA;在 apiserver配置中，--authorization-mode=Node,RBAC&#xA;2-将用户和权限与 RBAC 角色解耦 当在CMD使用 kubectl 执行命令时，会发生：&#xA;kubectl 读取本地的 kubeconfig 配置 将访问kubenetes api server，并发现API 【着仅仅是检查API可用性】 kubectl 将执行客户端验证【检查 yml 中是否有错误】 将数据发送给 api server 请求，收到请求并不会直接存储在 etcd 中 首先，验证请求是否合法【对请求做身份验证 - 是否有权限创建这些资源】，有权限访问集群并不意味着有权限创建、读取、删除等等 【通常通过 RBAC来控制，精细的控制权限】 如果未授权，则返回401，否则进入下一步 3 - Kubernetes RBAC ==RBAC：意在根据个人角色授权对资源的访问==&#xA;从头开始设计授权系统&#xA;为权限定义一个通用的 role 将权限分配给role，而不是直接向用户分配权限 将 role 链接到 用户 RBAC：</description>
+    </item>
+    <item>
+      <title>第5章：Ingress</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC5%E7%AB%A0-ingress/</link>
+      <pubDate>Sat, 04 May 2024 15:40:14 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC5%E7%AB%A0-ingress/</guid>
+      <description>官方文档&#xA;简述 Ingress 提供从集群外部到集群内服务的 HTTP 和 HTTPS 路由。 流量路由由 Ingress 资源所定义的规则来控制。&#xA;使用LB存在的缺点：&#xA;如果需要包括多个服务，将会得到一组 LB，我们想让用户访问：通过域名，而非LB的域名或者IP。没有一个域名可以让我们访问所有LB服务 在服务器上将会使 NodePort 暴露多个端口。 Ingress：集群入口组件，接受请求并路由到服务&#xA;部署在集群内，将ingress svc 端口暴露出去。【所以我们将只需要一个LB】 Ingress 不会随意公开端口或协议。 将 HTTP 和 HTTPS 以外的服务开放到 Internet 时，通常使用 Service.Type=NodePort 或 Service.Type=LoadBalancer 类型的 Service。 Ingress语法：&#xA;apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: minimal-ingress annotations: nginx.ingress.kubernetes.io/rewrite-target: / spec: ingressClassName: nginx-example rules: - http: paths: - path: /testpath pathType: Prefix backend: service: name: test port: number: 80 https：&#xA;apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: tls-example-ingress spec: tls: - hosts: - https-example.</description>
+    </item>
+    <item>
+      <title>第4章: External_Services</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC4%E7%AB%A0-external_services-ingress/</link>
+      <pubDate>Tue, 30 Apr 2024 10:41:13 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC4%E7%AB%A0-external_services-ingress/</guid>
+      <description>详细官方文档：【https://kubernetes.io/zh-cn/docs/concepts/services-networking/service/#publishing-services-service-types】&#xA;SVC 服务的IP从何来？&#xA;SVC的IP和PodIP在完全不同的范围&#xA;如果更新了 svc的 CIDR，旧的分配的IP将会保留&#xA;默认service 类型： ClusterIP&#xA;创建：&#xA;[root@local ~]# kubectl create service clusterip test-new-cidr --tcp=80:80 --dry-run=client -o yaml apiVersion: v1 kind: Service metadata: creationTimestamp: null labels: app: test-new-cidr name: test-new-cidr spec: ports: - name: 80-80 port: 80 protocol: TCP targetPort: 80 selector: app: test-new-cidr type: ClusterIP deployment 同样：&#xA;[root@local ~]# kubectl create deployment my-nginx -n default --image=nginx --dry-run=client -o yaml Service Service API 是 Kubernetes 的组成部分，它是一种抽象，帮助你将 Pod 集合在网络上公开出去。 每个 Service 对象定义端点的一个逻辑集合（通常这些端点就是 Pod）以及如何访问到这些 Pod 的策略。</description>
+    </item>
+    <item>
+      <title>Kubernetes DNS</title>
+      <link>http://localhost:1313/docsgo/kubernetes/study/kubernetes-dns/</link>
+      <pubDate>Sun, 28 Apr 2024 17:36:34 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/study/kubernetes-dns/</guid>
+      <description>CoreDNS 深入探讨&#xA;好文：https://pracucci.com/kubernetes-dns-resolution-ndots-options-and-why-it-may-affect-application-performances.html&#xA;CoreDNS 最著名的是云原生生态系统中 Kubernetes 的默认集群 DNS，它也是一个可扩展且灵活的 DNS 服务器，专注于服务发现。 CoreDNS 的可扩展性来自其独特的基于插件的架构，可以轻松添加新功能。&#xA;在k8s这种Pod IP 会发生变化的集群中，使用IP访问是很糟糕的&#xA;DNS：IP翻译成域名&#xA;文件：&#xA;/etc/hosts /etc/resolv.conf 当集群中存在数百个服务，这将是大量的&#xA;/etc/resolv.conf中&#xA;nameserver 10.233.0.3 为 DNS服务器&#xA;1.12版本前使用kube-dns，之后使用 CoreDNS&#xA;[root@local ~]# kubectl get pod -A --show-labels NAMESPACE NAME READY STATUS RESTARTS AGE LABELS kube-system coredns-6799fbcd5-c869r 1/1 Running 0 47m k8s-app=kube-dns,pod-template-hash=6799fbcd5 Pod内：&#xA;[root@local ~]# kubectl exec -ti nginx-7854ff8877-5dtzt -- sh # cat /etc/hosts # Kubernetes-managed hosts file. 127.0.0.1&#x9;localhost ::1&#x9;localhost ip6-localhost ip6-loopback fe00::0&#x9;ip6-localnet fe00::0&#x9;ip6-mcastprefix fe00::1&#x9;ip6-allnodes fe00::2&#x9;ip6-allrouters 10.</description>
+    </item>
     <item>
       <title>第1章 Kubernetes核心概念</title>
       <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC1%E7%AB%A0-kubernetes%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/</link>
