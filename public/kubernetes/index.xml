@@ -6,8 +6,127 @@
     <description>Recent content in Kubernetes on docsGo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 13 May 2024 10:01:52 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 May 2024 15:13:55 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/docsgo/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>15 Labs</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/15-labs/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/15-labs/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>16 Exams</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/16-exams/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/16-exams/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>17 Conclusion</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/17-conclusion/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/17-conclusion/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>3 Scheduling</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/3-scheduling/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/3-scheduling/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>4 Monitoring</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/4-monitoring/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/4-monitoring/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>5 Management</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/5-management/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/5-management/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>6 Maintenance</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/6-maintenance/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/6-maintenance/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>7 Security</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/7-security/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/7-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>8 Storage</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/8-storage/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/8-storage/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>9 Networking</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/9-networking/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/9-networking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>cka-2: 核心概念</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/2-concepts/</link>
+      <pubDate>Wed, 15 May 2024 15:13:55 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/2-concepts/</guid>
+      <description>​&#x9;这将是第一部分，将从较高层次了解集群体系结构，然后了解一些API，例如 Pod、Replicaset、deployment等&#xA;核心概念 集群架构 基本概述 Kubernetes 集群由一组节点组成，可以是 物理节点、虚拟节点、本地节点、云节点等。&#xA;以容器的方式托管应用程序&#xA;worker nodes：运行容器 master worker：负责管理 Kuberntes 集群、存储有关不同节点信息、规划容器去向、监控节点及其上的容器等。 master 节点使用一组控制组件完成这些操作&#xA;Etcd 集群：记录集群中所有信息&#xA;Kube-scheduler：调度器基于容器资源要求，工作节点容量或者任何其他策略或约束（例如，污点、容忍、亲和性规则）来识别容器放置的正确节点。&#xA;Controller：控制器处理不同的区域，&#xA;节点控制器：负责管理节点、将节点加载到集群、处理节点变得不可以或者被破坏等情况。 Replicaset 控制器：负责确保始终运行所需数量的容器。 【说明】现在已经有这么多组件，谁对它们进行高级管理？&#xA;kube APIserver：负责协调集群中所有操作，公开了API（外部用户使用该API在集群上执行管理操作）以及各种控制器（用于监控集群状态并根据需要进行必要更改） 和 工作节点（用于与服务器通信）&#xA;Containerd：集群中所有节点安装，CRI支持的引擎&#xA;Kubelet：&#xA;负责与 kube-Apiserver 通信，收集节点信息和节点上Pod状态等等。 每个节点上运行的代理，监听KubeAPIServer指令，并根据需要在节点上部署或者销毁容器。 KubeAPIServer 定期从Kubelet 获取状态报告，以监视节点和容器状态 【说明】Kubelet 负责管理Pod、但在工作节点上运行的应用程序需要能够相互通信&#xA;Kube-Proxy：确保了工作节点上有必要的规则以运行这些节点上运行的容器相互访问&#xA;CoreDNS：负责集群中域名解析&#xA;ETCD 介绍 what is ETCD？ ​&#x9;一种分布式可靠的键值存储、简单、安全且快速&#xA;what is 键值存储 ？ ​&#x9;传统中 数据库采用 表格格式，SQL 或关系型数据库。&#xA;key-value 通常通过 JSON 或 YAML等数据格式进行处理 Install ETCD 下载 curl -L https://github.com/etcd-io/etcd/releases/download/v3.3.11/etcd-v3.3.11-linux-amd64.tar.gz -o etcd-v3.</description>
+    </item>
+    <item>
+      <title>10 Cluster</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/10-cluster/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/10-cluster/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>11 Way</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/11-way/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/11-way/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>12 Cluster</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/12-cluster/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/12-cluster/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>13 Troubleshooting</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/13-troubleshooting/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/13-troubleshooting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>14 Topics</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/14-topics/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/14-topics/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>cka-1：介绍.md</title>
+      <link>http://localhost:1313/docsgo/kubernetes/cka/1-introduction/</link>
+      <pubDate>Wed, 15 May 2024 15:13:54 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/kubernetes/cka/1-introduction/</guid>
+      <description>开始要求：&#xA;对 Docker 的基本的了解 了解YAML语言 对 Linux 的基本了解 实验室：点击访问&#xA;因为 Kuberntes 将是我就业所必须的，所以必须做好准备。&#xA;例如架构、网络、负载均衡、各种监控工具、自动扩容、存储、配置、安全等</description>
+    </item>
     <item>
       <title>第19章 安全集群 通过网络策略控制流量</title>
       <link>http://localhost:1313/docsgo/kubernetes/study/%E7%AC%AC19%E7%AB%A0-%E5%AE%89%E5%85%A8%E9%9B%86%E7%BE%A4-%E9%80%9A%E8%BF%87%E7%BD%91%E7%BB%9C%E7%AD%96%E7%95%A5%E6%8E%A7%E5%88%B6%E6%B5%81%E9%87%8F/</link>

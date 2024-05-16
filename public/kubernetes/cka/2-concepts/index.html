@@ -1,0 +1,709 @@
+
+<script src="/docsgo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=docsgo/livereload" data-no-instant defer></script><div class="footer-content ">
+    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img class="float-right" src="http://localhost:1313/docsgo/punching.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-offset-1 vcenter">
+            <div class="quote" style="font-size: 1.5em; font-family: 'Courier New', Courier, monospace; color: #888; margin-left: 20px; margin-right: 20px; text-align: center;">“成功绝非偶然。 这是努力工作、坚持不懈、学习、学习、牺牲，最重要的是，热爱你正在做的事情或正在学习的事情。” - 贝利</div>
+        </div>
+        <div class="col-md-4 col-md-offset-0 vcenter">
+            <div style="text-align: center;">
+                <img src="http://localhost:1313/docsgo/success.gif" style="width: 40%">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="article" style="padding-left: 20px; padding-right: 20px;">
+    <div class="article-title">
+        <h1>cka-2: 核心概念</h1>
+    </div>
+    
+    
+    <time datetime="2024-05-15T15:13:55&#43;08:00">May 15, 2024</time>
+    <hr/>
+    <aside>
+        <p> 目录: </p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#集群架构">集群架构</a>
+      <ul>
+        <li><a href="#基本概述">基本概述</a></li>
+        <li><a href="#etcd-介绍">ETCD 介绍</a></li>
+        <li><a href="#kubernetes-中的-etcd">Kubernetes 中的 ETCD</a></li>
+        <li><a href="#kubeapi-server">KubeAPI Server</a></li>
+        <li><a href="#kube-controller-manager">Kube-Controller-Manager</a></li>
+        <li><a href="#kube-scheduler">Kube-Scheduler</a></li>
+        <li><a href="#kubelet">Kubelet</a></li>
+        <li><a href="#kube-proxy">Kube-Proxy</a></li>
+      </ul>
+    </li>
+    <li><a href="#pod">Pod</a>
+      <ul>
+        <li><a href="#回顾-pod">回顾 Pod</a></li>
+        <li><a href="#pods-with-yaml">Pods with Yaml</a></li>
+        <li><a href="#练习---pods">练习 - Pods</a></li>
+        <li><a href="#回顾-replication">回顾 replication</a></li>
+      </ul>
+    </li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#service">Service</a>
+      <ul>
+        <li><a href="#node-port"><strong>Node Port</strong></a></li>
+        <li><a href="#cluster-ip">Cluster IP</a></li>
+        <li><a href="#loadbalancer">LoadBalancer</a></li>
+      </ul>
+    </li>
+    <li><a href="#命令式与声明式">命令式与声明式</a></li>
+  </ul>
+</nav>
+    </aside>
+    <hr>
+    <div class="post">
+        <div id="content-font">
+            <p>​		这将是第一部分，将从较高层次了解集群体系结构，然后了解一些API，例如 Pod、Replicaset、deployment等</p>
+<h1 id="核心概念">核心概念</h1>
+<h2 id="集群架构">集群架构</h2>
+<h3 id="基本概述">基本概述</h3>
+<p>Kubernetes 集群由一组节点组成，可以是 物理节点、虚拟节点、本地节点、云节点等。</p>
+<p>以容器的方式托管应用程序</p>
+<ul>
+<li>worker nodes：运行容器</li>
+<li>master worker：负责管理 Kuberntes 集群、存储有关不同节点信息、规划容器去向、监控节点及其上的容器等。</li>
+</ul>
+<p>master 节点使用一组控制组件完成这些操作</p>
+<ul>
+<li>
+<p>Etcd 集群：记录集群中所有信息</p>
+</li>
+<li>
+<p>Kube-scheduler：调度器基于容器资源要求，工作节点容量或者任何其他策略或约束（例如，污点、容忍、亲和性规则）来识别容器放置的正确节点。</p>
+</li>
+<li>
+<p>Controller：控制器处理不同的区域，</p>
+<ul>
+<li>节点控制器：负责管理节点、将节点加载到集群、处理节点变得不可以或者被破坏等情况。</li>
+<li>Replicaset 控制器：负责确保始终运行所需数量的容器。</li>
+</ul>
+<p>【说明】现在已经有这么多组件，谁对它们进行高级管理？</p>
+</li>
+<li>
+<p>kube APIserver：负责协调集群中所有操作，公开了API（外部用户使用该API在集群上执行管理操作）以及各种控制器（用于监控集群状态并根据需要进行必要更改） 和 工作节点（用于与服务器通信）</p>
+</li>
+<li>
+<p>Containerd：集群中所有节点安装，CRI支持的引擎</p>
+</li>
+<li>
+<p>Kubelet：</p>
+<ul>
+<li>负责与 kube-Apiserver 通信，收集节点信息和节点上Pod状态等等。</li>
+<li>每个节点上运行的代理，监听KubeAPIServer指令，并根据需要在节点上部署或者销毁容器。</li>
+<li>KubeAPIServer 定期从Kubelet 获取状态报告，以监视节点和容器状态</li>
+</ul>
+<p>【说明】Kubelet 负责管理Pod、但在工作节点上运行的应用程序需要能够相互通信</p>
+</li>
+<li>
+<p>Kube-Proxy：确保了工作节点上有必要的规则以运行这些节点上运行的容器相互访问</p>
+</li>
+<li>
+<p>CoreDNS：负责集群中域名解析</p>
+</li>
+</ul>
+<h3 id="etcd-介绍">ETCD 介绍</h3>
+<h4 id="what-is-etcd">what is ETCD？</h4>
+<p>​		一种分布式可靠的键值存储、简单、安全且快速</p>
+<h4 id="what-is-键值存储-">what is 键值存储 ？</h4>
+<p>​		传统中 数据库采用 表格格式，SQL 或关系型数据库。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240515173954950.png" alt="0"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<h4 id="key-value">key-value</h4>
+<ul>
+<li>通常通过 JSON 或 YAML等数据格式进行处理</li>
+</ul>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240515174126219.png" alt="1"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<h4 id="install-etcd">Install ETCD</h4>
+<ol>
+<li>下载</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>curl -L https://github.com/etcd-io/etcd/releases/download/v3.3.11/etcd-v3.3.11-linux-amd64.tar.gz -o etcd-v3.3.11-linux-amd64.tar.gz
+</span></span></code></pre></div><ol start="2">
+<li>减压</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>tar xzvf etcd-v3.3.11-linux-amd64.tar.gz
+</span></span></code></pre></div><ol start="3">
+<li>Run ETCD Service</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>./etcd
+</span></span></code></pre></div><p>默认情况下会启动监听 2379端口的服务，可以连接到 ETCD服务存储和检索信息</p>
+<p>ETCD 附带的默认客户端：etcdctl</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>./etcdctl set key1 value1
+</span></span><span style="display:flex;"><span>./etcdctl get key1
+</span></span></code></pre></div><h4 id="etcd-版本">ETCD 版本</h4>
+<p>生产环境中可能遇到不同版本的 ETCD，了解ETCD版本历史非常重要</p>
+<p>v0.1: 2013年8月发布</p>
+<p>v0.5: 官方稳定版本，发布在2015年，这是RAFT算法被重新设计的时候，支持每秒1万次写入</p>
+<p>v2.0: 2015年发布</p>
+<p>v3.0: 2017年发布，包含更多的优化和性能改进</p>
+<ul>
+<li>2018年，在CNCF中孵化</li>
+</ul>
+<p>最重要的是 v2.0和 v3.0的变化，API发生了改变，意味着 etcdctl 发生了变化</p>
+<p>查看版本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ ./etcdctl --version
+</span></span><span style="display:flex;"><span>etcdctl version: 3.3.11
+</span></span><span style="display:flex;"><span>API version: <span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>对于较新的 ETCD API版本为3，因此使用前看下 API版本</p>
+<p>使用 API v3，在运行命令前，每个命令的环境变量 <code>ETCDCTL_API</code> 设置为 3</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ export ETCDCTL_API<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>➜  ./etcdctl version
+</span></span><span style="display:flex;"><span>etcdctl version: 3.3.11
+</span></span><span style="display:flex;"><span>API version: 3.3
+</span></span></code></pre></div><p>在 v3 中 ，查看版本是 <code>version</code> 而不是 <code>--version</code></p>
+<h3 id="kubernetes-中的-etcd">Kubernetes 中的 ETCD</h3>
+<p>etcd 存储有关集群的信息，例如：</p>
+<ul>
+<li>nodes、Pods、Configs、Secrets、Accounts、Roles、Bindings、Others</li>
+</ul>
+<p>运行 <code>kubectl get</code> 看到的所有信息都来自 ETCD</p>
+<p>对集群所做的所有更改都将在 ETCD 中更新，只有当 ETCD 中被更新时才能认为更改完成。</p>
+<p>根据集群部署方式，ETCD 的部署方式也会有所不同。</p>
+<ul>
+<li>二进制</li>
+<li>kubeadm</li>
+</ul>
+<h4 id="从头开始部署设置集群">从头开始部署设置集群</h4>
+<p>可以通过以下方式部署 ETCD：</p>
+<ul>
+<li>自己下载 ETCD 二进制文件</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget -q --https-only <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span><span style="color:#e6db74">&#34;https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz&#34;</span>
+</span></span></code></pre></div><p>并且设置 Systemd启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/etcd <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --name <span style="color:#e6db74">${</span>ETCD_NAME<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --cert-file<span style="color:#f92672">=</span>/etc/etcd/kubernetes.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --key-file<span style="color:#f92672">=</span>/etc/etcd/kubernetes-key.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --peer-cert-file<span style="color:#f92672">=</span>/etc/etcd/kubernetes.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --peer-key-file<span style="color:#f92672">=</span>/etc/etcd/kubernetes-key.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --trusted-ca-file<span style="color:#f92672">=</span>/etc/etcd/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --peer-trusted-ca-file<span style="color:#f92672">=</span>/etc/etcd/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --peer-client-cert-auth <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --client-cert-auth <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --initial-advertise-peer-urls https://<span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span>:2380 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --listen-peer-urls https://<span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span>:2380 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --listen-client-urls https://<span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span>:2379,https://127.0.0.1:2379 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --advertise-client-urls https://<span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span>:2379 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --initial-cluster-token etcd-cluster-0 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --initial-cluster controller-0<span style="color:#f92672">=</span>https://<span style="color:#e6db74">${</span>CONTROLLER0_IP<span style="color:#e6db74">}</span>:2380,controller-1<span style="color:#f92672">=</span>https://<span style="color:#e6db74">${</span>CONTROLLER1_IP<span style="color:#e6db74">}</span>:2380 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --initial-cluster-state new <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>  --data-dir<span style="color:#f92672">=</span>/var/lib/etcd
+</span></span></code></pre></div><p>会有很多的传入项：</p>
+<ul>
+<li>证书有关</li>
+<li>需要注意的选项 <code>--advertise-client-urls https://${INTERNAL_IP}:2379</code></li>
+</ul>
+<p>当 KubeAPIServer尝试访问 ETCD 服务是应该在Kube API服务器上配置此 URL</p>
+<h4 id="使用-kubeadm-部署集群">使用 Kubeadm 部署集群</h4>
+<p>kubeadm 会将 ETCD 服务器作为 Pod 部署到 kube-system 系统命名空间中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl get pods -n kube-system
+</span></span><span style="display:flex;"><span>kube-system etcd-master 1/1 Running <span style="color:#ae81ff">0</span> 1h
+</span></span></code></pre></div><p>列出 kubernetes 存储的所有密钥：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl exec etcd-master –n kube-system etcdctl get / --prefix –keys-only
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.apps
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.authentication.k8s.io
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.authorization.k8s.io
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.autoscaling
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.batch
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.networking.k8s.io
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.rbac.authorization.k8s.io
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1.storage.k8s.io
+</span></span><span style="display:flex;"><span>/registry/apiregistration.k8s.io/apiservices/v1beta1.admissionregistration.k8s.io
+</span></span></code></pre></div><p>kubernetes 会将数据存储在特定的目录结构中，根目录是一个 <code>registry</code> , 在该目录下有各种 kubernets 结构。</p>
+<h4 id="etcd-高可用环境">ETCD 高可用环境</h4>
+<p>集群中会有多个主节点，会拥有多个分布在主节点上的 ETCD 实例</p>
+<p>通过 <code>--initial-cluster controller-0=https://${CONTROLLER0_IP}:2380,controller-1=https://${CONTROLLER1_IP}:2380 \\</code> 指定 ETCD 服务的不同实例。</p>
+<p>之后会深入研究</p>
+<h3 id="kubeapi-server">KubeAPI Server</h3>
+<p>kube-apiserver集群的主要管理组件。</p>
+<p>当 使用 kubectl 时，实际上是在访问 kube-apiserver</p>
+<ol>
+<li>首先  kube-apiserver 对请求进行身份验证</li>
+<li>然后   kube-apiserver 从 etcd 集群中检索数据，使用请求信息进行响应</li>
+</ol>
+<p>实际上并不必须 kubectl 也可以，可以通过发送 POST 请求直接调用 API</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ curl –X POST /api/v1/namespaces/default/pods ...<span style="color:#f92672">[</span>other<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Pod created!
+</span></span></code></pre></div><ol>
+<li>身份认证</li>
+<li>验证请求</li>
+<li>检索数据</li>
+<li>更新 ETCD</li>
+<li>调度程序：持续监听 kube-apiserver ，并发现一个新的Pod未分配节点，确认节点后将消息传回 kube-apiserver，kube-apiserver 更新 etcd 集群中信息。</li>
+<li>kubelet：kube-apiserver 将信息传递给 对应工作节点的额 kubelet，kubelet 在节点上创建Pod，并指定 Container CRI 部署应用程序镜像。一旦完成，kubelet 将状态更新回 API 服务器，然后 kube-apiserver 将数据更新回 etcd 集群</li>
+</ol>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240516134646195.png" alt="2"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<p>kube-apiserver 是在集群中进行更改所需执行的所有不同任务中心</p>
+<p>kube-apiserver  是唯一一个与 ETCD 直接交互的组件</p>
+<p>其他组件：sechduler、kube-controller-manager、kubelet 使用 kube-apiserver 在集群中各自的区域执行更新</p>
+<p>如果使用 kubeadm 工具部署集群，那么可能不需要知道这些</p>
+<p>二进制安装 kube-apiserver</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-apiserver
+</span></span></code></pre></div><p>kube-apiserver.service</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kube-apiserver <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--advertise-address<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--allow-privileged<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--apiserver-count<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--authorization-mode<span style="color:#f92672">=</span>Node,RBAC <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--bind-address<span style="color:#f92672">=</span>0.0.0.0 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--enable-admission-
+</span></span><span style="display:flex;"><span>plugins<span style="color:#f92672">=</span>Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,Reso
+</span></span><span style="display:flex;"><span>urceQuota <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--enable-swagger-ui<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--etcd-servers<span style="color:#f92672">=</span>https://127.0.0.1:2379 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--event-ttl<span style="color:#f92672">=</span>1h <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--experimental-encryption-provider-config<span style="color:#f92672">=</span>/var/lib/kubernetes/encryption-config.yaml <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--runtime-config<span style="color:#f92672">=</span>api/all <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--service-account-key-file<span style="color:#f92672">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--service-cluster-ip-range<span style="color:#f92672">=</span>10.32.0.0/24 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--service-node-port-range<span style="color:#f92672">=</span>30000-32767 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>很多参数</p>
+<p>如果使用的是 kubeadm 部署的集群</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ cat /etc/kubernetes/manifests/kube-apiserver.yaml
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>containers:
+</span></span><span style="display:flex;"><span>- command:
+</span></span><span style="display:flex;"><span>- kube-apiserver
+</span></span><span style="display:flex;"><span>- --authorization-mode<span style="color:#f92672">=</span>Node,RBAC
+</span></span><span style="display:flex;"><span>- --advertise-address<span style="color:#f92672">=</span>172.17.0.32
+</span></span><span style="display:flex;"><span>- --allow-privileged<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>- --client-ca-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/ca.crt
+</span></span><span style="display:flex;"><span>- --disable-admission-plugins<span style="color:#f92672">=</span>PersistentVolumeLabel
+</span></span><span style="display:flex;"><span>- --enable-admission-plugins<span style="color:#f92672">=</span>NodeRestriction
+</span></span><span style="display:flex;"><span>- --enable-bootstrap-token-auth<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>- --etcd-cafile<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/ca.crt
+</span></span><span style="display:flex;"><span>- --etcd-certfile<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-etcd-client.crt
+</span></span><span style="display:flex;"><span>- --etcd-keyfile<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-etcd-client.key
+</span></span><span style="display:flex;"><span>- --etcd-servers<span style="color:#f92672">=</span>https://127.0.0.1:2379
+</span></span><span style="display:flex;"><span>- --insecure-port<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>- --kubelet-client-certificate<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-kubelet-client.crt
+</span></span><span style="display:flex;"><span>- --kubelet-client-key<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-kubelet-client.key
+</span></span><span style="display:flex;"><span>- --kubelet-preferred-address-types<span style="color:#f92672">=</span>InternalIP,ExternalIP,Hostname
+</span></span><span style="display:flex;"><span>- --proxy-client-cert-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/front-proxy-client.crt
+</span></span><span style="display:flex;"><span>- --proxy-client-key-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/front-proxy-client.key
+</span></span><span style="display:flex;"><span>- --requestheader-allowed-names<span style="color:#f92672">=</span>front-proxy-client
+</span></span><span style="display:flex;"><span>- --requestheader-client-ca-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/front-proxy-ca.crt
+</span></span><span style="display:flex;"><span>- --requestheader-extra-headers-prefix<span style="color:#f92672">=</span>X-Remote-Extra-
+</span></span><span style="display:flex;"><span>- --requestheader-group-headers<span style="color:#f92672">=</span>X-Remote-Group
+</span></span><span style="display:flex;"><span>- --requestheader-username-headers<span style="color:#f92672">=</span>X-Remote-User
+</span></span></code></pre></div><p>如果是二进制安装的</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ cat /etc/systemd/system/kube-apiserver.service
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Service<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kube-apiserver <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--advertise-address<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>INTERNAL_IP<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--allow-privileged<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--apiserver-count<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--audit-log-maxage<span style="color:#f92672">=</span><span style="color:#ae81ff">30</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--audit-log-maxbackup<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--audit-log-maxsize<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--audit-log-path<span style="color:#f92672">=</span>/var/log/audit.log <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--authorization-mode<span style="color:#f92672">=</span>Node,RBAC <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--bind-address<span style="color:#f92672">=</span>0.0.0.0 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--client-ca-file<span style="color:#f92672">=</span>/var/lib/kubernetes/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--enable-admission-
+</span></span><span style="display:flex;"><span>plugins<span style="color:#f92672">=</span>Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,Defa
+</span></span><span style="display:flex;"><span>ultStorageClass,ResourceQuota <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--enable-swagger-ui<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--etcd-cafile<span style="color:#f92672">=</span>/var/lib/kubernetes/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--etcd-certfile<span style="color:#f92672">=</span>/var/lib/kubernetes/kubernetes.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--etcd-keyfile<span style="color:#f92672">=</span>/var/lib/kubernetes/kubernetes-key.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--etcd-
+</span></span><span style="display:flex;"><span>servers<span style="color:#f92672">=</span>https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--event-ttl<span style="color:#f92672">=</span>1h <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--experimental-encryption-provider-config<span style="color:#f92672">=</span>/var/lib/kubernetes/encryption-config.yaml
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--kubelet-certificate-authority<span style="color:#f92672">=</span>/var/lib/kubernetes/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--kubelet-client-certificate<span style="color:#f92672">=</span>/var/lib/kubernetes/kubernetes.pem <span style="color:#ae81ff">\\</span>
+</span></span></code></pre></div><p>还可以通过：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ps -aux | grep kube-apiserver
+</span></span></code></pre></div><h3 id="kube-controller-manager">Kube-Controller-Manager</h3>
+<p>Kube-Controller-Manager 控制器是管理 kubernets 中的各种控制器</p>
+<p>持续监控系统内各个组件的状态，使整个系统达到所需的功能状态，在出现问题的时候作出补救。</p>
+<p>都是通过 kuber apiserver，</p>
+<p>例如：Node Controller</p>
+<ul>
+<li>监视 node的状态，并采取必要的动作保持应用程序运行</li>
+<li>5s 进行一次检测健康状况</li>
+<li>如果停止接受心跳，会等待 40s，然后将其标记为不可访问。</li>
+<li>不可访问后会有 5分钟的时间来恢复，如果没有它将删除分配给改 Node 的Pod。</li>
+</ul>
+<p>Resplices 控制器：</p>
+<ul>
+<li>监视副本集的状态，确保副本集始终有所需数量的 Pod 可用</li>
+</ul>
+<p>这只是两个例子，像这样的控制器有很多。</p>
+<p>像deploymen、job、svc、sa、pv、pvc、namespace、等等都是通过不同的控制器实现的。</p>
+<p>位于集群位置？</p>
+<ul>
+<li>它们被打包成到一个 Kubernetes Controller Manager 的 进程中，会安装不同的控制器。</li>
+</ul>
+<p>安装：二进制</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-controller-manager
+</span></span></code></pre></div><p>kube-controller-manager.service</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">[</span>Service<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kube-controller-manager <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--address<span style="color:#f92672">=</span>0.0.0.0 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--cluster-cidr<span style="color:#f92672">=</span>10.200.0.0/16 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--cluster-name<span style="color:#f92672">=</span>kubernetes <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--cluster-signing-cert-file<span style="color:#f92672">=</span>/var/lib/kubernetes/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--cluster-signing-key-file<span style="color:#f92672">=</span>/var/lib/kubernetes/ca-key.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--kubeconfig<span style="color:#f92672">=</span>/var/lib/kubernetes/kube-controller-manager.kubeconfig <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--leader-elect<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--root-ca-file<span style="color:#f92672">=</span>/var/lib/kubernetes/ca.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--service-account-private-key-file<span style="color:#f92672">=</span>/var/lib/kubernetes/service-account-key.pem <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--service-cluster-ip-range<span style="color:#f92672">=</span>10.32.0.0/24 <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--use-service-account-credentials<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>Restart<span style="color:#f92672">=</span>on-failure
+</span></span><span style="display:flex;"><span>RestartSec<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+</span></span></code></pre></div><p>默认情况下所有的 选项都是启动状态</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>--controllers stringSlice Default: <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>A list of controllers to enable. <span style="color:#e6db74">&#39;*&#39;</span> enables all on-by-default controllers, <span style="color:#e6db74">&#39;foo&#39;</span> enables the controller
+</span></span><span style="display:flex;"><span>named <span style="color:#e6db74">&#39;foo&#39;</span>, <span style="color:#e6db74">&#39;-foo&#39;</span> disables the controller named <span style="color:#e6db74">&#39;foo&#39;</span>.
+</span></span><span style="display:flex;"><span>All controllers: attachdetach, bootstrapsigner, clusterrole-aggregation, cronjob, csrapproving,
+</span></span><span style="display:flex;"><span>csrcleaner, csrsigning, daemonset, deployment, disruption, endpoint, garbagecollector,
+</span></span><span style="display:flex;"><span>horizontalpodautoscaling, job, namespace, nodeipam, nodelifecycle, persistentvolume-binder,
+</span></span><span style="display:flex;"><span>persistentvolume-expander, podgc, pv-protection, pvc-protection, replicaset, replicationcontroller,
+</span></span><span style="display:flex;"><span>resourcequota, root-ca-cert-publisher, route, service, serviceaccount, serviceaccount-token, statefulset,
+</span></span><span style="display:flex;"><span>tokencleaner, ttl, ttl-after-finished
+</span></span><span style="display:flex;"><span>Disabled-by-default controllers: bootstrapsigner, tokencleaner
+</span></span></code></pre></div><p>安装方式：kubeadmin</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl get pods -n kube-system
+</span></span><span style="display:flex;"><span>kube-system kube-controller-manager-master 1/1 Running <span style="color:#ae81ff">0</span> 15m
+</span></span></code></pre></div><p>配置文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ cat /etc/kubernetes/manifests/kube-controller-manager.yaml
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>containers:
+</span></span><span style="display:flex;"><span>- command:
+</span></span><span style="display:flex;"><span>- kube-controller-manager
+</span></span><span style="display:flex;"><span>- --address<span style="color:#f92672">=</span>127.0.0.1
+</span></span><span style="display:flex;"><span>- --cluster-signing-cert-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/ca.crt
+</span></span><span style="display:flex;"><span>- --cluster-signing-key-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/ca.key
+</span></span><span style="display:flex;"><span>- --controllers<span style="color:#f92672">=</span>*,bootstrapsigner,tokencleaner
+</span></span><span style="display:flex;"><span>- --kubeconfig<span style="color:#f92672">=</span>/etc/kubernetes/controller-manager.conf
+</span></span><span style="display:flex;"><span>- --leader-elect<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>- --root-ca-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/ca.crt
+</span></span><span style="display:flex;"><span>- --service-account-private-key-file<span style="color:#f92672">=</span>/etc/kubernetes/pki/sa.key
+</span></span><span style="display:flex;"><span>- --use-service-account-credentials<span style="color:#f92672">=</span>true
+</span></span></code></pre></div><p>还可以通过</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ps -aux | grep kube-controller-manager
+</span></span></code></pre></div><h3 id="kube-scheduler">Kube-Scheduler</h3>
+<p>调度器 只决定哪个 Pod 在哪个节点上运行。</p>
+<p>实际上并没有将Pod放置在节点上，这是 Kubelet 的工作，调度程序只决定 Pod去哪里。</p>
+<ol>
+<li>排除不符合调度的节点</li>
+<li>优先级函数为节点分配分数</li>
+</ol>
+<p>可以写自己的调度程序，还需要了解</p>
+<ul>
+<li>资源请求、限制、污点、容忍、亲和、node selecter、nodename 等</li>
+</ul>
+<p>安装：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-scheduler
+</span></span></code></pre></div><p>kube-scheduler.service</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kube-scheduler <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--config<span style="color:#f92672">=</span>/etc/kubernetes/config/kube-scheduler.yaml <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>kube-scheduler.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#ae81ff">$ cat /etc/kubernetes/manifests/kube-scheduler.yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">command</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">kube-scheduler</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">address=127.0.0.1</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">kubeconfig=/etc/kubernetes/scheduler.conf</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">leader-elect=true</span>
+</span></span></code></pre></div><h3 id="kubelet">Kubelet</h3>
+<p>Kubelet 领导 Node的一切活动，master 是它们的唯一联络点</p>
+<p>定期向 Kube-APIServer 返回节点信息及Pod信息</p>
+<p>kubernetes 中的工作节点中的 kubelet 将节点注册到 Kubernets 集群，当 kubelet 收到 加载容器或Pod的指令，它请求 CRL 拉取所需镜像并运行实例。</p>
+<p>kubelet 持续监控 Pod 和其中容器的状态，并及时向 Kube-apiserver  服务器报告。</p>
+<p>安装：</p>
+<p>kubeadm 不会自动安装 kubelet，必须在工作节点手动安装。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+</span></span></code></pre></div><p>kubelet.service</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kubelet <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--config<span style="color:#f92672">=</span>/var/lib/kubelet/kubelet-config.yaml <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--container-runtime<span style="color:#f92672">=</span>remote <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--container-runtime-endpoint<span style="color:#f92672">=</span>unix:///var/run/containerd/containerd.sock <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--image-pull-progress-deadline<span style="color:#f92672">=</span>2m <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--kubeconfig<span style="color:#f92672">=</span>/var/lib/kubelet/kubeconfig <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--network-plugin<span style="color:#f92672">=</span>cni <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--register-node<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><h3 id="kube-proxy">Kube-Proxy</h3>
+<p>默认情况下，在 Kubernets 中 每个Pod都能到达其他 Pod，这是通过 Pod的 网络解决方案部署到集群实现的。</p>
+<p>Pod Network：内部的虚拟网络，跨越集群中所有单元连接到所有节点，通过这个网络它们能够相互交流，有许多的解决方案。</p>
+<p>因为无法保证 Pod的IP始终保持不变，使用 service 事更好的方法，可以使用 SVC 名称访问数据库。</p>
+<p>Kube-Proxy 时在每一个节点上运行的进程，它的工作是寻找新服务，每次创建新服务时，会在每个节点上创建适当的规则。</p>
+<p>方法：</p>
+<ol>
+<li>iptables 规则</li>
+<li>ipvs 规则</li>
+</ol>
+<p>如果使用 cilium 将不会有 kube-proxy 组件，因为 cilium 使用 EBPF 内核技术。</p>
+<p>安装：二进制</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy
+</span></span></code></pre></div><p>kube-proxy.service</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ExecStart<span style="color:#f92672">=</span>/usr/local/bin/kube-proxy <span style="color:#ae81ff">\\</span>
+</span></span><span style="display:flex;"><span>--config<span style="color:#f92672">=</span>/var/lib/kube-proxy/kube-proxy-config.yaml
+</span></span><span style="display:flex;"><span>Restart<span style="color:#f92672">=</span>on-failure
+</span></span><span style="display:flex;"><span>RestartSec<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+</span></span></code></pre></div><p>安装：kubeadm</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl get pods -n kube-system
+</span></span><span style="display:flex;"><span>kube-system kube-proxy-lzt6f 1/1 Running <span style="color:#ae81ff">0</span> 16m
+</span></span></code></pre></div><h2 id="pod">Pod</h2>
+<h3 id="回顾-pod">回顾 Pod</h3>
+<p>最终目标是以容器的形式将应用程序部署在工作节点上</p>
+<p>Pod 通常和 运行的应用程序的容器具有一对一关系。</p>
+<p>Multi-Container PODs</p>
+<ul>
+<li>一个Pod中可以有多个容器</li>
+<li>例如 为 web 服务执行某种支持任务，处理用户输入、输出数据、处理用户上传的文件等。</li>
+<li>共享相同的网络 Namespace 空间：通过 localhost 通信</li>
+<li>共享存储</li>
+</ul>
+<p>简单的 Docker 容器：</p>
+<ul>
+<li><code>docker run python-app</code></li>
+<li>当负载增加是：需要运行多次 <code>docker run</code></li>
+<li>需要自定义网络，容器之间建立网络连接</li>
+</ul>
+<p>在 Kubermetes 中，只需要定义一组包含哪些容器。</p>
+<p>Pod 可以使应用程序适应未来的架构和更改和扩展。</p>
+<p>部署：kubectl</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl run nginx –-image nginx
+</span></span></code></pre></div><h3 id="pods-with-yaml">Pods with Yaml</h3>
+<p>kubernets yaml 文件始终包含：</p>
+<ul>
+<li>apiVersion：创建对象的 Kubernets API的版本</li>
+<li>kind：对象类型</li>
+<li>metadata: 对象名称、标签等</li>
+<li>spec</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">creationTimestamp</span>: <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">run</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">resources</span>: {}
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">dnsPolicy</span>: <span style="color:#ae81ff">ClusterFirst</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">restartPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>: {}
+</span></span></code></pre></div><p>这些都是顶级属性，必须字段</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl get pod -n ns
+</span></span><span style="display:flex;"><span>$ kubectl describe pod -n ns podname
+</span></span></code></pre></div><p>创建：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>controlplane ~ ➜  kubectl apply -f nginx.yml
+</span></span><span style="display:flex;"><span>pod/nginx created
+</span></span><span style="display:flex;"><span>controlplane ~ ➜  kubectl get pod
+</span></span><span style="display:flex;"><span>NAME    READY   STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>nginx   1/1     Running   <span style="color:#ae81ff">0</span>          15s
+</span></span></code></pre></div><h3 id="练习---pods">练习 - Pods</h3>
+<ol>
+<li>查看系统中的Pod （default）</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl get pod
+</span></span></code></pre></div><ol start="2">
+<li>创建一个 Nginx Pod</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl run nginx --image<span style="color:#f92672">=</span>nginx
+</span></span></code></pre></div><ol start="3">
+<li>查看创建Pod的Image</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ kubectl describe pod nginx | grep -i image:
+</span></span><span style="display:flex;"><span>    Image:          nginx
+</span></span></code></pre></div><ol start="4">
+<li>Pod 在哪个节点</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> ✖ kubectl get pod nginx -oyaml | grep -i nodename
+</span></span><span style="display:flex;"><span>  nodeName: node01
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>➜  kubectl get pod -owide
+</span></span></code></pre></div><ol start="5">
+<li>Pod的状态</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  kubectl get pod
+</span></span><span style="display:flex;"><span>➜  kubectl describe pod nginx | grep -i state:
+</span></span><span style="display:flex;"><span>    State:          Running
+</span></span></code></pre></div><ol start="6">
+<li>删除Pod</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  kubectl delete pod nginx
+</span></span></code></pre></div><ol start="7">
+<li>创建一个Pod redis image:redis123 的yml文件</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span> ➜  kubectl run redis --image<span style="color:#f92672">=</span>redis123 --dry-run<span style="color:#f92672">=</span>client -o yaml &gt; redis.yml
+</span></span></code></pre></div><ol start="8">
+<li>修改 redis image</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ kubectl edit pod redis
+</span></span><span style="display:flex;"><span>✖ kubectl set image pod/redis redis<span style="color:#f92672">=</span>redis:6.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>✖ vi redis.yml 
+</span></span><span style="display:flex;"><span>➜  kubectl apply -f redis.yml
+</span></span></code></pre></div><h3 id="回顾-replication">回顾 replication</h3>
+<p>Replication Controller ： 复制控制器</p>
+<h4 id="高可用性">高可用性</h4>
+<ul>
+<li>如果由于某种原因，程序奔溃，Pod失败了，用户将无法访问。所以我们希望运行多个实例或Pod。如果一个故障，我们仍然可以使用另一个。</li>
+<li>即使只有一个Pod，Replication 也会在出现故障时自动启动一个新的Pod</li>
+</ul>
+<p>帮助在集群中运行多个实例，从而提供高可用性</p>
+<h4 id="lb-和-扩展">LB 和 扩展</h4>
+<p>创建多个Pod以在它们之间共享负载</p>
+<p>跨越集群中多个节点</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240516182031605.png" alt="3"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<p><code>Replication Controller</code> VS <code>Replica Set</code></p>
+<p>复制器 和 副本集：两个相似的术语</p>
+<ul>
+<li>复制器是正在被 副本集取代的较旧技术,存在细微的差异</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#ae81ff">✖ kubectl create deployment nginx --image=nginx --replicas=3 --dry-run=client -o yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">➜  kubectl get replicasets.apps </span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">NAME               DESIRED   CURRENT   READY   AGE</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">nginx-7854ff8877   3         3         3       15s</span>
+</span></span></code></pre></div><p>查看API 版本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ kubectl explain replicaset
+</span></span><span style="display:flex;"><span>GROUP:      apps
+</span></span><span style="display:flex;"><span>KIND:       ReplicaSet
+</span></span><span style="display:flex;"><span>VERSION:    v1
+</span></span></code></pre></div><h2 id="deployment">Deployment</h2>
+<p>滚动更新：在升级Pod版本时希望无缝升级</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>✖ kubectl create deployment nginx --image<span style="color:#f92672">=</span>nginx --replicas<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> --dry-run<span style="color:#f92672">=</span>client -o yaml
+</span></span><span style="display:flex;"><span>apiVersion: apps/v1
+</span></span><span style="display:flex;"><span>kind: Deployment
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  creationTimestamp: null
+</span></span><span style="display:flex;"><span>  labels:
+</span></span><span style="display:flex;"><span>    app: nginx
+</span></span><span style="display:flex;"><span>  name: nginx
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  replicas: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>    matchLabels:
+</span></span><span style="display:flex;"><span>      app: nginx
+</span></span><span style="display:flex;"><span>  strategy: <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>  template:
+</span></span><span style="display:flex;"><span>    metadata:
+</span></span><span style="display:flex;"><span>      creationTimestamp: null
+</span></span><span style="display:flex;"><span>      labels:
+</span></span><span style="display:flex;"><span>        app: nginx
+</span></span><span style="display:flex;"><span>    spec:
+</span></span><span style="display:flex;"><span>      containers:
+</span></span><span style="display:flex;"><span>      - image: nginx
+</span></span><span style="display:flex;"><span>        name: nginx
+</span></span><span style="display:flex;"><span>        resources: <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>status: <span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p><strong>创建 NGINX Pod</strong></p>
+<pre tabindex="0"><code>kubectl run nginx --image=nginx
+</code></pre><p><strong>生成 POD 清单 YAML 文件 (-o yaml)。不要创建它（&ndash;dry-run）</strong></p>
+<pre tabindex="0"><code>kubectl run nginx --image=nginx --dry-run=client -o yaml
+</code></pre><p><strong>创建部署</strong></p>
+<pre tabindex="0"><code>kubectl create deployment --image=nginx nginx
+</code></pre><p><strong>生成部署 YAML 文件 (-o yaml)。不要创建它（&ndash;dry-run）</strong></p>
+<pre tabindex="0"><code>kubectl create deployment --image=nginx nginx --dry-run=client -o yaml
+</code></pre><p><strong>生成部署 YAML 文件 (-o yaml)。不要使用 4 个副本 (&ndash;replicas=4) 创建它(&ndash;dry-run)</strong></p>
+<pre tabindex="0"><code>kubectl create deployment --image=nginx nginx --dry-run=client -o yaml &gt; nginx-deployment.yaml
+</code></pre><p><strong>将其保存到文件，对文件进行必要的更改（例如，添加更多副本），然后创建部署。</strong></p>
+<pre tabindex="0"><code>kubectl create -f nginx-deployment.yaml
+</code></pre><p><strong>或者</strong></p>
+<p><strong>在 k8s 1.19+ 版本中，我们可以指定 &ndash;replicas 选项来创建具有 4 个副本的部署。</strong></p>
+<pre tabindex="0"><code>kubectl create deployment --image=nginx nginx --replicas=4 --dry-run=client -o yaml &gt; nginx-deployment.yaml
+</code></pre><h2 id="service">Service</h2>
+<p>kubernetes Service 支持应用程序内部和外部的各种组件之间的通信。</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240516223758894.png" alt="4"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<p><strong>Service Type</strong></p>
+<ul>
+<li>Node Port</li>
+<li>ClusterIP</li>
+<li>LoadBalancer</li>
+</ul>
+<h3 id="node-port"><strong>Node Port</strong></h3>
+<p>通过将节点上的端口映射到 Pod 上的端口来实现访问</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240516224346020.png" alt="5"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<p>TargetPort：目标端口，应用程序本身端口，请求会转发到该端口</p>
+<p>Port：Service 端口</p>
+<p>Node Port：节点上的端口</p>
+<p>最后，还需配置 <code>selector</code> 去标签匹配 Pod</p>
+<h3 id="cluster-ip">Cluster IP</h3>
+<p>kubernets 环境中，完整的 Web 应用程序通常包含：前段、后端、数据库</p>
+<p>服务或层之间建立连接的正确方法：</p>
+<p><img
+    src="http://localhost:1313/docsgo/images/image-20240516231528433.png" alt="6"
+    
+     style="width: 50%; max-width: Title;"
+    />
+</p>
+<h3 id="loadbalancer">LoadBalancer</h3>
+<p>Node Port 有助于从节点上接受流量，并将流量路由到相应的Pod。</p>
+<p>访问结果就是 所有NodeIP: nodeport</p>
+<p>少数节点还好，如果是有很多节点，虽然可以访问，但是这是有问题的。</p>
+<p>给用户提供的需要是一个域名：w w w.***.com</p>
+<p>方法：</p>
+<ul>
+<li>创建一个 LB</li>
+</ul>
+<h2 id="命令式与声明式">命令式与声明式</h2>
+<p>声明式方法是指定要做什么，而不是如何做</p>
+<p>提供基础设施的命令性方法的一个例子是：逐步编写命令，例如安装服务。</p>
+<p>声明式中：声明需求</p>
+
+        </div>
+    </div>
+</div>

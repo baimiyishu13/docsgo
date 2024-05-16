@@ -58,20 +58,6 @@
       <description></description>
     </item>
     <item>
-      <title>3 Injection</title>
-      <link>http://localhost:1313/docsgo/istio/3-injection/</link>
-      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/3-injection/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>4 Breaking</title>
-      <link>http://localhost:1313/docsgo/istio/4-breaking/</link>
-      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
-      <guid>http://localhost:1313/docsgo/istio/4-breaking/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>5 TLS</title>
       <link>http://localhost:1313/docsgo/istio/5-tls/</link>
       <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
@@ -112,6 +98,20 @@
       <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
       <guid>http://localhost:1313/docsgo/istio/2-releases/</guid>
       <description>直接进入尽快使用 Istio，但是此篇并不打算太过深入&#xA;环境：MAC、Arm64、minikube&#xA;Istio 实际上是一个不同工具的集合 - 框架，包装在一起，所以在 Istio 中有相当多的组件&#xA;woat is Istio？ Istio 被称为服务网格，在曾经很多面试官都喜欢问我 什么是 Istio ？？？&#xA;可以说 Istio 是一个服务网格 “Service Mesh”，那么意味着需要知道服务网格的概念是什么&#xA;当正在使用基于集群的微服务，会发现作为一个现有的框架，比如 kubernets，就其本身而言并不是相当完美，服务网格也不会取代 kubernetes，它实际上是一个额外的 软件层，和 Kubernetes 一起部署，服务网格不仅仅与 Kubernets 无关，任何一种分布式体系中这就是多个软件组件网格的地方。彼此直接，将从服务网格中受益。所以至今为止，Kubenrets 都被称为：编排框架。&#xA;🤔 一个标准的微服务体系结构在 Kubenrets 中运行&#xA;我们会有：&#xA;一大堆的 Pod，每个Pod包含 一个或多个 Container。但是它是相当标准的，只有一个 Container 使用了服务发现机制，在Kubernets 内部从任何容器进行网络调用。 k8s非常删除去管理Pod，如果需要删除一个Pod，向apiserver发生命令、kubectl、修改yaml等等。&#xA;但是，Kubernets 不擅长管理或在任何情况下管理Pod之间网络，很难推断出里面发生了什么，例如互联网络通信里面有一个错误，网络请求有一些是错误的。虽然可以对软件进行粗略的研究或者分析日志然后推断出出了什么事。&#xA;如果知道是哪个容器出了问题还好，但是如果有数千个微服务，这些网络协调的组合非常复杂。只是标准的 Kubenrets，没有任何互联的不可见性或控制权。 🎯 这就是 服务网格可以提供帮助的地方&#xA;形容词：Service Mesh 【服务网格】&#xA;Istio 如何实施，从概念上以某种方式将通过集群中运行的网络流量将通过本服务网格软件进行路由。&#xA;例子：Pod 至今建立访问，通过 SVC 直接访问&#xA;但是有了 Service Mesh，将设置使所有访问都通过 Service Mesh 进行定向。&#xA;容器实际上不会钓鱼目标容器，它的网络请求是到 Service Mesh，然后Service Mesh 将负责记录指向目标。</description>
+    </item>
+    <item>
+      <title>第3章：可选安装本地 Kubernetes 环境</title>
+      <link>http://localhost:1313/docsgo/istio/3-injection/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/3-injection/</guid>
+      <description>可以在任何一个集群上运行 Istio （太古老的集群不适配）&#xA;安装文件：&#xA;1-可选安装 Minikube ➜ istio-hands-on-for-kubernetes minikube status minikube type: Control Plane host: Running kubelet: Running apiserver: Running kubeconfig: Configured 已经安装成功&#xA;minikube kubectl minikube drivers&#xA;minikube 可以部署为虚拟机、容器或裸机。</description>
+    </item>
+    <item>
+      <title>第四章：Istio 演示</title>
+      <link>http://localhost:1313/docsgo/istio/4-breaking/</link>
+      <pubDate>Tue, 14 May 2024 14:04:40 +0800</pubDate>
+      <guid>http://localhost:1313/docsgo/istio/4-breaking/</guid>
+      <description>演示 存储库&#xA;1 - 运行Istio ➜ 1-Telemetry ls 1-istio-init.yaml 3-kiali-secret.yaml 5-application-no-istio.yaml 2-istio-minikube.yaml 4-label-default-namespace.yaml 执行：&#xA;创建 CRDS （kubernetes API） $ kubectl create -f 1-istio-init.yaml $ kubectl get ns NAME STATUS AGE istio-system Active 2m10s 安装 Istio Grafnan 和 prometheus egressgateway 和 ingressgateway ： 控制进出的流量 jaeger：端到端分布式追踪系统 Istiod kiali： 图形界面 kubectl create -f 2-istio-minikube.yaml ➜ 1-Telemetry kubectl get pod -n istio-system NAME READY STATUS RESTARTS AGE grafana-686cc64b9b-rdrrc 1/1 Running 0 5m22s istio-egressgateway-595dfb96b8-d9pch 1/1 Running 0 5m22s istio-ingressgateway-66cdbc7dc8-7j64x 1/1 Running 0 5m22s istiod-685fc94db9-kf7n6 1/1 Running 0 5m22s jaeger-664d88ccf4-47gnz 1/1 Running 0 5m22s kiali-87c6d84b7-gmclk 1/1 Running 0 5m21s prometheus-84cf88dfb8-zgt78 2/2 Running 0 5m22s 为kiali 设置账户 admin admin kubectl create -f 3-kiali-secret.</description>
     </item>
     <item>
       <title>第1章：Istio 简介</title>

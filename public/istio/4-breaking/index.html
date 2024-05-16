@@ -23,7 +23,7 @@
 </div>
 <div id="article" style="padding-left: 20px; padding-right: 20px;">
     <div class="article-title">
-        <h1>4 Breaking</h1>
+        <h1>第四章：Istio 演示</h1>
     </div>
     
     
@@ -31,12 +31,78 @@
     <hr/>
     <aside>
         <p> 目录: </p>
-        <nav id="TableOfContents"></nav>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#演示">演示</a>
+      <ul>
+        <li><a href="#1---运行istio">1 - 运行Istio</a></li>
+        <li><a href="#2---启用-sidecar-注入">2 - 启用 Sidecar 注入</a></li>
+        <li><a href="#3---使用-kiali-可视化系统">3 - 使用 Kiali 可视化系统</a></li>
+        <li><a href="#4---查找性能问题">4 - 查找性能问题</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </aside>
     <hr>
     <div class="post">
         <div id="content-font">
-            
+            <h2 id="演示">演示</h2>
+<p><a href="https://github.com/DickChesterwood/istio-fleetman/tree/master/_course_files">存储库</a></p>
+<h3 id="1---运行istio">1 - 运行Istio</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>➜  1-Telemetry ls
+</span></span><span style="display:flex;"><span>1-istio-init.yaml              3-kiali-secret.yaml            5-application-no-istio.yaml
+</span></span><span style="display:flex;"><span>2-istio-minikube.yaml          4-label-default-namespace.yaml
+</span></span></code></pre></div><p>执行：</p>
+<ol>
+<li>创建 CRDS （kubernetes API）</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ kubectl create -f 1-istio-init.yaml
+</span></span><span style="display:flex;"><span>$ kubectl get ns
+</span></span><span style="display:flex;"><span>NAME              STATUS   AGE
+</span></span><span style="display:flex;"><span>istio-system      Active   2m10s
+</span></span></code></pre></div><ol start="2">
+<li>安装 Istio</li>
+</ol>
+<ul>
+<li>Grafnan 和 prometheus</li>
+<li>egressgateway 和 ingressgateway ： 控制进出的流量</li>
+<li>jaeger：端到端分布式追踪系统</li>
+<li>Istiod</li>
+<li>kiali： 图形界面</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create -f 2-istio-minikube.yaml
+</span></span><span style="display:flex;"><span>➜  1-Telemetry kubectl get pod -n istio-system      
+</span></span><span style="display:flex;"><span>NAME                                    READY   STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>grafana-686cc64b9b-rdrrc                1/1     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span><span style="display:flex;"><span>istio-egressgateway-595dfb96b8-d9pch    1/1     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span><span style="display:flex;"><span>istio-ingressgateway-66cdbc7dc8-7j64x   1/1     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span><span style="display:flex;"><span>istiod-685fc94db9-kf7n6                 1/1     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span><span style="display:flex;"><span>jaeger-664d88ccf4-47gnz                 1/1     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span><span style="display:flex;"><span>kiali-87c6d84b7-gmclk                   1/1     Running   <span style="color:#ae81ff">0</span>          5m21s
+</span></span><span style="display:flex;"><span>prometheus-84cf88dfb8-zgt78             2/2     Running   <span style="color:#ae81ff">0</span>          5m22s
+</span></span></code></pre></div><ol start="3">
+<li>为kiali 设置账户 admin admin</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create -f 3-kiali-secret.yaml 
+</span></span></code></pre></div><h3 id="2---启用-sidecar-注入">2 - 启用 Sidecar 注入</h3>
+<p>启用 Istio</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Namespace</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">istio-injection</span>: <span style="color:#ae81ff">enabled</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">default</span>
+</span></span></code></pre></div><p>创建：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl apply -f  4-label-default-namespace.yaml
+</span></span></code></pre></div><p>部署程序到 default ns</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>kubectl create -f  5-application-no-istio.yaml 
+</span></span></code></pre></div><p>会发现有两个容器</p>
+<h3 id="3---使用-kiali-可视化系统">3 - 使用 Kiali 可视化系统</h3>
+<p>暴露端口访问可以使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>minikube service  -n istio-system  kiali --url  
+</span></span></code></pre></div><h3 id="4---查找性能问题">4 - 查找性能问题</h3>
+
         </div>
     </div>
 </div>
